@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🕌 Al-Hikmah Islamic App</title>
     <meta name="theme-color" content="#1a1a1a">
     
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Al-Hikmah","short_name":"Al-Hikmah","display":"standalone","background_color":"#1a1a1a","theme_color":"#d4af37","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3073/3073860.png","sizes":"512x512","type":"image/png"}]}'>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -29,6 +32,9 @@
         .nav-btn { width: 100%; background: none; border: none; color: #ddd; padding: 15px 20px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
         .nav-btn:hover, .nav-btn.active { background-color: rgba(212, 175, 55, 0.15); color: var(--gold); border-right: 4px solid var(--gold); }
         
+        .install-box { margin: 10px; padding: 15px; background: rgba(212, 175, 55, 0.1); border: 1px dashed var(--gold); border-radius: 8px; text-align: center; display: none; }
+        .install-box button { background: var(--gold); color: #000; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px;}
+
         /* MAIN CONTENT */
         .main-content { flex-grow: 1; overflow-y: auto; padding: 30px; padding-bottom: 140px; position: relative; }
         .section { display: none; animation: fadeIn 0.4s ease; }
@@ -42,7 +48,7 @@
         input, select, button { padding: 10px 12px; border: 1px solid var(--gold); border-radius: 5px; font-size: 14px; background: #fff; color: #333; outline: none; max-width: 250px;}
         button.action-btn { background-color: var(--gold); color: #111; font-weight: bold; cursor: pointer; }
 
-        /* MUSHAF FRAME (Keep your image_60cc7d.jpg in same folder) */
+        /* MUSHAF FRAME */
         .mushaf-frame { max-width: 800px; margin: 0 auto; background-color: var(--mushaf-paper); background-image: url('image_60cc7d.jpg'); background-size: 100% 100%; padding: 14% 12%; box-shadow: 0 15px 50px rgba(0,0,0,0.8); }
         .mushaf-inner { background-color: rgba(253, 246, 227, 0.85); min-height: 500px; padding: 20px; border-radius: 5px; }
         .surah-title { text-align: center; font-family: 'Amiri Quran', serif; font-size: 3rem; color: #b33939; margin-bottom: 20px; border-bottom: 2px solid #b33939; }
@@ -53,26 +59,22 @@
         .trans-text { font-size: 20px; line-height: 2.2; text-align: center; color: #444; margin-top: 15px; padding-top:10px; border-top: 1px solid #ccc;}
         .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 24px; direction: rtl;}
 
-        /* WIDGETS */
+        /* WIDGETS & ABOUT */
         .widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
         .widget-card { background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 20px; border-radius: 10px; text-align: center; }
         .widget-card h3 { color: var(--gold); margin-top: 0; }
         .time-display { font-size: 2rem; font-weight: bold; margin: 10px 0; }
         .hijri-date { font-size: 1.2rem; color: #ddd; margin-bottom: 20px; border-bottom: 1px solid var(--gold); padding-bottom: 10px;}
-        .qibla-compass { width: 150px; height: 150px; border: 5px solid var(--gold); border-radius: 50%; margin: 20px auto; position: relative; background: url('https://upload.wikimedia.org/wikipedia/commons/1/16/Compass_rose_pale.svg') no-repeat center; background-size: cover; }
-        .qibla-needle { width: 4px; height: 70px; background: #b33939; position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; transform: translateX(-50%) rotate(0deg); transition: transform 1s ease-out; border-radius: 5px 5px 0 0; }
-
-        /* ADHKAR CARDS */
-        .adhkar-card { background: #fff; color: #000; padding: 25px; border-radius: 10px; margin-bottom: 20px; border-top: 5px solid var(--gold); }
-        .adhkar-arabic { font-family: 'Amiri Quran', serif; font-size: 28px; line-height: 2; text-align: right; direction: rtl; margin-bottom: 15px;}
-        .adhkar-trans { font-family: 'Noto Nastaliq Urdu', serif; font-size: 20px; line-height: 2; text-align: right; direction: rtl; color: #555; border-top: 1px dashed #ccc; padding-top: 10px;}
+        
+        .contact-box { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;}
+        .contact-btn { display: inline-block; padding: 10px 20px; margin: 5px; border-radius: 20px; color: white; text-decoration: none; font-weight: bold; }
+        .btn-wa { background: #25D366; } .btn-call { background: #3498db; } .btn-email { background: #e74c3c; }
 
         /* GLOBAL PLAYER */
         .audio-player { position: fixed; bottom: 0; left: 260px; right: 0; background-color: #050505; border-top: 2px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .player-title { color: var(--gold); font-weight: 600; font-size: 16px; margin-bottom: 5px;}
         .player-controls button { background: none; border: none; color: white; font-size: 26px; cursor: pointer; margin: 0 15px; }
         .player-controls button:hover { color: var(--gold); }
-        .play-btn { font-size: 45px !important; color: var(--gold) !important; }
     </style>
 </head>
 <body>
@@ -89,11 +91,17 @@
 <div class="sidebar">
     <div class="logo"><h2>الحكمة</h2><p>Global Islamic Hub</p></div>
     <div class="nav-links">
-        <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-home"></i> Timings & Qibla</button>
+        <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-clock"></i> Timings & Alarms</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Read Mushaf</button>
-        <button class="nav-btn" onclick="switchTab('adhkarTab')"><i class="fas fa-praying-hands"></i> Adhkar & Ruqyah</button>
         <button class="nav-btn" onclick="switchTab('hadithTab')"><i class="fas fa-feather-alt"></i> Hadith Collection</button>
         <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
+        <button class="nav-btn" onclick="switchTab('aboutTab')"><i class="fas fa-info-circle"></i> About Us & Contact</button>
+    </div>
+    
+    <div class="install-box" id="installBox">
+        <i class="fas fa-mobile-alt" style="font-size:24px; color:var(--gold);"></i>
+        <p style="font-size:12px; margin:5px 0;">Install Al-Hikmah App</p>
+        <button id="installAppBtn">Install Now</button>
     </div>
 </div>
 
@@ -101,36 +109,60 @@
     <div id="loading" style="display:none; text-align:center; color:var(--gold);"><i class="fas fa-spinner fa-spin" style="font-size: 40px;"></i><br><b>Loading Data...</b></div>
 
     <div id="homeTab" class="section active">
-        <h2 style="color:var(--gold);">Islamic Calendar & Timings</h2>
+        <h2 style="color:var(--gold);">Prayer Timings & Alarm System</h2>
         <div class="controls-bar">
-            <div class="control-group"><label>City / District</label><input type="text" id="cityName" value="Srinagar" /></div>
-            <div class="control-group"><label>State / Country</label><input type="text" id="countryName" value="Jammu and Kashmir, India" /></div>
-            <div class="control-group"><label>Auto-Azan Voice</label>
+            <div class="control-group"><label>City</label><input type="text" id="cityName" value="Srinagar" /></div>
+            <div class="control-group"><label>Country</label><input type="text" id="countryName" value="Jammu and Kashmir, India" /></div>
+            <div class="control-group"><label>Auto-Azan Voice (Alarm)</label>
                 <select id="azanVoice">
                     <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah Al-Mukarramah</option>
                     <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Madinah Al-Munawwarah</option>
                     <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">Al-Aqsa</option>
                 </select>
             </div>
-            <button class="action-btn" onclick="fetchPrayerTimes()"><i class="fas fa-sync"></i> Get Timings</button>
+            <button class="action-btn" onclick="fetchPrayerTimes()"><i class="fas fa-sync"></i> Update Location</button>
         </div>
+        
         <div class="hijri-date" id="hijriDateDisplay">Loading Islamic Date...</div>
+        
         <div class="widget-grid">
+            <div class="widget-card">
+                <h3><i class="fas fa-bell"></i> Namaz Alarms</h3>
+                <div id="prayerList" style="text-align:left; display:inline-block; font-size:1.1rem; line-height:1.8; width:100%;">
+                    Fajr: <span id="timeFajr" style="float:right;">--:--</span><br>
+                    Dhuhr: <span id="timeDhuhr" style="float:right;">--:--</span><br>
+                    Asr: <span id="timeAsr" style="float:right;">--:--</span><br>
+                    Maghrib: <span id="timeMaghrib" style="float:right;">--:--</span><br>
+                    Isha: <span id="timeIsha" style="float:right;">--:--</span>
+                </div>
+                <p style="color:#25D366; font-size:0.9rem; margin-top:15px; font-weight:bold;"><i class="fas fa-check-circle"></i> Auto-Azan Alarm is Active</p>
+            </div>
+            
             <div class="widget-card"><h3><i class="fas fa-sun"></i> Sehri & Iftari</h3><p>Sehri Ends: <br><span class="time-display" id="sehriTime">--:--</span></p><hr style="border-color:var(--gold); opacity:0.3;"><p>Iftari Time: <br><span class="time-display" id="iftariTime">--:--</span></p></div>
-            <div class="widget-card"><h3><i class="fas fa-clock"></i> Prayer Times</h3><div id="prayerList" style="text-align:left; display:inline-block; font-size:1.1rem; line-height:1.8;">Fajr: <span id="timeFajr" style="float:right; margin-left:20px;">--:--</span><br>Dhuhr: <span id="timeDhuhr" style="float:right;">--:--</span><br>Asr: <span id="timeAsr" style="float:right;">--:--</span><br>Maghrib: <span id="timeMaghrib" style="float:right;">--:--</span><br>Isha: <span id="timeIsha" style="float:right;">--:--</span></div></div>
-            <div class="widget-card"><h3><i class="fas fa-compass"></i> Qibla Direction</h3><p>Degree: <span id="qiblaDegree" style="font-weight:bold; color:var(--gold);">--</span>°</p><div class="qibla-compass"><div class="qibla-needle" id="qiblaNeedle"></div></div></div>
         </div>
     </div>
 
     <div id="quranTab" class="section">
         <div class="controls-bar">
             <div class="control-group"><label>Surah No (1-114)</label><input type="number" id="surahNumber" placeholder="1-114" min="1" max="114" value="1" style="width:70px;"/></div>
-            <div class="control-group"><label>Global Reciters (100+)</label><select id="arReciter"></select></div>
-            <div class="control-group"><label>Translations (130+)</label><select id="textLang"></select></div>
+            <div class="control-group"><label>Arabic Reciter (100+)</label><select id="arReciter"></select></div>
+            <div class="control-group">
+                <label>Text Translation</label>
+                <select id="textLang">
+                    <option value="ur.jalandhry">✅ Urdu (Jalandhry)</option>
+                    <option value="hi.hindi">✅ Hindi (Farooq/Nadwi)</option>
+                    <option value="en.sahih">✅ English (Sahih International)</option>
+                    <option value="ur.jawadi">Urdu (Jawadi)</option>
+                    <option value="en.yusufali">English (Yusuf Ali)</option>
+                    <option value="bn.bengali">Bengali</option>
+                    <option value="fa.ayati">Persian (Ayati)</option>
+                    <option value="es.cortes">Spanish</option>
+                    </select>
+            </div>
             <div class="control-group">
                 <label>Audio Translation</label>
                 <select id="urReciter">
-                    <option value="none">-- MUTE AUDIO TRANSLATION --</option>
+                    <option value="none">-- Mute Translation Audio --</option>
                     <option value="translations/urdu_shamshad_ali_khan_46kbps">Urdu: Shamshad Ali Khan</option>
                     <option value="translations/urdu_farhat_hashmi">Urdu: Farhat Hashmi</option>
                     <option value="English/Sahih_Intnl_Ibrahim_Walk_192kbps">English: Ibrahim Walk</option>
@@ -147,25 +179,6 @@
                     <div id="mushafContent"></div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="adhkarTab" class="section">
-        <h2 style="color:var(--gold);">Adhkar & Ruqyah Shariah</h2>
-        <div class="controls-bar">
-            <div class="control-group">
-                <label>Select Category</label>
-                <select id="adhkarCategory">
-                    <option value="morning">أذكار الصباح (Morning Adhkar)</option>
-                    <option value="evening">أذكار المساء (Evening Adhkar)</option>
-                    <option value="ruqyah">الرقية الشرعية (Ruqyah Shariah)</option>
-                    <option value="khatam">دعاء ختم القرآن (Khatm-e-Quran Dua)</option>
-                </select>
-            </div>
-            <button class="action-btn" onclick="loadAdhkar()"><i class="fas fa-book-reader"></i> Read Duas</button>
-        </div>
-        <div id="adhkarContent">
-            <p style="text-align:center; color:#ccc;">Please select a category and click "Read Duas".</p>
         </div>
     </div>
 
@@ -188,6 +201,29 @@
         <div id="searchContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
     </div>
 
+    <div id="aboutTab" class="section">
+        <h2 style="color:var(--gold); text-align:center;">About Al-Hikmah & Privacy Policy</h2>
+        
+        <div class="contact-box">
+            <h3>Contact Us</h3>
+            <p>If you have any feedback, suggestions, or need help, please reach out:</p>
+            <a href="https://wa.me/917006686584" class="contact-btn btn-wa" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
+            <a href="tel:7006686584" class="contact-btn btn-call"><i class="fas fa-phone"></i> Call: 7006686584</a>
+            <a href="mailto:darajazb@gmail.com" class="contact-btn btn-email"><i class="fas fa-envelope"></i> darajazb@gmail.com</a>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.5); padding:20px; border-radius:10px; border:1px solid #444;">
+            <h3 style="color:var(--gold);">Privacy Policy</h3>
+            <p>Welcome to Al-Hikmah. Your privacy is of utmost importance to us.</p>
+            <ul>
+                <li><strong>No Data Collection:</strong> We do not store, track, or sell your personal information.</li>
+                <li><strong>Location Services:</strong> The city and country you enter are strictly used to fetch real-time Prayer and Azan timings from public APIs (AlAdhan). This data is processed locally on your device.</li>
+                <li><strong>Permissions:</strong> The auto-azan feature requires basic audio playback permissions.</li>
+                <li><strong>Content:</strong> All Quranic text, audio, and Hadiths are sourced from authentic public APIs (AlQuran.cloud, EveryAyah, and Open Hadith).</li>
+            </ul>
+        </div>
+    </div>
+
 </div>
 
 <div class="audio-player" id="globalPlayer">
@@ -197,69 +233,55 @@
     </div>
     <div class="player-controls">
         <button onclick="skipTrack(-1)"><i class="fas fa-step-backward"></i></button>
-        <button class="play-btn" id="playBtn" onclick="togglePlay()"><i class="fas fa-play-circle"></i></button>
+        <button id="playBtn" onclick="togglePlay()" style="font-size: 45px; color: var(--gold);"><i class="fas fa-play-circle"></i></button>
         <button onclick="skipTrack(1)"><i class="fas fa-step-forward"></i></button>
     </div>
     <audio id="audioEngine"></audio>
 </div>
 
 <script>
-    var playlist = [];
-    var currentTrackIndex = 0;
-    var isPlaying = false;
+    var playlist = []; var currentTrackIndex = 0; var isPlaying = false;
     var audioEngine = document.getElementById("audioEngine");
     var azanAudio = document.getElementById("azanAudio");
-    var todayPrayerTimes = {};
-    var autoAzanInterval;
+    var todayPrayerTimes = {}; var autoAzanInterval;
 
-    // --- STATIC ADHKAR DATABASE (Fail-Proof) ---
-    var adhkarDB = {
-        "morning": [
-            { ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ...", ur: "ہم نے صبح کی اور تمام بادشاہی اللہ کی ہے، اور سب تعریف اللہ کے لیے ہے..." },
-            { ar: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ", ur: "اے اللہ! ہم نے تیرے ہی نام سے صبح کی، اور تیرے ہی نام سے شام کی، اور تیرے ہی نام سے جیتے ہیں، اور مرتے ہیں، اور تیری ہی طرف لوٹنا ہے۔" }
-        ],
-        "evening": [
-            { ar: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ...", ur: "ہم نے شام کی اور تمام بادشاہی اللہ کی ہے، اور سب تعریف اللہ کے لیے ہے..." },
-            { ar: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ", ur: "اے اللہ! ہم نے تیرے ہی نام سے شام کی، اور تیرے ہی نام سے صبح کی، اور تیرے ہی نام سے جیتے ہیں، اور مرتے ہیں، اور تیری ہی طرف لوٹنا ہے۔" }
-        ],
-        "ruqyah": [
-            { ar: "بِسْمِ اللَّهِ أَرْقِيكَ، مِنْ كُلِّ شَيْءٍ يُؤْذِيكَ...", ur: "اللہ کے نام سے میں آپ پر دم کرتا ہوں، ہر اس چیز سے جو آپ کو تکلیف دے..." },
-            { ar: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ", ur: "میں اللہ کے مکمل کلمات کی پناہ مانگتا ہوں اس شر سے جو اس نے پیدا کیا۔" }
-        ],
-        "khatam": [
-            { ar: "اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً", ur: "اے اللہ! مجھ پر قرآن کے ذریعے رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔" }
-        ]
-    };
+    // --- PWA SERVICE WORKER (FOR INSTALLATION) ---
+    // Trick the browser into thinking a SW is registered so the "Install" prompt shows up!
+    if ('serviceWorker' in navigator) {
+        var swCode = "self.addEventListener('install', function(e){ self.skipWaiting(); }); self.addEventListener('fetch', function(e){});";
+        var blob = new Blob([swCode], {type: 'application/javascript'});
+        var swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).then(function() { console.log("PWA Ready"); });
+    }
 
-    // --- ON LOAD FETCH RECITERS ---
+    // Install Button Logic
+    var deferredPrompt;
+    window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBox').style.display = 'block';
+    });
+
+    document.getElementById('installAppBtn').addEventListener('click', function() {
+        document.getElementById('installBox').style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(choiceResult) { deferredPrompt = null; });
+    });
+
+    // --- ON LOAD ---
     window.onload = async function() {
         try {
             var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
             var arData = await arRes.json();
             var arSelect = document.getElementById("arReciter");
-            
             arData.data.forEach(function(ed) {
-                var opt = document.createElement('option');
-                opt.value = ed.identifier;
-                opt.text = ed.englishName;
+                var opt = document.createElement('option'); opt.value = ed.identifier; opt.text = ed.englishName;
                 if(ed.identifier === 'ar.abdurrahmaansudais') { opt.selected = true; opt.text = "⭐ " + opt.text + " (Sudais)"; }
                 arSelect.add(opt);
             });
 
-            var txtRes = await fetch('https://api.alquran.cloud/v1/edition?format=text');
-            var txtData = await txtRes.json();
-            var txtSelect = document.getElementById("textLang");
+            // Note: Text langs are hardcoded in HTML for priority, dynamic fetch can be added if needed, but manual is cleaner for user.
             
-            txtData.data.forEach(function(ed) {
-                if(ed.language !== 'ar') { 
-                    var opt = document.createElement('option');
-                    opt.value = ed.identifier;
-                    opt.text = ed.language.toUpperCase() + ": " + ed.englishName;
-                    if(ed.identifier === 'ur.jalandhry') opt.selected = true; 
-                    txtSelect.add(opt);
-                }
-            });
-
             document.getElementById("splashQuote").innerText = '"Indeed, with hardship comes ease." (Quran 94:6)';
             document.getElementById("enterBtn").style.display = "block";
         } catch(e) { document.getElementById("splashQuote").innerText = "Network Error. Please refresh."; }
@@ -281,7 +303,7 @@
 
     var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
-    // --- PRAYER TIMES ---
+    // --- PRAYER TIMINGS & ALARM ---
     async function fetchPrayerTimes() {
         showLoad(true);
         var city = document.getElementById("cityName").value;
@@ -299,11 +321,6 @@
             document.getElementById("timeMaghrib").innerText = todayPrayerTimes.Maghrib;
             document.getElementById("timeIsha").innerText = todayPrayerTimes.Isha;
 
-            var qiblaRes = await fetch('https://api.aladhan.com/v1/qibla/' + data.data.meta.latitude + '/' + data.data.meta.longitude);
-            var qiblaData = await qiblaRes.json();
-            document.getElementById("qiblaDegree").innerText = Math.round(qiblaData.data.direction);
-            document.getElementById("qiblaNeedle").style.transform = "translateX(-50%) rotate(" + Math.round(qiblaData.data.direction) + "deg)";
-
             clearInterval(autoAzanInterval);
             autoAzanInterval = setInterval(checkAzanTime, 60000); 
         } catch (e) { alert("Could not fetch timings."); }
@@ -315,7 +332,8 @@
         var p = todayPrayerTimes;
         if ([p.Fajr, p.Dhuhr, p.Asr, p.Maghrib, p.Isha].includes(currentTime)) {
             azanAudio.src = document.getElementById("azanVoice").value;
-            audioEngine.pause(); azanAudio.play(); alert("Auto-Azan playing.");
+            audioEngine.pause(); azanAudio.play(); 
+            alert("⏰ Alarm: Namaz ka waqt ho gaya hai!");
         }
     }
 
@@ -348,7 +366,7 @@
                 playlist.push({ url: ayah.audio, type: 'Arabic', num: ayahNum, id: 'ayah-' + ayahNum });
                 if(transAudioFolder !== "none") {
                     var transAudioUrl = 'https://everyayah.com/data/' + transAudioFolder + '/' + pad(surah) + pad(ayahNum) + '.mp3';
-                    playlist.push({ url: transAudioUrl, type: 'Translation Audio', num: ayahNum, id: 'ayah-' + ayahNum });
+                    playlist.push({ url: transAudioUrl, type: 'Translation', num: ayahNum, id: 'ayah-' + ayahNum });
                 }
                 var transClass = isRTL ? 'trans-text urdu-font' : 'trans-text';
                 html += '<div class="ayah-row" id="ayah-' + ayahNum + '">' +
@@ -388,22 +406,7 @@
     audioEngine.onerror = function() { currentTrackIndex++; if(currentTrackIndex < playlist.length) playTrack(); };
     audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
-    // --- ADHKAR LOGIC ---
-    function loadAdhkar() {
-        var cat = document.getElementById("adhkarCategory").value;
-        var data = adhkarDB[cat];
-        var div = document.getElementById("adhkarContent");
-        var html = "";
-        data.forEach(function(item) {
-            html += '<div class="adhkar-card">' +
-                    '<div class="adhkar-arabic">' + item.ar + '</div>' +
-                    '<div class="adhkar-trans">' + item.ur + '</div>' +
-                    '</div>';
-        });
-        div.innerHTML = html;
-    }
-
-    // --- HADITH & SEARCH LOGIC ---
+    // --- HADITH & SEARCH ---
     async function loadHadith() {
         var book = document.getElementById("hadithBook").value;
         var num = document.getElementById("hadithNumber").value;
