@@ -27,7 +27,7 @@
         .logo { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
         .logo h2 { margin: 0; color: var(--gold); font-family: 'Amiri', serif; font-size: 28px;}
         .nav-links { flex-grow: 1; padding: 10px 0; overflow-y: auto;}
-        .nav-btn { width: 100%; background: none; border: none; color: #ddd; padding: 15px 20px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .nav-btn { width: 100%; background: none; border: none; color: #ddd; padding: 12px 20px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
         .nav-btn:hover, .nav-btn.active { background-color: rgba(212, 175, 55, 0.15); color: var(--gold); border-right: 4px solid var(--gold); }
         .install-box { margin: 10px; padding: 15px; background: rgba(212, 175, 55, 0.1); border: 1px dashed var(--gold); border-radius: 8px; text-align: center; }
         .install-box button { background: var(--gold); color: #000; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px;}
@@ -49,44 +49,29 @@
         .widget-card { background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 20px; border-radius: 10px; text-align: center; position: relative;}
         .widget-card h3 { color: var(--gold); margin-top: 0; border-bottom: 1px dashed var(--gold); padding-bottom: 10px;}
         .time-display { font-size: 2rem; font-weight: bold; margin: 10px 0; }
-        
-        /* LIVE CLOCK */
         .live-clock { font-family: 'Amiri', serif; font-size: 3rem; color: var(--gold); text-shadow: 0 0 10px rgba(212,175,55,0.5); margin: 15px 0; }
-
-        /* MUSHAF FRAME (Bulletproof Backup) */
-        .mushaf-frame { 
-            max-width: 800px; margin: 0 auto; 
-            background-color: var(--mushaf-paper); 
-            /* FALLBACK ONLINE IMAGE + LOCAL IMAGE */
-            background-image: url('image_60cc7d.jpg'), url('https://img.freepik.com/premium-vector/islamic-arabic-arabesque-ornament-border-frame-pattern-background_510300-357.jpg'); 
-            background-size: 100% 100%; 
-            padding: 14% 12%; box-shadow: 0 15px 50px rgba(0,0,0,0.8); 
-            border: 5px solid #8b0000; border-radius: 10px;
-        }
+        .time-input { background: rgba(0,0,0,0.7); color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 8px; font-family: monospace; font-size: 1.1rem; float: right; cursor: pointer;}
+        
+        /* MUSHAF & DUA FRAMES */
+        .mushaf-frame { max-width: 800px; margin: 0 auto; background-color: var(--mushaf-paper); background-image: url('image_60cc7d.jpg'), url('https://img.freepik.com/premium-vector/islamic-arabic-arabesque-ornament-border-frame-pattern-background_510300-357.jpg'); background-size: 100% 100%; padding: 14% 12%; box-shadow: 0 15px 50px rgba(0,0,0,0.8); border: 5px solid #8b0000; border-radius: 10px;}
         .mushaf-inner { background-color: rgba(253, 246, 227, 0.95); min-height: 500px; padding: 20px; border-radius: 5px; border: 2px solid var(--gold); outline: 1px dashed #8b0000; outline-offset: -5px;}
-        .surah-title { text-align: center; font-family: 'Amiri Quran', serif; font-size: 3rem; color: #b33939; margin-bottom: 20px; border-bottom: 2px solid #b33939; }
+        .surah-title { text-align: center; font-family: 'Amiri Quran', serif; font-size: 2.5rem; color: #b33939; margin-bottom: 20px; border-bottom: 2px solid #b33939; padding-bottom:10px;}
         .ayah-row { padding: 20px 10px; border-bottom: 1px dashed rgba(179, 57, 57, 0.3); }
         .ayah-row.playing-active { background-color: rgba(212, 175, 55, 0.3); border-right: 5px solid #b33939; border-left: 5px solid #b33939; }
-        .arabic-text { font-family: 'Amiri Quran', serif; font-size: 38px; line-height: 2.2; direction: rtl; text-align: center; color: var(--text-dark); }
-        .ayah-marker { color: #b33939; font-size: 32px; margin: 0 8px; }
-        .trans-text { font-size: 20px; line-height: 2.2; text-align: center; color: #444; margin-top: 15px; padding-top:10px; border-top: 1px solid #ccc;}
-        .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 24px; direction: rtl;}
+        .arabic-text { font-family: 'Amiri Quran', serif; font-size: 36px; line-height: 2.2; direction: rtl; text-align: center; color: var(--text-dark); }
+        .ayah-marker { color: #b33939; font-size: 30px; margin: 0 8px; }
+        .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 22px; direction: rtl; line-height: 2.2; text-align: center; color: #444; margin-top: 15px; padding-top:10px; border-top: 1px solid #ccc;}
+
+        /* DUA CARDS */
+        .dua-card { background: #fff; color: #111; padding: 25px; border-radius: 10px; margin-bottom: 20px; border-top: 4px solid var(--gold); position: relative;}
+        .dua-title { color: #b33939; font-weight: bold; border-bottom: 1px dashed #ccc; padding-bottom: 10px; margin-bottom: 15px;}
+        .dua-play-btn { background: var(--gold); color: #111; border: none; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; float: right;}
 
         /* HIJRI CALENDAR TABLE */
         .calendar-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px;}
         .calendar-table th, .calendar-table td { border: 1px solid rgba(212,175,55,0.3); padding: 5px; text-align: center; }
         .calendar-table th { background: rgba(212,175,55,0.2); color: var(--gold); }
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
-
-        /* MANUAL ALARMS */
-        .alarm-list { text-align: left; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 5px; margin-top: 10px; max-height: 150px; overflow-y: auto;}
-        .alarm-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #555; padding: 5px 0;}
-        .del-btn { background: red; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 2px 8px;}
-
-        /* ABOUT / CONTACT */
-        .contact-box { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;}
-        .contact-btn { display: inline-block; padding: 10px 20px; margin: 5px; border-radius: 20px; color: white; text-decoration: none; font-weight: bold; }
-        .btn-wa { background: #25D366; } .btn-call { background: #3498db; } .btn-email { background: #e74c3c; }
 
         /* GLOBAL PLAYER */
         .audio-player { position: fixed; bottom: 0; left: 260px; right: 0; background-color: #050505; border-top: 2px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
@@ -104,15 +89,17 @@
 </div>
 
 <audio id="azanAudio" preload="none"></audio>
+<audio id="duaAudio" preload="none"></audio>
 
 <div class="sidebar">
     <div class="logo"><h2>الحكمة</h2><p>Global Islamic Hub</p></div>
     <div class="nav-links">
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-clock"></i> Timings & Alarms</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Read Mushaf</button>
+        <button class="nav-btn" onclick="switchTab('duasTab')"><i class="fas fa-hands-praying"></i> Masnoon Duain</button>
+        <button class="nav-btn" onclick="switchTab('khatmTab')"><i class="fas fa-star-and-crescent"></i> Khatm-ul-Quran</button>
         <button class="nav-btn" onclick="switchTab('hadithTab')"><i class="fas fa-feather-alt"></i> Hadith Collection</button>
         <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
-        <button class="nav-btn" onclick="switchTab('aboutTab')"><i class="fas fa-info-circle"></i> About Us & Contact</button>
     </div>
     
     <div class="install-box" id="installBox">
@@ -128,16 +115,16 @@
     <div id="homeTab" class="section active">
         <h2 style="color:var(--gold);">Dashboard & Timings</h2>
         <div class="controls-bar">
-            <div class="control-group"><label>City</label><input type="text" id="cityName" value="Srinagar" /></div>
-            <div class="control-group"><label>Country</label><input type="text" id="countryName" value="Jammu and Kashmir, India" /></div>
+            <div class="control-group"><label>City / District</label><input type="text" id="cityName" value="Srinagar" onchange="saveSettings()" /></div>
+            <div class="control-group"><label>Country</label><input type="text" id="countryName" value="India" onchange="saveSettings()" /></div>
             <div class="control-group"><label>Auto-Azan Voice</label>
-                <select id="azanVoice">
+                <select id="azanVoice" onchange="saveSettings()">
                     <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah Al-Mukarramah</option>
                     <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Madinah Al-Munawwarah</option>
                     <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">Al-Aqsa</option>
                 </select>
             </div>
-            <button class="action-btn" onclick="fetchPrayerTimes()"><i class="fas fa-sync"></i> Update Location</button>
+            <button class="action-btn" onclick="fetchPrayerTimes(true)"><i class="fas fa-sync"></i> Fetch / Reset API Timings</button>
         </div>
         
         <div class="widget-grid">
@@ -147,58 +134,39 @@
                 <div id="hijriDateDisplay" style="color:#ddd; font-size:1.1rem;">Loading Date...</div>
             </div>
 
-            <div class="widget-card">
-                <h3><i class="fas fa-mosque"></i> Prayer Timings</h3>
-                <div id="prayerList" style="text-align:left; font-size:1.1rem; line-height:1.8;">
-                    Fajr: <span id="timeFajr" style="float:right;">--:--</span><br>
-                    Dhuhr: <span id="timeDhuhr" style="float:right;">--:--</span><br>
-                    Asr: <span id="timeAsr" style="float:right;">--:--</span><br>
-                    Maghrib: <span id="timeMaghrib" style="float:right;">--:--</span><br>
-                    Isha: <span id="timeIsha" style="float:right;">--:--</span>
+            <div class="widget-card" style="grid-column: span 2;">
+                <h3><i class="fas fa-mosque"></i> Prayer Timings (Saved Locally)</h3>
+                <p style="font-size:12px; color:#aaa; margin-top:-10px;">Times are auto-saved as you type. Alarms ring at these exact times.</p>
+                <div id="prayerList" style="text-align:left; font-size:1.1rem; line-height:2.5; display: flex; flex-wrap: wrap; justify-content: space-between;">
+                    <div style="width: 48%;">Fajr: <input type="time" id="timeFajr" class="time-input" onchange="saveSettings()"></div>
+                    <div style="width: 48%;">Dhuhr: <input type="time" id="timeDhuhr" class="time-input" onchange="saveSettings()"></div>
+                    <div style="width: 48%;">Asr: <input type="time" id="timeAsr" class="time-input" onchange="saveSettings()"></div>
+                    <div style="width: 48%;">Maghrib: <input type="time" id="timeMaghrib" class="time-input" onchange="saveSettings()"></div>
+                    <div style="width: 48%;">Isha: <input type="time" id="timeIsha" class="time-input" onchange="saveSettings()"></div>
+                    <div style="width: 48%; border: 1px solid var(--gold); padding: 2px 5px; border-radius: 5px; background: rgba(212,175,55,0.1);">
+                        <span style="color:var(--gold); font-weight:bold;">Jumu'ah:</span> <input type="time" id="timeJummah" class="time-input" style="background:var(--gold); color:#000;" onchange="saveSettings()">
+                    </div>
                 </div>
             </div>
-
-            <div class="widget-card">
-                <h3><i class="fas fa-bell"></i> Manual Mosque Alarms</h3>
-                <div style="display:flex; gap:5px; margin-bottom:10px;">
-                    <input type="time" id="manualAlarmTime" style="width:40%; padding:5px;" required>
-                    <input type="text" id="manualAlarmName" placeholder="e.g. Jumuah" style="width:40%; padding:5px;" required>
-                    <button class="action-btn" onclick="addManualAlarm()" style="width:20%; padding:5px;">Add</button>
-                </div>
-                <div class="alarm-list" id="manualAlarmList">
-                    <p style="color:#888; text-align:center; font-size:12px;">No manual alarms set.</p>
-                </div>
-            </div>
-
-            <div class="widget-card" style="grid-column: 1 / -1;">
-                <h3><i class="fas fa-calendar-alt"></i> Monthly Hijri Calendar</h3>
-                <div style="overflow-x:auto;">
-                    <table class="calendar-table" id="calendarTable">
-                        <tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>
-                        </table>
-                </div>
-            </div>
+            <div class="widget-card"><h3><i class="fas fa-sun"></i> Sehri & Iftari</h3><p>Sehri Ends: <br><span class="time-display" id="sehriTime">--:--</span></p><hr style="border-color:var(--gold); opacity:0.3;"><p>Iftari Time: <br><span class="time-display" id="iftariTime">--:--</span></p></div>
         </div>
     </div>
 
     <div id="quranTab" class="section">
         <div class="controls-bar">
             <div class="control-group"><label>Surah No (1-114)</label><input type="number" id="surahNumber" placeholder="1-114" min="1" max="114" value="1" style="width:70px;"/></div>
-            <div class="control-group"><label>Arabic Reciter (100+)</label><select id="arReciter"></select></div>
-            <div class="control-group">
-                <label>Text Translation</label>
+            <div class="control-group"><label>Arabic Reciter</label><select id="arReciter"></select></div>
+            <div class="control-group"><label>Text Translation</label>
                 <select id="textLang">
                     <option value="ur.jalandhry">✅ Urdu (Jalandhry)</option>
                     <option value="hi.hindi">✅ Hindi (Farooq/Nadwi)</option>
                     <option value="en.sahih">✅ English (Sahih International)</option>
-                    </select>
+                </select>
             </div>
-            <div class="control-group">
-                <label>Audio Translation</label>
+            <div class="control-group"><label>Audio Translation</label>
                 <select id="urReciter">
                     <option value="none">-- Mute Translation Audio --</option>
                     <option value="translations/urdu_shamshad_ali_khan_46kbps">Urdu: Shamshad Ali Khan</option>
-                    <option value="translations/urdu_farhat_hashmi">Urdu: Farhat Hashmi</option>
                     <option value="English/Sahih_Intnl_Ibrahim_Walk_192kbps">English: Ibrahim Walk</option>
                 </select>
             </div>
@@ -209,8 +177,35 @@
             <div class="mushaf-frame">
                 <div class="mushaf-inner">
                     <div class="surah-title" id="surahTitle">سورة</div>
-                    <div id="bismillah" style="text-align: center; font-family: 'Amiri Quran', serif; font-size: 32px; margin-bottom: 20px; color: #111;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
                     <div id="mushafContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="duasTab" class="section">
+        <h2 style="color:var(--gold);">Masnoon Duain (Daily Supplications)</h2>
+        <div id="duasContainer">
+            </div>
+    </div>
+
+    <div id="khatmTab" class="section">
+        <h2 style="color:var(--gold); text-align:center;">Dua Khatm-ul-Quran</h2>
+        <div class="mushaf-frame" style="max-width: 900px;">
+            <div class="mushaf-inner">
+                <div class="surah-title">دعاء ختم القرآن</div>
+                <button class="action-btn" style="display:block; margin: 0 auto 20px auto;" onclick="playDuaAudio('https://download.quranicaudio.com/quran/khatm/sudais_khatm_1434.mp3')"><i class="fas fa-play"></i> Play Audio (Imam Sudais)</button>
+                <div class="arabic-text" style="font-size: 32px;">
+                    اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً<br>
+                    اللَّهُمَّ ذَكِّرْنِي مِنْهُ مَا نَسِيتُ وَعَلِّمْنِي مِنْهُ مَا جَهِلْتُ<br>
+                    وَارْزُقْنِي تِلاَوَتَهُ آنَاءَ اللَّيْلِ وَأَطْرَافَ النَّهَارِ<br>
+                    وَاجْعَلْهُ لِي حُجَّةً يَا رَبَّ الْعَالَمِينَ
+                </div>
+                <div class="urdu-font">
+                    اے اللہ! قرآن کی برکت سے مجھ پر رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔<br>
+                    اے اللہ! میں جو اس میں سے بھول گیا ہوں وہ مجھے یاد دلا دے اور جو میں نہیں جانتا وہ مجھے سکھا دے۔<br>
+                    اور مجھے رات کی گھڑیوں اور دن کے کناروں میں اس کی تلاوت نصیب فرما۔<br>
+                    اور اسے میرے حق میں دلیل بنا دے اے تمام جہانوں کے رب!
                 </div>
             </div>
         </div>
@@ -224,8 +219,6 @@
                 <option value="muslim">Sahih Muslim</option>
                 <option value="tirmidhi">Jami At-Tirmidhi</option>
                 <option value="abudawud">Sunan Abu Dawud</option>
-                <option value="nasai">Sunan An-Nasai</option>
-                <option value="ibnmajah">Sunan Ibn Majah</option>
             </select>
             <input type="number" id="hadithNumber" placeholder="Hadith No." min="1" />
             <button class="action-btn" onclick="loadHadith()">Read</button>
@@ -234,40 +227,13 @@
     </div>
 
     <div id="searchTab" class="section">
-        <h2 style="color:var(--gold);">Dictionary Search (Any Language)</h2>
+        <h2 style="color:var(--gold);">Dictionary Search</h2>
         <div class="controls-bar">
-            <div class="control-group">
-                <label>Search In</label>
-                <select id="searchEdition">
-                    <option value="ur.jalandhry">Urdu</option>
-                    <option value="en.sahih">English</option>
-                    <option value="ar.quran-simple">Arabic</option>
-                    <option value="hi.hindi">Hindi</option>
-                </select>
-            </div>
-            <input type="text" id="searchKeyword" placeholder="Enter word to search..." style="flex-grow:1;" />
+            <select id="searchEdition"><option value="ur.jalandhry">Urdu</option><option value="en.sahih">English</option></select>
+            <input type="text" id="searchKeyword" placeholder="Enter word..." style="flex-grow:1;" />
             <button class="action-btn" onclick="searchQuran()">Search</button>
         </div>
         <div id="searchContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
-    </div>
-
-    <div id="aboutTab" class="section">
-        <h2 style="color:var(--gold); text-align:center;">About Al-Hikmah & Privacy Policy</h2>
-        <div class="contact-box">
-            <h3>Contact Us</h3>
-            <p>If you have any feedback, suggestions, or need help, please reach out:</p>
-            <a href="https://wa.me/917006686584" class="contact-btn btn-wa" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
-            <a href="tel:7006686584" class="contact-btn btn-call"><i class="fas fa-phone"></i> Call: 7006686584</a>
-            <a href="mailto:darajazb@gmail.com" class="contact-btn btn-email"><i class="fas fa-envelope"></i> darajazb@gmail.com</a>
-        </div>
-        <div style="background:rgba(0,0,0,0.5); padding:20px; border-radius:10px; border:1px solid #444;">
-            <h3 style="color:var(--gold);">Privacy Policy</h3>
-            <ul>
-                <li><strong>No Data Collection:</strong> We do not store or sell your personal information.</li>
-                <li><strong>Location Services:</strong> City/Country are used locally to fetch real-time Prayer timings.</li>
-                <li><strong>Content:</strong> All text and audio are sourced from authentic public APIs (AlQuran.cloud, EveryAyah, and Open Hadith).</li>
-            </ul>
-        </div>
     </div>
 
 </div>
@@ -289,8 +255,69 @@
     var playlist = []; var currentTrackIndex = 0; var isPlaying = false;
     var audioEngine = document.getElementById("audioEngine");
     var azanAudio = document.getElementById("azanAudio");
-    var todayPrayerTimes = {}; var autoAzanInterval;
-    var customAlarms = [];
+    var duaAudio = document.getElementById("duaAudio");
+    var autoAzanInterval;
+
+    // --- DAILY DUAS DATABASE ---
+    var dailyDuas = [
+        { title: "Sone se pehle ki Dua (Before Sleeping)", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", ur: "اے اللہ! میں تیرے ہی نام سے مرتا (سوتا) اور جیتا (جاگتا) ہوں۔", audio: "https://www.hisnulmuslim.com/audio/ar/ar_01_01.mp3" },
+        { title: "So kar uthne ki Dua (Waking Up)", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur: "سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio: "https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3" },
+        { title: "Ghar se nikalne ki Dua (Leaving Home)", ar: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur: "اللہ کے نام سے، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔", audio: "https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3" },
+        { title: "Safar ki Dua (Traveling)", ar: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ", ur: "پاک ہے وہ ذات جس نے اس (سواری) کو ہمارے تابع کر دیا حالانکہ ہم اسے قابو میں لانے والے نہ تھے، اور بے شک ہم اپنے رب کی طرف لوٹنے والے ہیں۔", audio: "https://www.hisnulmuslim.com/audio/ar/ar_01_04.mp3" }
+    ];
+
+    function renderDuas() {
+        var html = "";
+        dailyDuas.forEach(function(dua) {
+            html += '<div class="dua-card">' +
+                    '<button class="dua-play-btn" onclick="playDuaAudio(\''+dua.audio+'\')"><i class="fas fa-play"></i> Play</button>' +
+                    '<div class="dua-title">' + dua.title + '</div>' +
+                    '<div class="arabic-text" style="font-size:28px; border:none;">' + dua.ar + '</div>' +
+                    '<div class="urdu-font">' + dua.ur + '</div>' +
+                    '</div>';
+        });
+        document.getElementById("duasContainer").innerHTML = html;
+    }
+
+    function playDuaAudio(url) {
+        audioEngine.pause();
+        duaAudio.src = url;
+        duaAudio.play();
+    }
+
+    // --- LOCAL STORAGE (SAVING TIMINGS) ---
+    function saveSettings() {
+        localStorage.setItem("cityName", document.getElementById("cityName").value);
+        localStorage.setItem("countryName", document.getElementById("countryName").value);
+        localStorage.setItem("azanVoice", document.getElementById("azanVoice").value);
+        
+        var times = ["timeFajr", "timeDhuhr", "timeAsr", "timeMaghrib", "timeIsha", "timeJummah"];
+        times.forEach(function(id) {
+            localStorage.setItem(id, document.getElementById(id).value);
+        });
+        alert("Settings Saved!");
+    }
+
+    function loadSettings() {
+        if(localStorage.getItem("cityName")) {
+            document.getElementById("cityName").value = localStorage.getItem("cityName");
+            document.getElementById("countryName").value = localStorage.getItem("countryName");
+            document.getElementById("azanVoice").value = localStorage.getItem("azanVoice");
+            
+            var times = ["timeFajr", "timeDhuhr", "timeAsr", "timeMaghrib", "timeIsha", "timeJummah"];
+            var hasTimes = true;
+            times.forEach(function(id) {
+                if(localStorage.getItem(id)) {
+                    document.getElementById(id).value = localStorage.getItem(id);
+                } else { hasTimes = false; }
+            });
+            // If we didn't have saved times, fetch them from API
+            if(!hasTimes) fetchPrayerTimes(false);
+        } else {
+            // First time user
+            fetchPrayerTimes(false);
+        }
+    }
 
     // --- LIVE CLOCK ---
     setInterval(function() {
@@ -298,25 +325,10 @@
         document.getElementById("liveClock").innerText = now.toLocaleTimeString('en-US', { hour12: false });
     }, 1000);
 
-    // --- APP INSTALLATION LOGIC ---
-    var deferredPrompt;
-    window.addEventListener('beforeinstallprompt', function(e) {
-        e.preventDefault(); deferredPrompt = e;
-        document.getElementById('installBox').style.display = 'block';
-    });
-
-    function installAppPrompt() {
-        if(deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function(res) { document.getElementById('installBox').style.display = 'none'; deferredPrompt = null; });
-        } else {
-            alert("To install this App:\n\nAndroid/Chrome: Tap the 3 dots menu and select 'Add to Home Screen'.\n\niOS/Safari: Tap the Share button and select 'Add to Home Screen'.");
-        }
-    }
-
-    // --- ON LOAD DATABASES ---
+    // --- ON LOAD ---
     window.onload = async function() {
         try {
+            renderDuas();
             var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
             var arData = await arRes.json();
             var arSelect = document.getElementById("arReciter");
@@ -325,27 +337,17 @@
                 if(ed.identifier === 'ar.abdurrahmaansudais') { opt.selected = true; opt.text = "⭐ " + opt.text + " (Sudais)"; }
                 arSelect.add(opt);
             });
-
-            var txtRes = await fetch('https://api.alquran.cloud/v1/edition?format=text');
-            var txtData = await txtRes.json();
-            var txtSelect = document.getElementById("textLang");
-            txtData.data.forEach(function(ed) {
-                if(ed.language !== 'ar') { 
-                    var opt = document.createElement('option'); opt.value = ed.identifier; opt.text = ed.language.toUpperCase() + ": " + ed.englishName;
-                    txtSelect.add(opt);
-                }
-            });
-
             document.getElementById("splashQuote").innerText = '"Indeed, with hardship comes ease." (Quran 94:6)';
             document.getElementById("enterBtn").style.display = "block";
-        } catch(e) { document.getElementById("splashQuote").innerText = "Network Error. Please refresh."; }
+        } catch(e) { document.getElementById("splashQuote").innerText = "Network Error."; }
     };
 
     function startApp() {
         document.getElementById("splashScreen").style.display = "none";
         azanAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"; 
         azanAudio.play().catch(function(e){}); 
-        fetchPrayerTimes(); 
+        loadSettings(); // Load saved times
+        autoAzanInterval = setInterval(checkAzanTime, 60000); 
     }
 
     function switchTab(tabId) {
@@ -357,84 +359,54 @@
 
     var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
-    // --- TIMINGS & CALENDAR ---
-    async function fetchPrayerTimes() {
+    async function fetchPrayerTimes(forceUpdate) {
         showLoad(true);
         var city = document.getElementById("cityName").value;
         var country = document.getElementById("countryName").value;
         try {
-            // Get Timings
-            var res = await fetch('https://api.aladhan.com/v1/timingsByAddress?address=' + encodeURIComponent(city + ", " + country));
+            var res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=' + encodeURIComponent(city) + '&country=' + encodeURIComponent(country) + '&method=1');
             var data = await res.json();
-            todayPrayerTimes = data.data.timings;
+            var timings = data.data.timings;
+            
             document.getElementById("hijriDateDisplay").innerText = data.data.date.hijri.day + " " + data.data.date.hijri.month.en + " " + data.data.date.hijri.year + " AH";
-            
-            document.getElementById("sehriTime").innerText = todayPrayerTimes.Imsak;
-            document.getElementById("iftariTime").innerText = todayPrayerTimes.Maghrib;
-            document.getElementById("timeFajr").innerText = todayPrayerTimes.Fajr;
-            document.getElementById("timeDhuhr").innerText = todayPrayerTimes.Dhuhr;
-            document.getElementById("timeAsr").innerText = todayPrayerTimes.Asr;
-            document.getElementById("timeMaghrib").innerText = todayPrayerTimes.Maghrib;
-            document.getElementById("timeIsha").innerText = todayPrayerTimes.Isha;
+            document.getElementById("sehriTime").innerText = timings.Imsak;
+            document.getElementById("iftariTime").innerText = timings.Maghrib;
 
-            // Get Full Month Calendar
-            var d = new Date();
-            var calRes = await fetch('https://api.aladhan.com/v1/calendarByAddress?address=' + encodeURIComponent(city + ", " + country) + '&method=2&month=' + (d.getMonth()+1) + '&year=' + d.getFullYear());
-            var calData = await calRes.json();
-            var tableHTML = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
-            var todayStr = String(d.getDate()).padStart(2, '0');
-            
-            calData.data.forEach(function(day) {
-                var isToday = (day.date.gregorian.day === todayStr) ? "today-cell" : "";
-                tableHTML += '<tr class="'+isToday+'"><td>'+day.date.gregorian.date+'</td><td>'+day.date.hijri.date+' ('+day.date.hijri.month.en+')</td><td>'+day.date.gregorian.weekday.en+'</td></tr>';
-            });
-            document.getElementById("calendarTable").innerHTML = tableHTML;
-
-            clearInterval(autoAzanInterval);
-            autoAzanInterval = setInterval(checkAzanTime, 60000); 
+            // Only overwrite times if it's a forced update (button clicked) or first time
+            if(forceUpdate) {
+                document.getElementById("timeFajr").value = timings.Fajr;
+                document.getElementById("timeDhuhr").value = timings.Dhuhr;
+                document.getElementById("timeAsr").value = timings.Asr;
+                document.getElementById("timeMaghrib").value = timings.Maghrib;
+                document.getElementById("timeIsha").value = timings.Isha;
+                document.getElementById("timeJummah").value = timings.Dhuhr;
+                saveSettings(); // Save the new API times
+            }
         } catch (e) { alert("Could not fetch timings."); }
         showLoad(false);
     }
 
-    // --- MANUAL ALARMS ---
-    function addManualAlarm() {
-        var t = document.getElementById("manualAlarmTime").value;
-        var n = document.getElementById("manualAlarmName").value;
-        if(!t || !n) return alert("Please enter time and name.");
-        customAlarms.push({time: t, name: n});
-        renderAlarms();
-    }
-    function deleteAlarm(index) { customAlarms.splice(index, 1); renderAlarms(); }
-    
-    function renderAlarms() {
-        var div = document.getElementById("manualAlarmList");
-        if(customAlarms.length === 0) { div.innerHTML = '<p style="color:#888; text-align:center; font-size:12px;">No manual alarms set.</p>'; return; }
-        var html = "";
-        customAlarms.forEach(function(a, i) {
-            html += '<div class="alarm-item"><span><b>'+a.time+'</b> - '+a.name+'</span> <button class="del-btn" onclick="deleteAlarm('+i+')">X</button></div>';
-        });
-        div.innerHTML = html;
-    }
-
     function checkAzanTime() {
-        var now = new Date(); var currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-        
-        // Check Standard Prayers
-        var p = todayPrayerTimes;
-        if ([p.Fajr, p.Dhuhr, p.Asr, p.Maghrib, p.Isha].includes(currentTime)) {
-            triggerAzan("Standard Prayer");
-        }
+        var now = new Date(); 
+        var currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        var dayOfWeek = now.getDay(); 
 
-        // Check Custom Alarms
-        customAlarms.forEach(function(alarm) {
-            if(alarm.time === currentTime) triggerAzan(alarm.name);
+        var prayers = [
+            {name: "Fajr", time: document.getElementById("timeFajr").value},
+            {name: "Asr", time: document.getElementById("timeAsr").value},
+            {name: "Maghrib", time: document.getElementById("timeMaghrib").value},
+            {name: "Isha", time: document.getElementById("timeIsha").value}
+        ];
+        if (dayOfWeek === 5) { prayers.push({name: "Jumu'ah", time: document.getElementById("timeJummah").value}); } 
+        else { prayers.push({name: "Dhuhr", time: document.getElementById("timeDhuhr").value}); }
+
+        prayers.forEach(function(p) {
+            if(p.time === currentTime) {
+                azanAudio.src = document.getElementById("azanVoice").value;
+                audioEngine.pause(); azanAudio.play(); 
+                alert("⏰ Alarm: " + p.name + " ka waqt ho gaya hai!");
+            }
         });
-    }
-
-    function triggerAzan(name) {
-        azanAudio.src = document.getElementById("azanVoice").value;
-        audioEngine.pause(); azanAudio.play(); 
-        alert("⏰ Alarm: " + name + " ka waqt ho gaya hai!");
     }
 
     // --- MUSHAF LOGIC ---
@@ -506,7 +478,7 @@
     audioEngine.onerror = function() { currentTrackIndex++; if(currentTrackIndex < playlist.length) playTrack(); };
     audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
-    // --- HADITH & SEARCH (ANY LANGUAGE) ---
+    // --- HADITH & SEARCH ---
     async function loadHadith() {
         var book = document.getElementById("hadithBook").value;
         var num = document.getElementById("hadithNumber").value;
@@ -518,13 +490,13 @@
             if(resAr.ok && resUr.ok) {
                 var arData = await resAr.json(); var urData = await resUr.json();
                 div.innerHTML = '<div style="font-size:24px; direction:rtl; text-align:right;">' + arData.hadiths[0].text + '</div><hr><div style="font-size:16px;">' + urData.hadiths[0].text + '</div>';
-            } else { div.innerHTML = 'Hadith not found in this book.'; }
+            } else { div.innerHTML = 'Hadith not found.'; }
         } catch(e) {}
     }
 
     async function searchQuran() {
         var keyword = document.getElementById("searchKeyword").value;
-        var edition = document.getElementById("searchEdition").value; // Dynamic Language Selection
+        var edition = document.getElementById("searchEdition").value; 
         if(!keyword) return;
         var div = document.getElementById("searchContent"); div.innerHTML = "Searching...";
         try {
@@ -537,7 +509,7 @@
                     html += '<div style="margin-bottom:15px; border-bottom:1px solid #ccc; padding-bottom:10px;"><b>' + m.surah.englishName + ' [' + m.surah.number + ':' + m.numberInSurah + ']</b><br><span style="direction:' + (isRTL ? 'rtl' : 'ltr') + '; display:block; font-size:20px;">' + m.text + '</span></div>';
                 });
                 div.innerHTML = html;
-            } else { div.innerHTML = 'No records found for this word in selected language.'; }
+            } else { div.innerHTML = 'No records found.'; }
         } catch(e) {}
     }
 </script>
