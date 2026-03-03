@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?? Al-Hikmah Islamic App</title>
+    <title>🕌 Al-Hikmah Islamic App</title>
     <meta name="theme-color" content="#1a1a1a">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,7 +74,7 @@
 <body>
 
 <div id="splashScreen">
-    <h1>?????????? ??????????</h1>
+    <h1>السَّلَامُ عَلَيْكُمْ</h1>
     <h2 style="color:white; font-weight:300;">Welcome to Al-Hikmah</h2>
     <p id="splashQuote">Loading databases...</p>
     <button class="enter-btn" id="enterBtn" onclick="startApp()" style="display:none;"><i class="fas fa-door-open"></i> Bismillah - Enter</button>
@@ -83,7 +83,7 @@
 <audio id="azanAudio" preload="none"></audio>
 
 <div class="sidebar">
-    <div class="logo"><h2>??????</h2><p>Global Library</p></div>
+    <div class="logo"><h2>الحكمة</h2><p>Global Library</p></div>
     <div class="nav-links">
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-home"></i> Timings & Qibla</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Read Mushaf</button>
@@ -147,8 +147,8 @@
         <div id="quranContainer" style="display:none;">
             <div class="mushaf-frame">
                 <div class="mushaf-inner">
-                    <div class="surah-title" id="surahTitle">????</div>
-                    <div id="bismillah" style="text-align: center; font-family: 'Amiri Quran', serif; font-size: 32px; margin-bottom: 20px; color: #111;">?????? ??????? ????????????? ??????????</div>
+                    <div class="surah-title" id="surahTitle">سورة</div>
+                    <div id="bismillah" style="text-align: center; font-family: 'Amiri Quran', serif; font-size: 32px; margin-bottom: 20px; color: #111;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
                     <div id="mushafContent"></div>
                 </div>
             </div>
@@ -203,7 +203,7 @@
                 // BUG FIX: Ensure As-Sudais is the default!
                 if(ed.identifier === 'ar.abdurrahmaansudais') {
                     opt.selected = true;
-                    opt.text = "? " + opt.text + " (Sudais)";
+                    opt.text = "⭐ " + opt.text + " (Sudais)";
                 }
                 arSelect.add(opt);
             });
@@ -285,7 +285,7 @@
         }
     }
 
-    var toArabicNum = function(num) { return num.toString().replace(/\d/g, function(d) { return '??????????'[d]; }); };
+    var toArabicNum = function(num) { return num.toString().replace(/\d/g, function(d) { return '٠١٢٣٤٥٦٧٨٩'[d]; }); };
     var pad = function(num) { return num.toString().padStart(3, '0'); };
 
     async function loadSurah() {
@@ -304,7 +304,7 @@
             var resTrans = await fetch('https://api.alquran.cloud/v1/surah/' + surah + '/' + textLang);
             var dataTrans = await resTrans.json();
 
-            document.getElementById("surahTitle").innerText = '?????? ' + dataAr.data.name.replace('??????? ', '');
+            document.getElementById("surahTitle").innerText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
             var html = "";
             var isRTL = textLang.includes('ur.') || textLang.includes('fa.') || textLang.includes('ar.');
 
@@ -317,7 +317,7 @@
                 }
                 var transClass = isRTL ? 'trans-text urdu-font' : 'trans-text';
                 html += '<div class="ayah-row" id="ayah-' + ayahNum + '">' +
-                        '<div class="arabic-text">' + ayah.text + ' <span class="ayah-marker">?' + toArabicNum(ayahNum) + '</span></div>' +
+                        '<div class="arabic-text">' + ayah.text + ' <span class="ayah-marker">۝' + toArabicNum(ayahNum) + '</span></div>' +
                         '<div class="' + transClass + '" style="direction:' + (isRTL ? 'rtl' : 'ltr') + '">' + dataTrans.data.ayahs[i].text + '</div>' +
                         '</div>';
             });
