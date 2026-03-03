@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🕌 Al-Hikmah Islamic App</title>
     <meta name="theme-color" content="#1a1a1a">
     
@@ -27,7 +26,7 @@
         .logo { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.3); }
         .logo h2 { margin: 0; color: var(--gold); font-family: 'Amiri', serif; font-size: 28px;}
         .nav-links { flex-grow: 1; padding: 10px 0; overflow-y: auto;}
-        .nav-btn { width: 100%; background: none; border: none; color: #ddd; padding: 15px 25px; text-align: left; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .nav-btn { width: 100%; background: none; border: none; color: #ddd; padding: 15px 20px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
         .nav-btn:hover, .nav-btn.active { background-color: rgba(212, 175, 55, 0.15); color: var(--gold); border-right: 4px solid var(--gold); }
         
         /* MAIN CONTENT */
@@ -43,7 +42,7 @@
         input, select, button { padding: 10px 12px; border: 1px solid var(--gold); border-radius: 5px; font-size: 14px; background: #fff; color: #333; outline: none; max-width: 250px;}
         button.action-btn { background-color: var(--gold); color: #111; font-weight: bold; cursor: pointer; }
 
-        /* MUSHAF FRAME */
+        /* MUSHAF FRAME (Keep your image_60cc7d.jpg in same folder) */
         .mushaf-frame { max-width: 800px; margin: 0 auto; background-color: var(--mushaf-paper); background-image: url('image_60cc7d.jpg'); background-size: 100% 100%; padding: 14% 12%; box-shadow: 0 15px 50px rgba(0,0,0,0.8); }
         .mushaf-inner { background-color: rgba(253, 246, 227, 0.85); min-height: 500px; padding: 20px; border-radius: 5px; }
         .surah-title { text-align: center; font-family: 'Amiri Quran', serif; font-size: 3rem; color: #b33939; margin-bottom: 20px; border-bottom: 2px solid #b33939; }
@@ -63,6 +62,11 @@
         .qibla-compass { width: 150px; height: 150px; border: 5px solid var(--gold); border-radius: 50%; margin: 20px auto; position: relative; background: url('https://upload.wikimedia.org/wikipedia/commons/1/16/Compass_rose_pale.svg') no-repeat center; background-size: cover; }
         .qibla-needle { width: 4px; height: 70px; background: #b33939; position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; transform: translateX(-50%) rotate(0deg); transition: transform 1s ease-out; border-radius: 5px 5px 0 0; }
 
+        /* ADHKAR CARDS */
+        .adhkar-card { background: #fff; color: #000; padding: 25px; border-radius: 10px; margin-bottom: 20px; border-top: 5px solid var(--gold); }
+        .adhkar-arabic { font-family: 'Amiri Quran', serif; font-size: 28px; line-height: 2; text-align: right; direction: rtl; margin-bottom: 15px;}
+        .adhkar-trans { font-family: 'Noto Nastaliq Urdu', serif; font-size: 20px; line-height: 2; text-align: right; direction: rtl; color: #555; border-top: 1px dashed #ccc; padding-top: 10px;}
+
         /* GLOBAL PLAYER */
         .audio-player { position: fixed; bottom: 0; left: 260px; right: 0; background-color: #050505; border-top: 2px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
         .player-title { color: var(--gold); font-weight: 600; font-size: 16px; margin-bottom: 5px;}
@@ -77,17 +81,19 @@
     <h1>السَّلَامُ عَلَيْكُمْ</h1>
     <h2 style="color:white; font-weight:300;">Welcome to Al-Hikmah</h2>
     <p id="splashQuote">Loading databases...</p>
-    <button class="enter-btn" id="enterBtn" onclick="startApp()" style="display:none;"><i class="fas fa-door-open"></i> Bismillah - Enter</button>
+    <button class="enter-btn" id="enterBtn" onclick="startApp()" style="display:none;"><i class="fas fa-door-open"></i> Bismillah - Enter App</button>
 </div>
 
 <audio id="azanAudio" preload="none"></audio>
 
 <div class="sidebar">
-    <div class="logo"><h2>الحكمة</h2><p>Global Library</p></div>
+    <div class="logo"><h2>الحكمة</h2><p>Global Islamic Hub</p></div>
     <div class="nav-links">
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-home"></i> Timings & Qibla</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Read Mushaf</button>
+        <button class="nav-btn" onclick="switchTab('adhkarTab')"><i class="fas fa-praying-hands"></i> Adhkar & Ruqyah</button>
         <button class="nav-btn" onclick="switchTab('hadithTab')"><i class="fas fa-feather-alt"></i> Hadith Collection</button>
+        <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
     </div>
 </div>
 
@@ -118,27 +124,16 @@
 
     <div id="quranTab" class="section">
         <div class="controls-bar">
-            <div class="control-group"><label>Surah No</label><input type="number" id="surahNumber" placeholder="1-114" min="1" max="114" value="1" style="width:70px;"/></div>
+            <div class="control-group"><label>Surah No (1-114)</label><input type="number" id="surahNumber" placeholder="1-114" min="1" max="114" value="1" style="width:70px;"/></div>
+            <div class="control-group"><label>Global Reciters (100+)</label><select id="arReciter"></select></div>
+            <div class="control-group"><label>Translations (130+)</label><select id="textLang"></select></div>
             <div class="control-group">
-                <label>Arabic Reciter (Auto-Fetched)</label>
-                <select id="arReciter">
-                    </select>
-            </div>
-            <div class="control-group">
-                <label>Translation Text (Auto-Fetched)</label>
-                <select id="textLang">
-                    </select>
-            </div>
-            <div class="control-group">
-                <label>Audio Translation (Database Limits)</label>
+                <label>Audio Translation</label>
                 <select id="urReciter">
                     <option value="none">-- MUTE AUDIO TRANSLATION --</option>
                     <option value="translations/urdu_shamshad_ali_khan_46kbps">Urdu: Shamshad Ali Khan</option>
                     <option value="translations/urdu_farhat_hashmi">Urdu: Farhat Hashmi</option>
                     <option value="English/Sahih_Intnl_Ibrahim_Walk_192kbps">English: Ibrahim Walk</option>
-                    <option value="translations/Makarem_Kabiri_16Kbps">Persian: Makarem Kabiri</option>
-                    <option value="translations/Fooladvand_Hedayatfar_40Kbps">Persian: Hedayatfar</option>
-                    <option value="translations/besim_korkut_ajni_hasic">Bosnian: Besim Korkut</option>
                 </select>
             </div>
             <button class="action-btn" onclick="loadSurah()">Load Mushaf</button>
@@ -155,6 +150,25 @@
         </div>
     </div>
 
+    <div id="adhkarTab" class="section">
+        <h2 style="color:var(--gold);">Adhkar & Ruqyah Shariah</h2>
+        <div class="controls-bar">
+            <div class="control-group">
+                <label>Select Category</label>
+                <select id="adhkarCategory">
+                    <option value="morning">أذكار الصباح (Morning Adhkar)</option>
+                    <option value="evening">أذكار المساء (Evening Adhkar)</option>
+                    <option value="ruqyah">الرقية الشرعية (Ruqyah Shariah)</option>
+                    <option value="khatam">دعاء ختم القرآن (Khatm-e-Quran Dua)</option>
+                </select>
+            </div>
+            <button class="action-btn" onclick="loadAdhkar()"><i class="fas fa-book-reader"></i> Read Duas</button>
+        </div>
+        <div id="adhkarContent">
+            <p style="text-align:center; color:#ccc;">Please select a category and click "Read Duas".</p>
+        </div>
+    </div>
+
     <div id="hadithTab" class="section">
         <h2 style="color:var(--gold);">Authentic Hadith</h2>
         <div class="controls-bar">
@@ -164,6 +178,16 @@
         </div>
         <div id="hadithContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
     </div>
+
+    <div id="searchTab" class="section">
+        <h2 style="color:var(--gold);">Dictionary Search</h2>
+        <div class="controls-bar">
+            <input type="text" id="searchKeyword" placeholder="Search word (e.g., نماز)" />
+            <button class="action-btn" onclick="searchQuran()">Search</button>
+        </div>
+        <div id="searchContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
+    </div>
+
 </div>
 
 <div class="audio-player" id="globalPlayer">
@@ -188,10 +212,28 @@
     var todayPrayerTimes = {};
     var autoAzanInterval;
 
-    // --- DYNAMICALLY FETCH ALL RECITERS AND TRANSLATIONS ---
+    // --- STATIC ADHKAR DATABASE (Fail-Proof) ---
+    var adhkarDB = {
+        "morning": [
+            { ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ...", ur: "ہم نے صبح کی اور تمام بادشاہی اللہ کی ہے، اور سب تعریف اللہ کے لیے ہے..." },
+            { ar: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ", ur: "اے اللہ! ہم نے تیرے ہی نام سے صبح کی، اور تیرے ہی نام سے شام کی، اور تیرے ہی نام سے جیتے ہیں، اور مرتے ہیں، اور تیری ہی طرف لوٹنا ہے۔" }
+        ],
+        "evening": [
+            { ar: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ...", ur: "ہم نے شام کی اور تمام بادشاہی اللہ کی ہے، اور سب تعریف اللہ کے لیے ہے..." },
+            { ar: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ", ur: "اے اللہ! ہم نے تیرے ہی نام سے شام کی، اور تیرے ہی نام سے صبح کی، اور تیرے ہی نام سے جیتے ہیں، اور مرتے ہیں، اور تیری ہی طرف لوٹنا ہے۔" }
+        ],
+        "ruqyah": [
+            { ar: "بِسْمِ اللَّهِ أَرْقِيكَ، مِنْ كُلِّ شَيْءٍ يُؤْذِيكَ...", ur: "اللہ کے نام سے میں آپ پر دم کرتا ہوں، ہر اس چیز سے جو آپ کو تکلیف دے..." },
+            { ar: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ", ur: "میں اللہ کے مکمل کلمات کی پناہ مانگتا ہوں اس شر سے جو اس نے پیدا کیا۔" }
+        ],
+        "khatam": [
+            { ar: "اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً", ur: "اے اللہ! مجھ پر قرآن کے ذریعے رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔" }
+        ]
+    };
+
+    // --- ON LOAD FETCH RECITERS ---
     window.onload = async function() {
         try {
-            // 1. Fetch All Arabic Audio Reciters
             var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
             var arData = await arRes.json();
             var arSelect = document.getElementById("arReciter");
@@ -200,36 +242,27 @@
                 var opt = document.createElement('option');
                 opt.value = ed.identifier;
                 opt.text = ed.englishName;
-                // BUG FIX: Ensure As-Sudais is the default!
-                if(ed.identifier === 'ar.abdurrahmaansudais') {
-                    opt.selected = true;
-                    opt.text = "⭐ " + opt.text + " (Sudais)";
-                }
+                if(ed.identifier === 'ar.abdurrahmaansudais') { opt.selected = true; opt.text = "⭐ " + opt.text + " (Sudais)"; }
                 arSelect.add(opt);
             });
 
-            // 2. Fetch All Text Translations
             var txtRes = await fetch('https://api.alquran.cloud/v1/edition?format=text');
             var txtData = await txtRes.json();
             var txtSelect = document.getElementById("textLang");
             
             txtData.data.forEach(function(ed) {
-                if(ed.language !== 'ar') { // Only keep translations
+                if(ed.language !== 'ar') { 
                     var opt = document.createElement('option');
                     opt.value = ed.identifier;
                     opt.text = ed.language.toUpperCase() + ": " + ed.englishName;
-                    if(ed.identifier === 'ur.jalandhry') opt.selected = true; // Default to Urdu
+                    if(ed.identifier === 'ur.jalandhry') opt.selected = true; 
                     txtSelect.add(opt);
                 }
             });
 
-            // Unlock App Entry
-            document.getElementById("splashQuote").innerText = '"Allah is the Light of the heavens and the earth." (Quran 24:35)';
+            document.getElementById("splashQuote").innerText = '"Indeed, with hardship comes ease." (Quran 94:6)';
             document.getElementById("enterBtn").style.display = "block";
-
-        } catch(e) {
-            document.getElementById("splashQuote").innerText = "Network Error. Refresh the page.";
-        }
+        } catch(e) { document.getElementById("splashQuote").innerText = "Network Error. Please refresh."; }
     };
 
     function startApp() {
@@ -248,6 +281,7 @@
 
     var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
+    // --- PRAYER TIMES ---
     async function fetchPrayerTimes() {
         showLoad(true);
         var city = document.getElementById("cityName").value;
@@ -285,6 +319,7 @@
         }
     }
 
+    // --- MUSHAF LOGIC ---
     var toArabicNum = function(num) { return num.toString().replace(/\d/g, function(d) { return '٠١٢٣٤٥٦٧٨٩'[d]; }); };
     var pad = function(num) { return num.toString().padStart(3, '0'); };
 
@@ -353,6 +388,22 @@
     audioEngine.onerror = function() { currentTrackIndex++; if(currentTrackIndex < playlist.length) playTrack(); };
     audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
+    // --- ADHKAR LOGIC ---
+    function loadAdhkar() {
+        var cat = document.getElementById("adhkarCategory").value;
+        var data = adhkarDB[cat];
+        var div = document.getElementById("adhkarContent");
+        var html = "";
+        data.forEach(function(item) {
+            html += '<div class="adhkar-card">' +
+                    '<div class="adhkar-arabic">' + item.ar + '</div>' +
+                    '<div class="adhkar-trans">' + item.ur + '</div>' +
+                    '</div>';
+        });
+        div.innerHTML = html;
+    }
+
+    // --- HADITH & SEARCH LOGIC ---
     async function loadHadith() {
         var book = document.getElementById("hadithBook").value;
         var num = document.getElementById("hadithNumber").value;
@@ -365,6 +416,23 @@
                 var arData = await resAr.json(); var urData = await resUr.json();
                 div.innerHTML = '<div style="font-size:24px; direction:rtl; text-align:right;">' + arData.hadiths[0].text + '</div><hr><div style="font-size:16px;">' + urData.hadiths[0].text + '</div>';
             } else { div.innerHTML = 'Hadith not found.'; }
+        } catch(e) {}
+    }
+
+    async function searchQuran() {
+        var keyword = document.getElementById("searchKeyword").value;
+        if(!keyword) return;
+        var div = document.getElementById("searchContent"); div.innerHTML = "Searching...";
+        try {
+            var res = await fetch('https://api.alquran.cloud/v1/search/' + keyword + '/all/ur.jalandhry');
+            var data = await res.json();
+            if (data.code === 200 && data.data.count > 0) {
+                var html = "";
+                data.data.matches.slice(0, 15).forEach(function(m) {
+                    html += '<div style="margin-bottom:15px; border-bottom:1px solid #ccc; padding-bottom:10px;"><b>' + m.surah.englishName + ' [' + m.surah.number + ':' + m.numberInSurah + ']</b><br><span style="direction:rtl; display:block; font-size:20px;">' + m.text + '</span></div>';
+                });
+                div.innerHTML = html;
+            } else { div.innerHTML = 'No records found.'; }
         } catch(e) {}
     }
 </script>
