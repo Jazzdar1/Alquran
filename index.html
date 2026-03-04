@@ -140,7 +140,7 @@
 
 <div class="main-content">
     <div id="loading" style="display:none; text-align:center; color:var(--gold); margin-bottom: 20px;">
-        <i class="fas fa-spinner fa-spin fa-3x"></i><br>Processing Data...
+        <i class="fas fa-spinner fa-spin fa-3x"></i><br>Processing Data API...
     </div>
 
     <div id="homeTab" class="section active">
@@ -220,7 +220,6 @@
                     <option value="Saqib Raza Mustafai">Saqib Raza Mustafai</option>
                     <option value="Nouman Ali Khan">Nouman Ali Khan</option>
                     <option value="Mufti Taqi Usmani">Mufti Taqi Usmani</option>
-                    <option value="Peer Zulfiqar Ahmed">Peer Zulfiqar Ahmed</option>
                     <option value="Islamic Lectures Urdu">General Urdu Bayanat</option>
                 </select>
             </div>
@@ -237,17 +236,17 @@
     </div>
 
     <div id="naatTab" class="section">
-        <h2 style="color:var(--gold);">Naat Collection (Live API)</h2>
+        <h2 style="color:var(--gold);">Naat Collection</h2>
         <div class="controls-bar">
             <div class="control-group">
                 <label>Select Naat Khawan</label>
-                <select id="naatKhawanSelect" onchange="fetchNaatAPI()">
+                <select id="naatKhawanSelect" onchange="loadLocalNaats()">
                     <option value="Junaid Jamshed">Junaid Jamshed</option>
                     <option value="Awais Raza Qadri">Awais Raza Qadri</option>
                     <option value="Fasihuddin Soharwardi">Fasihuddin Soharwardi</option>
                     <option value="Sami Yusuf">Sami Yusuf</option>
                     <option value="Maher Zain">Maher Zain</option>
-                    <option value="Islamic Naats Urdu">General Famous Naats</option>
+                    <option value="General Famous Naats">General Famous Naats</option>
                 </select>
             </div>
             <div class="control-group" style="flex-grow:2;">
@@ -312,6 +311,20 @@
         </div>
         <div id="searchContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
     </div>
+
+    <div id="knowledgeTab" class="section">
+        <h2 style="color:var(--gold);">More Islamic Knowledge</h2>
+        <div class="widget-grid">
+            <div class="widget-card" style="text-align:left;">
+                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;">Quran & Hadith</h3>
+                <ul style="line-height: 2.2;">
+                    <li><a href="https://quran.com" target="_blank" class="ext-link">Quran.com</a></li>
+                    <li><a href="https://sunnah.com" target="_blank" class="ext-link">Sunnah.com</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="audio-player" id="globalPlayer">
@@ -325,7 +338,7 @@
     </div>
 </div>
 
-<script src="./app.js?v=10"></script>
+<script src="./app.js?v=11"></script>
 
 </body>
 </html>
