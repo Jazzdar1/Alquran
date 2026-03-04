@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🕌 Al-Hikmah Islamic Master Hub</title>
     <meta name="theme-color" content="#1a1a1a">
+    
     <link rel="manifest" href="./manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,8 +17,6 @@
         body { margin: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: #fff; display: flex; height: 100vh; overflow: hidden; }
 
         #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0a05, #1a1a1a); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        #splashScreen h1 { font-family: 'Amiri Quran', serif; color: var(--gold); font-size: 3.5rem; margin-bottom: 10px; }
-        #splashQuote { font-size: 1.2rem; max-width: 600px; color: #ddd; margin-bottom: 30px; line-height: 1.6; font-style: italic; }
         .enter-btn { background: var(--gold); color: #000; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 30px; cursor: pointer; transition: 0.3s; }
 
         .sidebar { width: 260px; background-color: var(--sidebar-bg); border-right: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 10; transition: 0.3s; }
@@ -59,9 +58,12 @@
         .playing-active { background: rgba(212,175,55,0.3); border-right: 5px solid #b33939; border-left: 5px solid #b33939; border-radius: 8px;}
 
         .dua-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--gold); }
-        .dua-card h4 { color: #b33939; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top:0;}
+        .dua-card h4 { color: #b33939; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top:0; font-size: 18px;}
+        /* Native Audio Player styling for Duas */
+        audio { width: 100%; margin-top: 15px; outline: none; border-radius: 30px; }
 
         .audio-player { position: fixed; bottom: 0; left: 260px; right: 0; background: #050505; border-top: 2px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; transition: 0.3s; }
+        
         #toastMsg { visibility: hidden; min-width: 250px; margin-left: -125px; background-color: var(--gold); color: #000; text-align: center; border-radius: 30px; padding: 15px 25px; position: fixed; z-index: 10000; left: 50%; bottom: 100px; font-size: 16px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 2px solid #fff; }
         #toastMsg.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 4.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
@@ -78,7 +80,7 @@
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
-            .mushaf-frame { padding: 15% 5%; }
+            .mushaf-frame { padding: 5%; background-image: none; background-color: var(--mushaf-paper); border: 2px solid #8b0000; }
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid { grid-template-columns: 1fr; }
             .controls-bar { flex-direction: column; }
@@ -94,8 +96,8 @@
 </div>
 
 <div id="toastMsg">Notification</div>
+
 <audio id="azanAudio" preload="none"></audio>
-<audio id="duaAudio" preload="none"></audio>
 
 <div class="sidebar">
     <div class="logo">
@@ -111,6 +113,7 @@
         <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
         <button class="nav-btn" onclick="switchTab('knowledgeTab')"><i class="fas fa-globe"></i> Islamic Links</button>
         <button class="nav-btn" onclick="switchTab('aboutTab')"><i class="fas fa-info-circle"></i> About & Privacy</button>
+        
         <div class="install-box" id="installBox">
             <i class="fas fa-mobile-alt" style="font-size:20px; color:var(--gold);"></i>
             <p style="font-size:12px; margin:5px 0;">Install App for Best Experience</p>
@@ -133,6 +136,7 @@
                 <select id="azanVoice" onchange="saveSettings()">
                     <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah Azan</option>
                     <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Madinah Azan</option>
+                    <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">Al-Aqsa Azan</option>
                 </select>
             </div>
             <div class="control-group" style="justify-content: flex-end;">
@@ -186,9 +190,9 @@
                 <label>Audio Translation</label>
                 <select id="urReciter">
                     <option value="none">-- Mute Audio Translation --</option>
-                    <option value="ur.khan">Shamshad Ali Khan (Urdu)</option>
-                    <option value="en.walk">Ibrahim Walk (English)</option>
-                    <option value="fa.hedayatfar">Fooladvand (Persian)</option>
+                    <option value="Urdu_Shamshad_Ali_Khan_46k">Shamshad Ali Khan (Urdu)</option>
+                    <option value="Urdu_Farhat_Hashmi">Farhat Hashmi (Urdu)</option>
+                    <option value="English_Walk">Ibrahim Walk (English)</option>
                 </select>
             </div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="loadSurah()">Load Mushaf</button></div>
@@ -197,7 +201,7 @@
         <div id="quranContainer" style="display:none;">
             <div class="mushaf-frame">
                 <div class="mushaf-inner">
-                    <h2 id="surahTitle" style="text-align:center; color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem; border-bottom:2px solid #b33939; padding-bottom:10px;">سورة</h2>
+                    <h2 id="surahTitle" style="text-align:center; color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem;">سورة</h2>
                     <div id="mushafContent"></div>
                 </div>
             </div>
@@ -212,10 +216,15 @@
     <div id="khatmTab" class="section">
         <div class="mushaf-frame" style="max-width:900px;">
             <div class="mushaf-inner" style="text-align:center;">
-                <h2 style="color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem; border-bottom:2px solid #b33939; padding-bottom:10px;">دعاء ختم القرآن</h2>
-                <button class="action-btn" onclick="playExternalAudio('https://download.quranicaudio.com/quran/khatm/sudais_khatm_1434.mp3')" style="margin: 20px 0; font-size:16px;"><i class="fas fa-play"></i> Play Khatm Audio (Sudais)</button>
-                <p class="arabic-text" style="font-size:28px;">اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً<br>اللَّهُمَّ ذَكِّرْنِي مِنْهُ مَا نَسِيتُ وَعَلِّمْنِي مِنْهُ مَا جَهِلْتُ<br>وَارْزُقْنِي تِلاَوَتَهُ آنَاءَ اللَّيْلِ وَأَطْرَافَ النَّهَارِ<br>وَاجْعَلْهُ لِي حُجَّةً يَا رَبَّ الْعَالَمِينَ</p>
-                <p class="urdu-font" style="font-size:20px; border-top:1px dashed #ccc; padding-top:15px;">اے اللہ! قرآن کی برکت سے مجھ پر رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔<br>اے اللہ! میں جو اس میں سے بھول گیا ہوں وہ مجھے یاد دلا دے اور جو میں نہیں جانتا وہ مجھے سکھا دے۔<br>اور مجھے رات کی گھڑیوں اور دن کے کناروں میں اس کی تلاوت نصیب فرما اور اسے میرے حق میں دلیل بنا دے۔</p>
+                <h2 style="color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem;">دعاء ختم القرآن</h2>
+                
+                <audio controls style="width:100%; margin: 20px 0;">
+                    <source src="https://download.quranicaudio.com/quran/khatm/sudais_khatm_1434.mp3" type="audio/mpeg">
+                    Your browser does not support audio.
+                </audio>
+
+                <p class="arabic-text" style="font-size:28px;">اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً<br>اللَّهُمَّ ذَكِّرْنِي مِنْهُ مَا نَسِيتُ وَعَلِّمْنِي مِنْهُ مَا جَهِلْتُ</p>
+                <p class="urdu-font" style="font-size:20px;">اے اللہ! قرآن کی برکت سے مجھ پر رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔</p>
             </div>
         </div>
     </div>
@@ -227,7 +236,11 @@
             <select id="hadithBook">
                 <option value="bukhari">Sahih Bukhari</option>
                 <option value="muslim">Sahih Muslim</option>
+                <option value="tirmidhi">Jami' At-Tirmidhi</option>
                 <option value="abudawud">Sunan Abu Dawud</option>
+                <option value="nasai">Sunan An-Nasai</option>
+                <option value="ibnmajah">Sunan Ibn Majah</option>
+                <option value="malik">Muwatta Malik</option>
             </select></div>
             <div class="control-group"><label>Hadith No</label><input type="number" id="hadithNumber" value="1"></div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="loadHadith()">Read Hadith</button></div>
@@ -239,10 +252,10 @@
         <h2 style="color:var(--gold);">Dictionary Search</h2>
         <div class="controls-bar">
             <div class="control-group">
-                <label>Search In</label>
-                <select id="searchEdition"><option value="ur.jalandhry">Urdu</option><option value="en.sahih">English</option></select>
+                <label>Language</label>
+                <select id="searchEdition"><option value="ur.jalandhry">Urdu</option><option value="en.sahih">English</option><option value="hi.hindi">Hindi</option></select>
             </div>
-            <div class="control-group" style="flex-grow:2;"><label>Keyword</label><input type="text" id="searchKeyword" placeholder="Enter word to search..."></div>
+            <div class="control-group" style="flex-grow:2;"><label>Keyword</label><input type="text" id="searchKeyword" placeholder="Type word..."></div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="searchQuran()">Search</button></div>
         </div>
         <div id="searchContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
@@ -267,11 +280,6 @@
             <hr style="border-color:var(--gold); opacity:0.3; margin-bottom: 20px;">
             <p><i class="fas fa-phone"></i> <b>Call/WhatsApp:</b> +91 7006686584</p>
             <p><i class="fas fa-envelope"></i> <b>Email:</b> darajazb@gmail.com</p>
-            <h4 style="color:var(--gold); margin-top:30px;">Privacy Policy</h4>
-            <ul>
-                <li>All prayer timings and locations are processed locally.</li>
-                <li>Your manual alarms are saved only in your browser cache.</li>
-            </ul>
         </div>
     </div>
 </div>
