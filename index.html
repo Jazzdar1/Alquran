@@ -58,23 +58,22 @@
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
         .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 15px;}
         
-        /* MUSHAF (Fixed Background Path) */
+        /* MUSHAF (Perfectly working background from your GitHub Repo!) */
         .mushaf-frame { 
             max-width: 850px; 
             margin: 0 auto; 
             background-color: var(--mushaf-paper); 
-            background-image: url('./image_60cc7d.jpg'); /* Fixed Path for local image */
+            /* RAW GITHUB IMAGE LINK ADDED HERE */
+            background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); 
             background-size: 100% 100%; 
-            background-position: center;
-            padding: 12% 10%; 
+            padding: 14% 10%; 
             box-shadow: 0 15px 50px rgba(0,0,0,0.8); 
-            border: 5px solid #8b0000; 
             border-radius: 10px; 
         }
         .mushaf-inner { background-color: rgba(253, 246, 227, 0.95); padding: 30px; border: 3px double var(--gold); outline: 2px solid #b33939; outline-offset: 5px; min-height: 500px;}
         .arabic-text { font-family: 'Amiri Quran', serif; font-size: 34px; line-height: 2.2; direction: rtl; text-align: center; color: #000; }
         .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 24px; line-height: 2.2; direction: rtl; text-align: center; color: #444; border-top: 1px dashed #ccc; margin-top: 10px; padding-top: 10px;}
-        .ayah-row { padding: 15px 5px; border-bottom: 1px dashed rgba(212,175,55,0.4); }
+        .ayah-row { padding: 15px 5px; border-bottom: 1px dashed rgba(212,175,55,0.4); transition: 0.3s;}
         .playing-active { background: rgba(212,175,55,0.3); border-right: 5px solid #b33939; border-left: 5px solid #b33939; border-radius: 8px;}
 
         /* DUA CARDS */
@@ -100,7 +99,7 @@
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
-            .mushaf-frame { padding: 5%; background-image: none; background-color: var(--mushaf-paper); border: 2px solid #8b0000; }
+            .mushaf-frame { padding: 15% 5%; }
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid { grid-template-columns: 1fr; }
             .controls-bar { flex-direction: column; }
@@ -117,8 +116,8 @@
 
 <div id="toastMsg">Notification</div>
 
-<audio id="azanAudio"></audio>
-<audio id="duaAudio"></audio>
+<audio id="azanAudio" preload="none"></audio>
+<audio id="duaAudio" preload="none"></audio>
 
 <div class="sidebar">
     <div class="logo">
