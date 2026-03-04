@@ -1,11 +1,9 @@
-// Global Variables
 var playlist = [], currentTrackIndex = 0, isPlaying = false;
 var audioEngine = document.getElementById("audioEngine") || new Audio();
 var azanAudio = document.getElementById("azanAudio");
 var duaAudio = document.getElementById("duaAudio");
 var lastPlayedMinute = ""; 
 
-// Toast Notification System
 function showToast(msg) {
     var t = document.getElementById("toastMsg");
     t.innerText = msg;
@@ -13,18 +11,15 @@ function showToast(msg) {
     setTimeout(function(){ t.className = t.className.replace("show", ""); }, 5000);
 }
 
-// Mobile Menu Toggle
 function toggleMenu() {
     var links = document.getElementById("navLinks");
     if (links.className.indexOf("show") == -1) { links.className += " show"; } else { links.className = links.className.replace(" show", ""); }
 }
 
-// PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(function() { console.log("PWA Ready"); });
 }
 
-// Install Prompt Logic
 var deferredPrompt;
 window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault(); deferredPrompt = e;
@@ -40,10 +35,6 @@ function installAppPrompt() {
     }
 }
 
-// Live Clock
-setInterval(() => { document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
-
-// Duas Database
 var dailyDuas = [
     {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
     {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
@@ -60,13 +51,21 @@ function renderDuas() {
 
 function playExternalAudio(url) {
     audioEngine.pause();
+    duaAudio.pause();
     duaAudio.src = url;
-    duaAudio.load();
-    duaAudio.play().catch(e => showToast("Please click play again."));
-    showToast("Loading Audio...");
+    // Removed duaAudio.load() to fix the Abort Error
+    var p = duaAudio.play();
+    if(p !== undefined) {
+        p.catch(e => {
+            showToast("Buffering audio...");
+            setTimeout(() => { duaAudio.play() }, 1000); // Retry logic
+        });
+    }
+    showToast("Playing Audio...");
 }
 
-// Initialize App
+setInterval(() => { document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
+
 window.onload = async function() {
     try {
         renderDuas();
@@ -101,7 +100,6 @@ function switchTab(id) {
 
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
-// Timings & Alarms
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
     localStorage.setItem("country", document.getElementById("countryName").value);
@@ -192,11 +190,10 @@ function checkAlarms() {
 function triggerAzan(name) {
     azanAudio.src = document.getElementById("azanVoice").value; 
     audioEngine.pause(); duaAudio.pause();
-    azanAudio.play().catch(e => showToast("Azan blocked by browser. Please tap anywhere.")); 
+    azanAudio.play().catch(e => showToast("Azan blocked by browser. Tap to allow.")); 
     showToast("🕌 Azan Time: " + name); 
 }
 
-// Quran Engine
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
@@ -214,20 +211,20 @@ async function loadSurah() {
         var dataTr = await resTr.json();
 
         document.getElementById("surahTitle").innerText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
+        var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
 
         dataAr.data.ayahs.forEach((ayah, i) => {
             var aNum = ayah.numberInSurah;
             playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${aNum}` });
             
-            // Urdu Audio Push Fix
             if(u !== 'none') {
                 playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(s)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${aNum}` });
             }
 
             html += `<div class="ayah-row" id="ayah-${aNum}">
                         <div class="arabic-text">${ayah.text} <span class="ayah-marker">۝${toArabicNum(aNum)}</span></div>
-                        <div class="urdu-font">${dataTr.data.ayahs[i].text}</div>
+                        <div class="urdu-font" style="direction:${isRTL ? 'rtl' : 'ltr'}">${dataTr.data.ayahs[i].text}</div>
                      </div>`;
         });
         document.getElementById("mushafContent").innerHTML = html;
@@ -247,7 +244,7 @@ function playTrack() {
     if (currentTrackIndex >= playlist.length) { isPlaying = false; currentTrackIndex = 0; document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; return; }
     var track = playlist[currentTrackIndex];
     audioEngine.src = track.url;
-    audioEngine.load(); // Force loading of audio
+    // Removed audioEngine.load() to fix the Abort Error
     var p = audioEngine.play();
     if(p !== undefined) {
         p.then(() => {
@@ -256,7 +253,11 @@ function playTrack() {
             document.querySelectorAll('.ayah-row').forEach(el => el.classList.remove('playing-active'));
             var row = document.getElementById(track.id);
             if(row) { row.classList.add('playing-active'); row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-        }).catch(e => { isPlaying = false; showToast("Audio blocked. Click Play again."); });
+        }).catch(e => { 
+            isPlaying = false; 
+            showToast("Buffering audio..."); 
+            setTimeout(() => { audioEngine.play(); }, 1500); // Retry logic
+        });
     }
 }
 
@@ -272,19 +273,21 @@ audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
 // Dictionary & Hadith
 async function searchQuran() {
-    var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
+    var k = document.getElementById("searchKeyword").value;
+    var e = document.getElementById("searchEdition").value; 
     if(!k) return; showLoad(true); var div = document.getElementById("searchContent"); div.innerHTML = "";
     try {
         var res = await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(k)}/all/${e}`);
         var data = await res.json();
         if (data.code === 200 && data.data.count > 0) {
             var html = `<p style='color:green;'>Found ${data.data.count} results</p>`;
+            var isRTL = e.includes('ur.') || e.includes('ar.');
             data.data.matches.slice(0, 20).forEach(m => {
-                html += `<div style="border-bottom:1px solid #ccc; padding:15px 0;"><b>${m.surah.englishName} [${m.surah.number}:${m.numberInSurah}]</b><br><span style="display:block; font-size:22px; margin-top:5px;">${m.text}</span></div>`;
+                html += `<div style="border-bottom:1px solid #ccc; padding:15px 0;"><b>${m.surah.englishName} [${m.surah.number}:${m.numberInSurah}]</b><br><span style="direction:${isRTL ? 'rtl' : 'ltr'}; display:block; font-size:22px; margin-top:5px; line-height:1.8;">${m.text}</span></div>`;
             });
             div.innerHTML = html;
         } else { div.innerHTML = 'No records found.'; }
-    } catch(e) { div.innerHTML = 'Search Error.'; } showLoad(false);
+    } catch(e) { div.innerHTML = 'Search Error. Try another word.'; } showLoad(false);
 }
 
 async function loadHadith() {
@@ -295,7 +298,7 @@ async function loadHadith() {
         var resUr = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/eng-${b}/${n}.json`); 
         if(resAr.ok && resUr.ok) {
             var arData = await resAr.json(); var urData = await resUr.json();
-            div.innerHTML = `<div class="arabic-text" style="font-size:30px; margin-bottom:15px;">${arData.hadiths[0].text}</div><hr><div style="font-size:18px;">${urData.hadiths[0].text}</div>`;
-        } else { div.innerHTML = 'Hadith not found.'; }
+            div.innerHTML = `<div class="arabic-text" style="font-size:30px; margin-bottom:15px; border:none;">${arData.hadiths[0].text}</div><hr><div style="font-size:18px; line-height:1.6;">${urData.hadiths[0].text}</div>`;
+        } else { div.innerHTML = 'Hadith not found in this book.'; }
     } catch(e) {} showLoad(false);
 }
