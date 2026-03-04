@@ -3,6 +3,14 @@ var audioEngine = document.getElementById("audioEngine") || new Audio();
 var azanAudio = document.getElementById("azanAudio");
 var lastPlayedMinute = ""; 
 
+// SILENT WAKELOCK TO PREVENT OS SLEEP
+var wakeLockAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
+wakeLockAudio.loop = true;
+
+// GLOBAL API STORES
+window.bayanData = [];
+window.naatData = [];
+
 function showToast(msg) {
     var t = document.getElementById("toastMsg");
     t.innerText = msg;
@@ -34,7 +42,71 @@ function installAppPrompt() {
     }
 }
 
-// 1. DUAS ENGINE (RESTORED PERFECTLY)
+// ==========================================
+// NEW API: BAYANAT (APPLE PODCAST API)
+// ==========================================
+async function fetchBayanatAPI() {
+    var query = document.getElementById("alimSelect").value;
+    showLoad(true);
+    try {
+        var res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=podcast&entity=podcastEpisode&limit=50`);
+        var data = await res.json();
+        var bSelect = document.getElementById("bayanSelect");
+        bSelect.innerHTML = "";
+        window.bayanData = data.results;
+        data.results.forEach((item, index) => {
+            if(item.episodeUrl) {
+                bSelect.add(new Option(item.trackName || item.collectionName, index));
+            }
+        });
+    } catch(e) { showToast("Failed to load Bayanat API."); }
+    showLoad(false);
+}
+
+function playBayan() {
+    var index = document.getElementById("bayanSelect").value;
+    if(!window.bayanData[index]) return;
+    var item = window.bayanData[index];
+    document.getElementById("currentBayanTitle").innerText = item.trackName;
+    var player = document.getElementById("bayanPlayer");
+    player.src = item.episodeUrl;
+    player.play().catch(e => showToast("Audio URL restricted. Try another."));
+}
+
+// ==========================================
+// NEW API: NAAT COLLECTION (APPLE PODCAST API)
+// ==========================================
+async function fetchNaatAPI() {
+    var query = document.getElementById("naatKhawanSelect").value;
+    showLoad(true);
+    try {
+        var res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=podcast&entity=podcastEpisode&limit=50`);
+        var data = await res.json();
+        var nSelect = document.getElementById("naatSelect");
+        nSelect.innerHTML = "";
+        window.naatData = data.results;
+        data.results.forEach((item, index) => {
+            if(item.episodeUrl) {
+                nSelect.add(new Option(item.trackName || item.collectionName, index));
+            }
+        });
+    } catch(e) { showToast("Failed to load Naats API."); }
+    showLoad(false);
+}
+
+function playNaat() {
+    var index = document.getElementById("naatSelect").value;
+    if(!window.naatData[index]) return;
+    var item = window.naatData[index];
+    document.getElementById("currentNaatTitle").innerText = item.trackName;
+    var player = document.getElementById("naatPlayer");
+    player.src = item.episodeUrl;
+    player.play().catch(e => showToast("Audio URL restricted. Try another."));
+}
+
+// ==========================================
+// RESTORED DUAS
+// ==========================================
 var dailyDuas = [
     {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
     {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
@@ -56,11 +128,17 @@ function renderDuas() {
     document.getElementById("duasContainer").innerHTML = html;
 }
 
+// ==========================================
+// INITIALIZATION
+// ==========================================
 setInterval(() => { document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
 
 window.onload = async function() {
     try {
         renderDuas();
+        fetchBayanatAPI(); // Fetch on load
+        fetchNaatAPI();    // Fetch on load
+
         var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
         var arData = await arRes.json();
         var arSelect = document.getElementById("arReciter");
@@ -91,7 +169,9 @@ function switchTab(id) {
 
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
-// 2. TIMINGS & ALARMS ENGINE (RESTORED PERFECTLY)
+// ==========================================
+// TIMINGS & ALARMS
+// ==========================================
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
     localStorage.setItem("country", document.getElementById("countryName").value);
@@ -133,17 +213,6 @@ async function fetchPrayerTimes(forceOverwrite) {
             document.getElementById("timeJummah").value = t.Dhuhr;
             saveSettings();
         }
-
-        var d = new Date();
-        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByAddress?address=${encodeURIComponent(city + ', ' + country)}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
-        var calData = await calRes.json();
-        var html = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
-        var todayStr = String(d.getDate()).padStart(2, '0');
-        calData.data.forEach(day => {
-            var isToday = (day.date.gregorian.day === todayStr) ? "today-cell" : "";
-            html += `<tr class="${isToday}"><td>${day.date.gregorian.date}</td><td>${day.date.hijri.date} ${day.date.hijri.month.en}</td><td>${day.date.gregorian.weekday.en}</td></tr>`;
-        });
-        document.getElementById("calendarTable").innerHTML = html;
     } catch(e) { showToast("Location Not Found."); }
     showLoad(false);
 }
@@ -181,7 +250,9 @@ function triggerAzan(name) {
     showToast("🕌 Azan Time: " + name); 
 }
 
-// 3. QURAN ENGINE: FULL ARABIC -> FULL URDU (WITH SCREEN-OFF FIX)
+// ==========================================
+// QURAN ENGINE (STRICT BOUNDARY + FULL ARABIC -> FULL URDU)
+// ==========================================
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
@@ -210,19 +281,15 @@ async function loadSurah() {
         var ayahsTr = mode === 'ayah' ? [dataTr.data] : dataTr.data.ayahs;
 
         var titleText = "";
-        if (mode === 'surah') {
-            titleText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
-        } else if (mode === 'ruku') {
-            titleText = 'رُكُوع ' + num + ' - ' + ayahsAr[0].surah.name; 
-        } else if (mode === 'ayah') {
-            titleText = 'آيَة ' + num + ' - ' + dataAr.data.surah.name;
-        }
+        if (mode === 'surah') { titleText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', ''); } 
+        else if (mode === 'ruku') { titleText = 'رُكُوع ' + num + ' - ' + ayahsAr[0].surah.name; } 
+        else if (mode === 'ayah') { titleText = 'آيَة ' + num + ' - ' + dataAr.data.surah.name; }
 
         var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
         
-        // 6 AYAHS PER PAGE (Exact Fit Logic)
-        var ayahsPerPage = 6; 
+        // 5 AYAHS PER PAGE (Safest for HD Background Borders)
+        var ayahsPerPage = 5; 
         
         for (var i = 0; i < ayahsAr.length; i += ayahsPerPage) {
             var chunkAr = ayahsAr.slice(i, i + ayahsPerPage);
@@ -246,12 +313,13 @@ async function loadSurah() {
         document.getElementById("quranContainer").style.display = "block";
         document.getElementById("playerTitle").innerText = `${mode.toUpperCase()} Loaded successfully.`;
 
-        // PLAYLIST: FULL ARABIC FIRST, THEN FULL URDU (As Requested)
+        // PLAYLIST: Pura Arabic Pehle
         ayahsAr.forEach(ayah => {
             var sNum = mode === 'surah' ? num : (ayah.surah ? ayah.surah.number : 1);
             playlist.push({ url: ayah.audio, num: ayah.numberInSurah, type: 'Arabic', id: `ayah-${sNum}-${ayah.numberInSurah}` });
         });
 
+        // PLAYLIST: Pura Urdu Baad Mein
         if(u !== 'none') {
             ayahsAr.forEach(ayah => {
                 var sNum = mode === 'surah' ? num : (ayah.surah ? ayah.surah.number : 1);
@@ -267,13 +335,24 @@ async function loadSurah() {
 
 function togglePlay() {
     if(!playlist.length) return;
-    if(isPlaying) { audioEngine.pause(); isPlaying = false; document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; } 
-    else { playTrack(); }
+    if(isPlaying) { 
+        audioEngine.pause(); 
+        wakeLockAudio.pause(); 
+        isPlaying = false; 
+        document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; 
+    } else { playTrack(); }
 }
 
 function playTrack() {
-    if (currentTrackIndex >= playlist.length) { isPlaying = false; currentTrackIndex = 0; document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; return; }
+    if (currentTrackIndex >= playlist.length) { 
+        isPlaying = false; currentTrackIndex = 0; 
+        wakeLockAudio.pause();
+        document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; 
+        return; 
+    }
     
+    wakeLockAudio.play().catch(e=>{});
+
     var track = playlist[currentTrackIndex];
     audioEngine.src = track.url;
     var p = audioEngine.play();
@@ -282,7 +361,7 @@ function playTrack() {
         p.then(() => {
             isPlaying = true; 
             
-            // SCREEN OFF FIX: DO NOT manipulate DOM if display is off.
+            // SCREEN OFF FIX: DOM only updates if screen is active.
             if (document.visibilityState === 'visible') {
                 document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
                 document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
@@ -295,16 +374,14 @@ function playTrack() {
                 var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah Quran";
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: `Ayah ${track.num} (${track.type})`,
-                    artist: 'Al-Hikmah Player',
+                    artist: 'Al-Hikmah',
                     album: surahNameText,
                     artwork: [ { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' } ]
                 });
             }
         }).catch(e => { 
             isPlaying = false; 
-            if(document.visibilityState === 'visible') {
-                document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
-            }
+            if(document.visibilityState === 'visible') { document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; }
         });
     }
 }
@@ -316,28 +393,18 @@ function skipTrack(dir) {
     playTrack();
 }
 
-// 4. BACKGROUND PROGRESSION FIX
 audioEngine.onerror = function() { 
     currentTrackIndex++; 
-    if(currentTrackIndex < playlist.length) {
-        playTrack(); 
-    } else {
-        isPlaying = false;
-        if(document.visibilityState === 'visible') { document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; }
-    }
+    if(currentTrackIndex < playlist.length) playTrack(); 
 };
-
 audioEngine.onended = function() { 
     currentTrackIndex++; 
-    if(currentTrackIndex < playlist.length) {
-        playTrack(); // Will play next track even if screen is off!
-    } else {
-        isPlaying = false;
-        if(document.visibilityState === 'visible') { document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; }
-    }
+    playTrack(); 
 };
 
-// 5. RESTORED DICTIONARY & HADITH
+// ==========================================
+// RESTORED DICTIONARY & HADITH
+// ==========================================
 async function searchQuran() {
     var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
     if(!k) return; showLoad(true); var div = document.getElementById("searchContent"); div.innerHTML = "";
