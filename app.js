@@ -69,6 +69,7 @@ window.onload = async function() {
             if(ed.identifier === 'ar.abdurrahmaansudais') { opt.selected = true; opt.text = "⭐ " + opt.text + " (Sudais)"; }
             arSelect.add(opt);
         });
+
         document.getElementById("splashQuote").innerText = '"App is Ready."';
         document.getElementById("enterBtn").style.display = "block";
     } catch(e) { document.getElementById("splashQuote").innerText = "Network Issue. Basic features will still work."; document.getElementById("enterBtn").style.display = "block"; }
@@ -207,29 +208,18 @@ async function loadSurah() {
         var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
 
-        // [FIX] STRICTLY DIVIDING SURAH INTO 4 AYAHS PER PAGE SO FRAME NEVER OVERFLOWS
         var ayahsPerPage = 4; 
         
         for (var i = 0; i < dataAr.data.ayahs.length; i += ayahsPerPage) {
             var chunk = dataAr.data.ayahs.slice(i, i + ayahsPerPage);
-            
-            // Start a new Page (Frame)
-            html += `<div class="mushaf-frame">
-                        <div class="mushaf-inner">`;
-            
-            // Show Title only on the first page
-            if(i === 0) {
-                html += `<h2 class="surah-title">${surahName}</h2>`;
-            }
+            html += `<div class="mushaf-frame"><div class="mushaf-inner">`;
+            if(i === 0) { html += `<h2 class="surah-title">${surahName}</h2>`; }
 
-            // Render Ayahs for this page
             chunk.forEach((ayah, j) => {
                 var globalIndex = i + j;
                 var aNum = ayah.numberInSurah;
                 
                 playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${aNum}` });
-                
-                // Audio Links
                 if(u !== 'none') {
                     playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(s)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${aNum}` });
                 }
@@ -239,10 +229,7 @@ async function loadSurah() {
                             <div class="urdu-font" style="direction:${isRTL ? 'rtl' : 'ltr'}">${dataTr.data.ayahs[globalIndex].text}</div>
                          </div>`;
             });
-
-            // End Page (Frame)
-            html += `   </div>
-                      </div>`;
+            html += `</div></div>`;
         }
 
         document.getElementById("quranContainer").innerHTML = html;
@@ -270,13 +257,36 @@ function playTrack() {
             isPlaying = true; 
             document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
             document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
+            
             document.querySelectorAll('.ayah-row').forEach(el => el.classList.remove('playing-active'));
             var row = document.getElementById(track.id);
             if(row) { row.classList.add('playing-active'); row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+            // ========================================================
+            // BACKGROUND PLAYBACK FIX (MEDIA SESSION API)
+            // ========================================================
+            if ('mediaSession' in navigator) {
+                var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah Quran";
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: `Ayah ${track.num} (${track.type})`,
+                    artist: 'Al-Hikmah Quran Player',
+                    album: surahNameText,
+                    artwork: [
+                        { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+
+                // Attach Lock Screen controls
+                navigator.mediaSession.setActionHandler('play', function() { togglePlay(); });
+                navigator.mediaSession.setActionHandler('pause', function() { togglePlay(); });
+                navigator.mediaSession.setActionHandler('previoustrack', function() { skipTrack(-1); });
+                navigator.mediaSession.setActionHandler('nexttrack', function() { skipTrack(1); });
+            }
+            // ========================================================
+
         }).catch(e => { 
             isPlaying = false; 
             document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
-            showToast("Audio stopped. Press Play."); 
         });
     }
 }
