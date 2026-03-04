@@ -58,8 +58,7 @@
         .playing-active { background: rgba(212,175,55,0.3); border-right: 5px solid #b33939; border-left: 5px solid #b33939; border-radius: 8px;}
 
         .dua-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--gold); }
-        .dua-card h4 { color: #b33939; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top:0; font-size: 18px;}
-        /* Native Audio Player styling for Duas */
+        .dua-card h4 { color: #b33939; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top:0;}
         audio { width: 100%; margin-top: 15px; outline: none; border-radius: 30px; }
 
         .audio-player { position: fixed; bottom: 0; left: 260px; right: 0; background: #050505; border-top: 2px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; transition: 0.3s; }
@@ -96,7 +95,6 @@
 </div>
 
 <div id="toastMsg">Notification</div>
-
 <audio id="azanAudio" preload="none"></audio>
 
 <div class="sidebar">
@@ -190,9 +188,9 @@
                 <label>Audio Translation</label>
                 <select id="urReciter">
                     <option value="none">-- Mute Audio Translation --</option>
-                    <option value="Urdu_Shamshad_Ali_Khan_46k">Shamshad Ali Khan (Urdu)</option>
-                    <option value="Urdu_Farhat_Hashmi">Farhat Hashmi (Urdu)</option>
-                    <option value="English_Walk">Ibrahim Walk (English)</option>
+                    <option value="translations/urdu_shamshad_ali_khan_46kbps">Shamshad Ali Khan (Urdu)</option>
+                    <option value="translations/urdu_farhat_hashmi">Farhat Hashmi (Urdu)</option>
+                    <option value="English/Sahih_Intnl_Ibrahim_Walk_192kbps">Ibrahim Walk (English)</option>
                 </select>
             </div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="loadSurah()">Load Mushaf</button></div>
@@ -220,7 +218,6 @@
                 
                 <audio controls style="width:100%; margin: 20px 0;">
                     <source src="https://download.quranicaudio.com/quran/khatm/sudais_khatm_1434.mp3" type="audio/mpeg">
-                    Your browser does not support audio.
                 </audio>
 
                 <p class="arabic-text" style="font-size:28px;">اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً<br>اللَّهُمَّ ذَكِّرْنِي مِنْهُ مَا نَسِيتُ وَعَلِّمْنِي مِنْهُ مَا جَهِلْتُ</p>
