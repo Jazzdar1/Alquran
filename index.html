@@ -32,7 +32,13 @@
         .install-box button { background: var(--gold); color: #000; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px;}
 
         /* MAIN CONTENT */
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 30px; padding-bottom: 150px; position: relative;}
+        .main-content { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 30px; 
+            /* [FIX] Essential space at bottom so player never covers text on desktop/mobile */
+            padding-bottom: 220px !important; 
+        }
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -55,64 +61,36 @@
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
         .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 15px;}
         
-        /* ======================================================== */
-        /* 🕌 AUTHENTIC MUSHAF DESIGN (DESKTOP)                      */
-        /* ======================================================== */
+        /* [FIX] AUTHENTIC MUSHAF DESIGN (FITS TEXT INSIDE IMAGE ONLY) */
         .mushaf-frame { 
-            max-width: 900px; 
+            max-width: 850px; 
             margin: 0 auto; 
             background-color: var(--mushaf-paper); 
             background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); 
-            background-size: 100% 100%; 
-            background-position: center;
-            padding: 8% 7%; /* Reduced padding to fit more text */
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9); 
-            border-radius: 8px; 
+            /* [FIX] Uses 'cover' to keep aspect ratio perfect without warping borders */
+            background-size: cover; 
+            background-position: center top; /* Start from top of page */
+            background-repeat: no-repeat;
+            
+            /* [FIX] Crucial constraints: heavy padding ensures text is only inside the paper area */
+            padding: 18% 12% 10% 12%; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.8); 
+            border-radius: 10px; 
+            box-sizing: border-box; /* Ensures padding doesn't push container wider */
+            overflow: hidden; /* Prevents text bleeding out of borders */
         }
         .mushaf-inner { 
-            background-color: transparent; /* Changed to transparent for real paper feel */
-            padding: 10px; 
+            background-color: rgba(253, 246, 227, 0.95); 
+            padding: 30px; 
+            border: 3px double var(--gold); 
+            outline: 2px solid #b33939; 
+            outline-offset: 5px; 
             min-height: 500px;
         }
-        .surah-title { 
-            text-align: center; 
-            font-family: 'Amiri Quran', serif; 
-            font-size: 3rem; 
-            color: #b33939; 
-            margin-bottom: 20px; 
-            border-bottom: 2px solid rgba(179, 57, 57, 0.5); 
-            padding-bottom: 10px;
-        }
-        .arabic-text { 
-            font-family: 'Amiri Quran', serif; 
-            font-size: 36px; 
-            line-height: 2.3; 
-            direction: rtl; 
-            text-align: center; 
-            color: #111; 
-            text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1); /* Realistic Ink Effect */
-        }
-        .urdu-font { 
-            font-family: 'Noto Nastaliq Urdu', serif; 
-            font-size: 22px; 
-            line-height: 2.2; 
-            direction: rtl; 
-            text-align: center; 
-            color: #444; 
-            margin-top: 15px; 
-            padding-top: 15px;
-            border-top: 1px dashed rgba(179, 57, 57, 0.2); 
-        }
-        .ayah-row { 
-            padding: 15px 5px; 
-            border-bottom: 1px solid transparent; 
-            transition: 0.3s;
-        }
-        .playing-active { 
-            background: rgba(212,175,55,0.15); /* Softer, premium highlight */
-            border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(212,175,55,0.2);
-        }
+        .arabic-text { font-family: 'Amiri Quran', serif; font-size: 34px; line-height: 2.2; direction: rtl; text-align: center; color: #000; }
+        .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 24px; line-height: 2.2; direction: rtl; text-align: center; color: #444; border-top: 1px dashed #ccc; margin-top: 10px; padding-top: 10px;}
+        .ayah-row { padding: 15px 5px; border-bottom: 1px dashed rgba(212,175,55,0.4); }
+        .playing-active { background: rgba(212,175,55,0.3); border-right: 5px solid #b33939; border-left: 5px solid #b33939; border-radius: 8px;}
 
         /* DUA CARDS */
         .dua-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--gold); }
@@ -126,9 +104,7 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 100px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* ======================================================== */
-        /* 📱 MOBILE RESPONSIVE (REAL MUSHAF FEEL FIX)              */
-        /* ======================================================== */
+        /* MOBILE RESPONSIVE (FITS WITHIN IMAGE FIXED) */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow-y: auto; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
@@ -136,45 +112,22 @@
             .mobile-menu-btn { display: block; }
             .nav-links { display: none; flex-direction: column; max-height: 60vh; background: var(--sidebar-bg); }
             .nav-links.show { display: flex; }
-            .main-content { padding: 15px; padding-bottom: 180px; overflow-y: visible; }
-            
-            /* Audio Player Mobile Adjustments */
+            .main-content { padding: 15px; padding-bottom: 250px !important; overflow-y: visible; }
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
             
-            /* REAL MUSHAF MOBILE FIX */
+            /* [FIX] REAL QURAN FEEL + PERFECT FIT FOR MOBILE */
             .mushaf-frame { 
-                background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); /* Keep background ON for mobile */
-                background-size: 100% 100%; 
-                padding: 12% 8%; /* Adjust padding to sit right inside the frame */
-                margin: -15px -15px 0 -15px; /* Stretch to absolute screen edges */
-                width: calc(100% + 30px);
-                border-radius: 0;
-                box-shadow: none;
+                background-size: cover; 
+                /* [FIX] Heavy constraints for mobile: keeps text strictly inside ornate corners */
+                padding: 22% 14% 15% 14% !important; 
+                margin: 0 auto; /* Removed negative margins */
+                width: 95%; /* Leaves a tiny gap on phone edges looks better than warping */
+                box-sizing: border-box;
+                border-radius: 8px;
             }
-            .mushaf-inner { 
-                padding: 0; 
-                background-color: transparent; 
-                border: none; 
-                outline: none; 
-            }
-            .surah-title {
-                font-size: 2.2rem;
-                margin-top: 5px;
-            }
-            .arabic-text { 
-                font-size: 28px; /* Perfect reading size for mobile */
-                line-height: 2.2; 
-            }
-            .urdu-font { 
-                font-size: 18px; 
-                line-height: 2.1; 
-            }
-            .ayah-marker {
-                font-size: 24px;
-            }
-
+            .mushaf-inner { padding: 10px; }
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid { grid-template-columns: 1fr; }
             .controls-bar { flex-direction: column; }
@@ -294,8 +247,7 @@
         <div id="quranContainer" style="display:none;">
             <div class="mushaf-frame">
                 <div class="mushaf-inner">
-                    <h2 id="surahTitle" class="surah-title">سورة</h2>
-                    <div id="bismillah" style="text-align: center; font-family: 'Amiri Quran', serif; font-size: 32px; margin-bottom: 20px; color: #111;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
+                    <h2 id="surahTitle" style="text-align:center; color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem;">سورة</h2>
                     <div id="mushafContent"></div>
                 </div>
             </div>
