@@ -125,20 +125,28 @@
     <div class="nav-links" id="navLinks">
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-clock"></i> Timings & Calendar</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Read Mushaf</button>
-        <button class="nav-btn" onclick="switchTab('audioTab')"><i class="fas fa-headphones"></i> Bayanat Library</button>
-        <button class="nav-btn" onclick="switchTab('naatTab')"><i class="fas fa-microphone"></i> Naat Collection</button>
+        
+        <button class="nav-btn" onclick="switchTab('audioTab')"><i class="fas fa-headphones"></i> Bayanat Playlists</button>
+        <button class="nav-btn" onclick="switchTab('naatTab')"><i class="fas fa-microphone"></i> Naat Playlists</button>
         <button class="nav-btn" onclick="switchTab('tvTab')"><i class="fas fa-tv"></i> Live Islamic TV</button>
+
         <button class="nav-btn" onclick="switchTab('duasTab')"><i class="fas fa-hands-praying"></i> Masnoon Duain</button>
         <button class="nav-btn" onclick="switchTab('khatmTab')"><i class="fas fa-scroll"></i> Khatm-ul-Quran</button>
         <button class="nav-btn" onclick="switchTab('hadithTab')"><i class="fas fa-feather-alt"></i> Hadith Collection</button>
         <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
         <button class="nav-btn" onclick="switchTab('knowledgeTab')"><i class="fas fa-globe"></i> Islamic Links</button>
+        
+        <div class="install-box" id="installBox">
+            <i class="fas fa-mobile-alt" style="font-size:20px; color:var(--gold);"></i>
+            <p style="font-size:12px; margin:5px 0;">Install App for Best</p>
+            <button onclick="installAppPrompt()">Install Now</button>
+        </div>
     </div>
 </div>
 
 <div class="main-content">
     <div id="loading" style="display:none; text-align:center; color:var(--gold); margin-bottom: 20px;">
-        <i class="fas fa-spinner fa-spin fa-3x"></i><br>Processing Data API...
+        <i class="fas fa-spinner fa-spin fa-3x"></i><br>Processing Data...
     </div>
 
     <div id="homeTab" class="section active">
@@ -175,6 +183,13 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="widget-card" style="grid-column: 1 / -1; overflow-x:auto;">
+                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-calendar-alt"></i> Full Hijri Calendar</h3>
+                <table class="calendar-table" id="calendarTable">
+                    <tr><th>Gregorian Date</th><th>Hijri Date</th><th>Day</th></tr>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -199,62 +214,41 @@
     </div>
 
     <div id="audioTab" class="section">
-        <h2 style="color:var(--gold);">Bayanat Audio Library (Live API)</h2>
+        <h2 style="color:var(--gold);">Bayanat Playlists (Full Collections)</h2>
         <div class="controls-bar">
             <div class="control-group">
                 <label>Select Speaker</label>
-                <select id="alimSelect" onchange="fetchBayanatAPI()">
-                    <option value="Dr Israr Ahmed">Dr. Israr Ahmed</option>
-                    <option value="Tariq Jameel Bayan">Maulana Tariq Jameel</option>
-                    <option value="Mufti Menk">Mufti Menk</option>
-                    <option value="Tariq Masood">Mufti Tariq Masood</option>
-                    <option value="Saqib Raza Mustafai">Saqib Raza Mustafai</option>
-                    <option value="Nouman Ali Khan">Nouman Ali Khan</option>
-                    <option value="Mufti Taqi Usmani">Mufti Taqi Usmani</option>
-                    <option value="Peer Zulfiqar Ahmed">Peer Zulfiqar Ahmed</option>
-                    <option value="Yasir Qadhi">Yasir Qadhi</option>
-                    <option value="Islamic Lectures Urdu">General Urdu Bayanat</option>
+                <select id="alimSelect" onchange="loadBayanPlaylist()">
+                    <option value="PLD9A098FA9280E0FA">Maulana Tariq Jameel</option>
+                    <option value="PLyJ6gQpB5Z3_w5o2P6Z_C5lY3T8P5K9L9">Dr. Israr Ahmed</option>
+                    <option value="PLMzbqwEMqRhw2mI-M7N382D4203t3_d0Q">Mufti Menk</option>
+                    <option value="PLdYh-N88d8bY3d34Uf11r7T1B7Gvj5D0b">Mufti Tariq Masood</option>
+                    <option value="PLP-bO13TfQ82LdO9b2wQ5J6t9A1a9Lp3y">Saqib Raza Mustafai</option>
                 </select>
             </div>
-            <div class="control-group" style="flex-grow:2;">
-                <label>Select Topic (Lazy Load)</label>
-                <select id="bayanSelect" onchange="handleBayanSelect()"></select>
-            </div>
-            <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playBayan()">Play Bayan</button></div>
         </div>
-        <div class="widget-card" style="margin-top:20px;">
-            <h3 id="currentBayanTitle" style="color:#b33939; margin-top:0;">Select a Bayan from above</h3>
-            <audio id="bayanPlayer" controls style="width:100%; outline:none; border-radius:30px;"></audio>
+        <div class="widget-card" style="margin-top:20px; padding:0; overflow:hidden;">
+            <iframe id="bayanIframe" width="100%" height="315" src="https://www.youtube.com/embed/videoseries?list=PLD9A098FA9280E0FA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="border-radius:10px;"></iframe>
         </div>
     </div>
 
     <div id="naatTab" class="section">
-        <h2 style="color:var(--gold);">Naat Collection (Live API)</h2>
+        <h2 style="color:var(--gold);">Naat Playlists (Full Collections)</h2>
         <div class="controls-bar">
             <div class="control-group">
                 <label>Select Naat Khawan</label>
-                <select id="naatKhawanSelect" onchange="fetchNaatAPI()">
-                    <option value="Junaid Jamshed Naat">Junaid Jamshed</option>
-                    <option value="Awais Raza Qadri">Awais Raza Qadri</option>
-                    <option value="Fasihuddin Soharwardi">Fasihuddin Soharwardi</option>
-                    <option value="Sami Yusuf">Sami Yusuf</option>
-                    <option value="Maher Zain">Maher Zain</option>
-                    <option value="Hafiz Tahir Qadri">Hafiz Tahir Qadri</option>
-                    <option value="Farhan Ali Qadri">Farhan Ali Qadri</option>
-                    <option value="Siddiq Ismail Naat">Siddiq Ismail</option>
-                    <option value="Atif Aslam Naat">Atif Aslam (Naats)</option>
-                    <option value="Urdu Naat 2024">Latest Famous Naats</option>
+                <select id="naatKhawanSelect" onchange="loadNaatPlaylist()">
+                    <option value="PL1E29CA918A01A0AE">Junaid Jamshed</option>
+                    <option value="PLD3C7A5C2A49B316D">Awais Raza Qadri</option>
+                    <option value="PL333FE0EBD6D490E0">Sami Yusuf</option>
+                    <option value="PLq60Zt1bMzw8D9y1-4p3G6O6bYk9VqBw_">Maher Zain</option>
+                    <option value="PLpB2-z6_eA1c-h7wX7H1xR_O3kG7iP6z0">Atif Aslam Naats</option>
+                    <option value="PLw3Jp_8Q2iH9-eD6BvA0aG8lT7o9B0R-9">Fasihuddin Soharwardi</option>
                 </select>
             </div>
-            <div class="control-group" style="flex-grow:2;">
-                <label>Select Naat (Lazy Load)</label>
-                <select id="naatSelect" onchange="handleNaatSelect()"></select>
-            </div>
-            <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playNaat()">Play Naat</button></div>
         </div>
-        <div class="widget-card" style="margin-top:20px;">
-            <h3 id="currentNaatTitle" style="color:#b33939; margin-top:0;">Select a Naat from above</h3>
-            <audio id="naatPlayer" controls style="width:100%; outline:none; border-radius:30px;"></audio>
+        <div class="widget-card" style="margin-top:20px; padding:0; overflow:hidden;">
+            <iframe id="naatIframe" width="100%" height="315" src="https://www.youtube.com/embed/videoseries?list=PL1E29CA918A01A0AE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="border-radius:10px;"></iframe>
         </div>
     </div>
 
@@ -309,6 +303,19 @@
         <div id="searchContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
     </div>
 
+    <div id="knowledgeTab" class="section">
+        <h2 style="color:var(--gold);">More Islamic Knowledge</h2>
+        <div class="widget-grid">
+            <div class="widget-card" style="text-align:left;">
+                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;">Quran & Hadith</h3>
+                <ul style="line-height: 2.2;">
+                    <li><a href="https://quran.com" target="_blank" class="ext-link">Quran.com</a></li>
+                    <li><a href="https://sunnah.com" target="_blank" class="ext-link">Sunnah.com</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="audio-player" id="globalPlayer">
@@ -322,7 +329,7 @@
     </div>
 </div>
 
-<script src="./app.js?v=8"></script>
+<script src="./app.js?v=9"></script>
 
 </body>
 </html>
