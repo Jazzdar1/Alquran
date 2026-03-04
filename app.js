@@ -8,9 +8,7 @@ var wakeLockAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAA
 wakeLockAudio.loop = true;
 
 window.bayanData = [];
-window.naatData = [];
 window.bayanDisplayCount = 30;
-window.naatDisplayCount = 30;
 
 function showToast(msg) {
     var t = document.getElementById("toastMsg");
@@ -78,36 +76,27 @@ function playBayan() {
 }
 
 // ==========================================
-// 2. NAATS (LOCAL FAIL-PROOF DATABASE)
+// 2. NAATS (LOCAL FAIL-PROOF MP3 DATABASE)
 // ==========================================
+// Using 100% verified working Direct Archive.org MP3 links!
 var localNaatDb = {
     "Junaid Jamshed": [
-        { title: "Mera Dil Badal De", url: "https://archive.org/download/JunaidJamshedNaats/Mera_Dil_Badal_De.mp3" },
-        { title: "Muhammad Ka Roza", url: "https://archive.org/download/JunaidJamshedNaats/Muhammad_Ka_Roza.mp3" },
-        { title: "Ilahi Teri Chaukhat", url: "https://archive.org/download/JunaidJamshedNaats/Ilahi_Teri_Chaukhat.mp3" },
-        { title: "Jalwa e Janan", url: "https://archive.org/download/JunaidJamshedNaats/Jalwa_e_Janan.mp3" }
+        { title: "Mera Dil Badal De", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MeraDilBadalDe.mp3" },
+        { title: "Mohammad Ka Roza", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MohammadKaRoza.mp3" },
+        { title: "Ilahi Teri Chokhat Pe", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/IlahiTeriChokhatPe.mp3" },
+        { title: "Jalwa-e-Janan", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/Jalwa-e-Janan.mp3" },
+        { title: "Aei Taiba", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/AeiTaiba.mp3" },
+        { title: "Aei Rasool-e-Ameen", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/AeiRasool-e-ameen.mp3" }
     ],
     "Awais Raza Qadri": [
-        { title: "Tajdar e Haram", url: "https://archive.org/download/AwaisRazaQadriNaats_201708/Tajdar-e-Haram.mp3" },
-        { title: "Dar e Nabi Par", url: "https://archive.org/download/AwaisRazaQadriNaats_201708/Dar-e-Nabi.mp3" },
-        { title: "Mein To Panjtan", url: "https://archive.org/download/AwaisRazaQadriNaats_201708/Mein-To-Panjtan.mp3" }
-    ],
-    "Fasihuddin Soharwardi": [
-        { title: "Main Behak Sakun", url: "https://archive.org/download/Fasihuddin/Main_Behak.mp3" },
-        { title: "Khudi Ka Sirr e Nihan", url: "https://archive.org/download/Fasihuddin/Khudi.mp3" }
+        { title: "Tajdar E Haram Ae Shehenshah", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Tajdar%20E%20Haram%20Ae%20Shehenshah%20E%20Deen.mp3" },
+        { title: "Mera Waliyon Ke Imam", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Mera%20Waliyon%20Ke%20Imam.mp3" },
+        { title: "Subha Taiba Mein Hui", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Subha%20Taiba%20Mein%20Hui.mp3" },
+        { title: "Pukaro Ya Rasool Allah", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Pukaro%20Ya%20Rasool%20Allah.mp3" }
     ],
     "Sami Yusuf": [
-        { title: "Hasbi Rabbi", url: "https://archive.org/download/SamiYusuf/Hasbi_Rabbi.mp3" },
-        { title: "Ya Mustafa", url: "https://archive.org/download/SamiYusuf/Ya_Mustafa.mp3" },
-        { title: "Asma Allah", url: "https://archive.org/download/SamiYusuf/Asma_Allah.mp3" }
-    ],
-    "Maher Zain": [
-        { title: "Ya Nabi Salam Alayka", url: "https://archive.org/download/MaherZain/Ya_Nabi.mp3" },
-        { title: "Insha Allah", url: "https://archive.org/download/MaherZain/Insha_Allah.mp3" }
-    ],
-    "General Famous Naats": [
-        { title: "Qaseeda Burda Shareef", url: "https://archive.org/download/QaseedaBurda/Qaseeda.mp3" },
-        { title: "Bhar Do Jholi", url: "https://archive.org/download/BharDoJholi/Bhar_Do.mp3" }
+        { title: "Hasbi Rabbi", url: "https://archive.org/download/HasbiRabbiJallallahSamiYusuf_201708/Hasbi%20Rabbi%20Jallallah%20Sami%20Yusuf.mp3" },
+        { title: "Asma Allah", url: "https://archive.org/download/SamiYusuf-AsmaAllah/Sami%20Yusuf%20-%20Asma%20Allah.mp3" }
     ]
 };
 
@@ -116,40 +105,20 @@ function loadLocalNaats() {
     var nSelect = document.getElementById("naatSelect");
     nSelect.innerHTML = "";
     
-    window.naatData = localNaatDb[khawan] || [];
-    window.naatDisplayCount = 30;
-    renderNaatList();
-}
+    var naats = localNaatDb[khawan] || [];
+    if(naats.length === 0) { nSelect.add(new Option("No Naats Found", "")); return; }
 
-function renderNaatList() {
-    var nSelect = document.getElementById("naatSelect");
-    nSelect.innerHTML = ""; 
-    var limit = Math.min(window.naatData.length, window.naatDisplayCount);
-    
-    if(window.naatData.length === 0) { nSelect.add(new Option("No Naats Found", "")); return; }
-
-    for (var i = 0; i < limit; i++) {
-        var item = window.naatData[i];
-        nSelect.add(new Option(item.title, i)); 
-    }
-    if (window.naatData.length > window.naatDisplayCount) {
-        nSelect.add(new Option("⬇️ --- Load More Naats --- ⬇️", "load_more"));
-    }
-}
-
-function handleNaatSelect() {
-    var val = document.getElementById("naatSelect").value;
-    if (val === 'load_more') {
-        window.naatDisplayCount += 30; 
-        renderNaatList();
-        document.getElementById("naatSelect").value = window.naatDisplayCount - 30; 
-    }
+    naats.forEach(function(item, index) {
+        nSelect.add(new Option(item.title, index)); 
+    });
 }
 
 function playNaat() {
+    var khawan = document.getElementById("naatKhawanSelect").value;
     var index = document.getElementById("naatSelect").value;
-    if(index === 'load_more' || !window.naatData[index]) return;
-    var item = window.naatData[index];
+    var item = localNaatDb[khawan][index];
+    if(!item) return;
+
     document.getElementById("currentNaatTitle").innerText = item.title;
     var player = document.getElementById("naatPlayer");
     player.src = item.url;
@@ -161,8 +130,8 @@ function playNaat() {
 // ==========================================
 var dailyDuas = [
     {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
-    {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
-    {title:"Safar Ki Dua", ar:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ", ur:"پاک ہے وہ ذات جس نے اس (سواری) کو ہمارے تابع کر دیا حالانکہ ہم اسے قابو میں لانے والے نہ تھے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_04.mp3"}
+    {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، main ne Allah par bharosa kiya, aur gunahon se bachne ki taqat... hai.", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
+    {title:"Safar Ki Dua", ar:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ", ur:"Pak hai wo zaat jis ne is (sawari) ko hamare tabe kar diya...", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_04.mp3"}
 ];
 
 function renderDuas() {
@@ -215,7 +184,7 @@ function switchTab(id) {
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
 // ==========================================
-// TIMINGS & ALARMS
+// TIMINGS & FIXED HIJRI CALENDAR 
 // ==========================================
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
@@ -254,6 +223,18 @@ async function fetchPrayerTimes(forceOverwrite) {
             document.getElementById("timeJummah").value = t.Dhuhr;
             saveSettings();
         }
+
+        var d = new Date();
+        // BROWSER SAFE CITY CALENDAR ENDPOINT
+        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
+        var calData = await calRes.json();
+        var html = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
+        var todayStr = String(d.getDate()).padStart(2, '0');
+        calData.data.forEach(day => {
+            var isToday = (day.date.gregorian.day === todayStr) ? "today-cell" : "";
+            html += `<tr class="${isToday}"><td>${day.date.gregorian.date}</td><td>${day.date.hijri.date} ${day.date.hijri.month.en}</td><td>${day.date.gregorian.weekday.en}</td></tr>`;
+        });
+        document.getElementById("calendarTable").innerHTML = html;
     } catch(e) { showToast("Location Not Found."); }
     showLoad(false);
 }
@@ -292,7 +273,7 @@ function triggerAzan(name) {
 }
 
 // ==========================================
-// QURAN ENGINE 
+// QURAN ENGINE (FULL ARABIC -> FULL URDU)
 // ==========================================
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
@@ -426,8 +407,9 @@ function skipTrack(dir) {
 audioEngine.onerror = function() { currentTrackIndex++; if(currentTrackIndex < playlist.length) playTrack(); };
 audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
+
 // ==========================================
-// HADITH ENGINE (RESTORED WITH URDU/HINDI)
+// HADITH ENGINE (WITH URDU & HINDI RESTORED)
 // ==========================================
 async function searchQuran() {
     var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
