@@ -16,9 +16,11 @@
         :root { --bg-color: #1a1a1a; --sidebar-bg: #0f0a05; --gold: #d4af37; --mushaf-paper: #fdf6e3; --text-dark: #111; }
         body { margin: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: #fff; display: flex; height: 100vh; overflow: hidden; }
 
+        /* SPLASH SCREEN */
         #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0a05, #1a1a1a); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .enter-btn { background: var(--gold); color: #000; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 30px; cursor: pointer; transition: 0.3s; }
 
+        /* SIDEBAR */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); border-right: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 10; transition: 0.3s; }
         .logo { padding: 20px; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.3); display: flex; justify-content: space-between; align-items: center; }
         .logo h2 { margin: 0; color: var(--gold); font-family: 'Amiri', serif; width: 100%; text-align: center; }
@@ -29,11 +31,13 @@
         .install-box { margin: 10px; padding: 15px; background: rgba(212, 175, 55, 0.1); border: 1px dashed var(--gold); border-radius: 8px; text-align: center; }
         .install-box button { background: var(--gold); color: #000; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px;}
 
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 30px; padding-bottom: 150px; }
+        /* MAIN CONTENT */
+        .main-content { flex-grow: 1; overflow-y: auto; padding: 30px; padding-bottom: 150px; position: relative;}
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* CONTROLS & CARDS */
         .controls-bar { background: rgba(0, 0, 0, 0.6); padding: 15px; border-radius: 10px; border: 1px solid var(--gold); display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
         .control-group { display: flex; flex-direction: column; flex-grow: 1; }
         .control-group label { font-size: 12px; color: var(--gold); margin-bottom: 3px; }
@@ -44,30 +48,87 @@
         .time-input { background: #000; color: var(--gold); border: 1px solid var(--gold); padding: 5px; border-radius: 4px; width: 100px; text-align: center; float: right; font-weight:bold; cursor: pointer; }
         input[type="checkbox"] { width: auto; transform: scale(1.3); margin-right: 8px; cursor: pointer; accent-color: var(--gold); }
 
+        /* CALENDAR */
         .calendar-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: rgba(255,255,255,0.05); }
         .calendar-table th, .calendar-table td { border: 1px solid var(--gold); padding: 8px; text-align: center; font-size: 13px;}
         .calendar-table th { background: rgba(212,175,55,0.2); color: var(--gold); }
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
         .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 15px;}
         
-        .mushaf-frame { max-width: 850px; margin: 0 auto; background-color: var(--mushaf-paper); background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); background-size: 100% 100%; padding: 12% 10%; box-shadow: 0 15px 50px rgba(0,0,0,0.8); border-radius: 10px; }
-        .mushaf-inner { background-color: rgba(253, 246, 227, 0.95); padding: 30px; border: 3px double var(--gold); outline: 2px solid #b33939; outline-offset: 5px; min-height: 500px;}
-        .arabic-text { font-family: 'Amiri Quran', serif; font-size: 34px; line-height: 2.2; direction: rtl; text-align: center; color: #000; }
-        .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 24px; line-height: 2.2; direction: rtl; text-align: center; color: #444; border-top: 1px dashed #ccc; margin-top: 10px; padding-top: 10px;}
-        .ayah-row { padding: 15px 5px; border-bottom: 1px dashed rgba(212,175,55,0.4); transition: 0.3s;}
-        .playing-active { background: rgba(212,175,55,0.3); border-right: 5px solid #b33939; border-left: 5px solid #b33939; border-radius: 8px;}
+        /* ======================================================== */
+        /* 🕌 AUTHENTIC MUSHAF DESIGN (DESKTOP)                      */
+        /* ======================================================== */
+        .mushaf-frame { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background-color: var(--mushaf-paper); 
+            background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); 
+            background-size: 100% 100%; 
+            background-position: center;
+            padding: 8% 7%; /* Reduced padding to fit more text */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9); 
+            border-radius: 8px; 
+        }
+        .mushaf-inner { 
+            background-color: transparent; /* Changed to transparent for real paper feel */
+            padding: 10px; 
+            min-height: 500px;
+        }
+        .surah-title { 
+            text-align: center; 
+            font-family: 'Amiri Quran', serif; 
+            font-size: 3rem; 
+            color: #b33939; 
+            margin-bottom: 20px; 
+            border-bottom: 2px solid rgba(179, 57, 57, 0.5); 
+            padding-bottom: 10px;
+        }
+        .arabic-text { 
+            font-family: 'Amiri Quran', serif; 
+            font-size: 36px; 
+            line-height: 2.3; 
+            direction: rtl; 
+            text-align: center; 
+            color: #111; 
+            text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1); /* Realistic Ink Effect */
+        }
+        .urdu-font { 
+            font-family: 'Noto Nastaliq Urdu', serif; 
+            font-size: 22px; 
+            line-height: 2.2; 
+            direction: rtl; 
+            text-align: center; 
+            color: #444; 
+            margin-top: 15px; 
+            padding-top: 15px;
+            border-top: 1px dashed rgba(179, 57, 57, 0.2); 
+        }
+        .ayah-row { 
+            padding: 15px 5px; 
+            border-bottom: 1px solid transparent; 
+            transition: 0.3s;
+        }
+        .playing-active { 
+            background: rgba(212,175,55,0.15); /* Softer, premium highlight */
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(212,175,55,0.2);
+        }
 
+        /* DUA CARDS */
         .dua-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--gold); }
         .dua-card h4 { color: #b33939; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top:0;}
         audio { width: 100%; margin-top: 15px; outline: none; border-radius: 30px; }
 
+        /* PLAYER & TOAST */
         .audio-player { position: fixed; bottom: 0; left: 260px; right: 0; background: #050505; border-top: 2px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; transition: 0.3s; }
-        
         #toastMsg { visibility: hidden; min-width: 250px; margin-left: -125px; background-color: var(--gold); color: #000; text-align: center; border-radius: 30px; padding: 15px 25px; position: fixed; z-index: 10000; left: 50%; bottom: 100px; font-size: 16px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 2px solid #fff; }
         #toastMsg.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 4.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 100px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
+        /* ======================================================== */
+        /* 📱 MOBILE RESPONSIVE (REAL MUSHAF FEEL FIX)              */
+        /* ======================================================== */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow-y: auto; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
@@ -76,10 +137,44 @@
             .nav-links { display: none; flex-direction: column; max-height: 60vh; background: var(--sidebar-bg); }
             .nav-links.show { display: flex; }
             .main-content { padding: 15px; padding-bottom: 180px; overflow-y: visible; }
+            
+            /* Audio Player Mobile Adjustments */
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
-            .mushaf-frame { padding: 5%; background-image: none; background-color: var(--mushaf-paper); border: 2px solid #8b0000; }
+            
+            /* REAL MUSHAF MOBILE FIX */
+            .mushaf-frame { 
+                background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); /* Keep background ON for mobile */
+                background-size: 100% 100%; 
+                padding: 12% 8%; /* Adjust padding to sit right inside the frame */
+                margin: -15px -15px 0 -15px; /* Stretch to absolute screen edges */
+                width: calc(100% + 30px);
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .mushaf-inner { 
+                padding: 0; 
+                background-color: transparent; 
+                border: none; 
+                outline: none; 
+            }
+            .surah-title {
+                font-size: 2.2rem;
+                margin-top: 5px;
+            }
+            .arabic-text { 
+                font-size: 28px; /* Perfect reading size for mobile */
+                line-height: 2.2; 
+            }
+            .urdu-font { 
+                font-size: 18px; 
+                line-height: 2.1; 
+            }
+            .ayah-marker {
+                font-size: 24px;
+            }
+
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid { grid-template-columns: 1fr; }
             .controls-bar { flex-direction: column; }
@@ -199,7 +294,8 @@
         <div id="quranContainer" style="display:none;">
             <div class="mushaf-frame">
                 <div class="mushaf-inner">
-                    <h2 id="surahTitle" style="text-align:center; color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem;">سورة</h2>
+                    <h2 id="surahTitle" class="surah-title">سورة</h2>
+                    <div id="bismillah" style="text-align: center; font-family: 'Amiri Quran', serif; font-size: 32px; margin-bottom: 20px; color: #111;">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
                     <div id="mushafContent"></div>
                 </div>
             </div>
@@ -212,16 +308,16 @@
     </div>
 
     <div id="khatmTab" class="section">
-        <div class="mushaf-frame" style="max-width:900px;">
+        <div class="mushaf-frame" style="max-width:900px; padding: 10%;">
             <div class="mushaf-inner" style="text-align:center;">
-                <h2 style="color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem;">دعاء ختم القرآن</h2>
+                <h2 style="color:#b33939; font-family:'Amiri Quran', serif; font-size:2.5rem; margin-bottom: 0;">دعاء ختم القرآن</h2>
                 
-                <audio controls style="width:100%; margin: 20px 0;">
+                <audio controls style="width:100%; margin: 25px 0;">
                     <source src="https://download.quranicaudio.com/quran/khatm/sudais_khatm_1434.mp3" type="audio/mpeg">
                 </audio>
 
                 <p class="arabic-text" style="font-size:28px;">اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً<br>اللَّهُمَّ ذَكِّرْنِي مِنْهُ مَا نَسِيتُ وَعَلِّمْنِي مِنْهُ مَا جَهِلْتُ</p>
-                <p class="urdu-font" style="font-size:20px;">اے اللہ! قرآن کی برکت سے مجھ پر رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔</p>
+                <p class="urdu-font" style="font-size:20px; border-top: 1px dashed rgba(179, 57, 57, 0.3);">اے اللہ! قرآن کی برکت سے مجھ پر رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔</p>
             </div>
         </div>
     </div>
