@@ -3,11 +3,9 @@ var audioEngine = document.getElementById("audioEngine") || new Audio();
 var azanAudio = document.getElementById("azanAudio");
 var lastPlayedMinute = ""; 
 
-// SILENT WAKELOCK TO PREVENT OS SLEEP
 var wakeLockAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
 wakeLockAudio.loop = true;
 
-// GLOBAL API STORES FOR LAZY LOADING
 window.bayanData = [];
 window.naatData = [];
 window.bayanDisplayCount = 30;
@@ -25,38 +23,35 @@ function toggleMenu() {
     if (links.className.indexOf("show") == -1) { links.className += " show"; } else { links.className = links.className.replace(" show", ""); }
 }
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(function() { console.log("PWA Ready"); });
-}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }
 
 // ==========================================
-// BAYANAT API WITH LAZY LOAD
+// BAYANAT API (LAZY LOAD RESTORED)
 // ==========================================
 async function fetchBayanatAPI() {
     var query = document.getElementById("alimSelect").value;
     showLoad(true);
     try {
-        // Fetch Max Limit (200) from iTunes API
         var res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=podcast&entity=podcastEpisode&limit=200`);
         var data = await res.json();
-        window.bayanData = data.results.filter(item => item.episodeUrl); // Only keep items with Audio
-        window.bayanDisplayCount = 30; // Reset counter
+        window.bayanData = data.results.filter(item => item.episodeUrl); 
+        window.bayanDisplayCount = 30; 
         renderBayanList();
-    } catch(e) { showToast("Failed to load Bayanat API."); }
+    } catch(e) { showToast("Failed to load Bayanat."); }
     showLoad(false);
 }
 
 function renderBayanList() {
     var bSelect = document.getElementById("bayanSelect");
-    bSelect.innerHTML = ""; // Clear existing
-    
+    bSelect.innerHTML = ""; 
     var limit = Math.min(window.bayanData.length, window.bayanDisplayCount);
+    
+    if(window.bayanData.length === 0) { bSelect.add(new Option("No Audio Found", "")); return; }
+
     for (var i = 0; i < limit; i++) {
         var item = window.bayanData[i];
         bSelect.add(new Option(item.trackName || item.collectionName, i));
     }
-    
-    // Add "Load More" option if more items exist
     if (window.bayanData.length > window.bayanDisplayCount) {
         bSelect.add(new Option("⬇️ --- Load More Bayans --- ⬇️", "load_more"));
     }
@@ -65,9 +60,9 @@ function renderBayanList() {
 function handleBayanSelect() {
     var val = document.getElementById("bayanSelect").value;
     if (val === 'load_more') {
-        window.bayanDisplayCount += 30; // Increase lazy load limit
+        window.bayanDisplayCount += 30; 
         renderBayanList();
-        document.getElementById("bayanSelect").value = window.bayanDisplayCount - 30; // keep selection near where user was
+        document.getElementById("bayanSelect").value = window.bayanDisplayCount - 30; 
     }
 }
 
@@ -78,11 +73,11 @@ function playBayan() {
     document.getElementById("currentBayanTitle").innerText = item.trackName;
     var player = document.getElementById("bayanPlayer");
     player.src = item.episodeUrl;
-    player.play().catch(e => showToast("Audio URL restricted. Try another."));
+    player.play().catch(e => showToast("Audio restricted by provider."));
 }
 
 // ==========================================
-// NAAT API WITH LAZY LOAD
+// NAAT API (LAZY LOAD & FIXED QUERIES)
 // ==========================================
 async function fetchNaatAPI() {
     var query = document.getElementById("naatKhawanSelect").value;
@@ -93,20 +88,21 @@ async function fetchNaatAPI() {
         window.naatData = data.results.filter(item => item.episodeUrl);
         window.naatDisplayCount = 30;
         renderNaatList();
-    } catch(e) { showToast("Failed to load Naats API."); }
+    } catch(e) { showToast("Failed to load Naats."); }
     showLoad(false);
 }
 
 function renderNaatList() {
     var nSelect = document.getElementById("naatSelect");
     nSelect.innerHTML = ""; 
-    
     var limit = Math.min(window.naatData.length, window.naatDisplayCount);
+    
+    if(window.naatData.length === 0) { nSelect.add(new Option("No Audio Found for this Name", "")); return; }
+
     for (var i = 0; i < limit; i++) {
         var item = window.naatData[i];
         nSelect.add(new Option(item.trackName || item.collectionName, i));
     }
-    
     if (window.naatData.length > window.naatDisplayCount) {
         nSelect.add(new Option("⬇️ --- Load More Naats --- ⬇️", "load_more"));
     }
@@ -128,7 +124,7 @@ function playNaat() {
     document.getElementById("currentNaatTitle").innerText = item.trackName;
     var player = document.getElementById("naatPlayer");
     player.src = item.episodeUrl;
-    player.play().catch(e => showToast("Audio URL restricted. Try another."));
+    player.play().catch(e => showToast("Audio restricted by provider."));
 }
 
 // ==========================================
@@ -215,7 +211,7 @@ async function fetchPrayerTimes(forceOverwrite) {
     showLoad(true);
     var city = document.getElementById("cityName").value, country = document.getElementById("countryName").value;
     try {
-        var res = await fetch(`https://api.aladhan.com/v1/timingsByAddress?address=${encodeURIComponent(city + ', ' + country)}&method=1`);
+        var res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`);
         var data = await res.json();
         document.getElementById("hijriDateDisplay").innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.en + " " + data.data.date.hijri.year + " AH";
 
@@ -229,6 +225,17 @@ async function fetchPrayerTimes(forceOverwrite) {
             document.getElementById("timeJummah").value = t.Dhuhr;
             saveSettings();
         }
+
+        var d = new Date();
+        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
+        var calData = await calRes.json();
+        var html = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
+        var todayStr = String(d.getDate()).padStart(2, '0');
+        calData.data.forEach(day => {
+            var isToday = (day.date.gregorian.day === todayStr) ? "today-cell" : "";
+            html += `<tr class="${isToday}"><td>${day.date.gregorian.date}</td><td>${day.date.hijri.date} ${day.date.hijri.month.en}</td><td>${day.date.gregorian.weekday.en}</td></tr>`;
+        });
+        document.getElementById("calendarTable").innerHTML = html;
     } catch(e) { showToast("Location Not Found."); }
     showLoad(false);
 }
@@ -267,7 +274,7 @@ function triggerAzan(name) {
 }
 
 // ==========================================
-// QURAN ENGINE 
+// QURAN ENGINE (FULL ARABIC -> FULL URDU)
 // ==========================================
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
@@ -288,7 +295,7 @@ async function loadSurah() {
     try {
         var resAr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${r}`);
         var dataAr = await resAr.json();
-        if(dataAr.code !== 200) throw new Error("API Limit Reached"); 
+        if(dataAr.code !== 200) throw new Error("API Limit"); 
 
         var resTr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${l}`);
         var dataTr = await resTr.json();
@@ -338,6 +345,7 @@ async function loadSurah() {
                 playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(sNum)}${padNum(ayah.numberInSurah)}.mp3`, num: ayah.numberInSurah, type: 'Translation', id: `ayah-${sNum}-${ayah.numberInSurah}` });
             });
         }
+
     } catch(e) { showToast("Error! Check Number."); }
     showLoad(false);
 }
@@ -358,7 +366,6 @@ function playTrack() {
     }
     
     wakeLockAudio.play().catch(e=>{});
-
     var track = playlist[currentTrackIndex];
     audioEngine.src = track.url;
     var p = audioEngine.play();
@@ -376,10 +383,10 @@ function playTrack() {
             }
 
             if ('mediaSession' in navigator) {
-                var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah Quran";
+                var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah";
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: `Ayah ${track.num} (${track.type})`,
-                    artist: 'Al-Hikmah',
+                    artist: 'Al-Hikmah Player',
                     album: surahNameText,
                     artwork: [ { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' } ]
                 });
@@ -403,7 +410,7 @@ audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
 
 // ==========================================
-// HADITH ENGINE (NOW WITH URDU & HINDI!)
+// HADITH ENGINE (WITH URDU & HINDI RESTORED)
 // ==========================================
 async function searchQuran() {
     var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
@@ -427,44 +434,27 @@ async function loadHadith() {
     if(!n) return; showLoad(true); var div = document.getElementById("hadithContent"); div.innerHTML = "";
     
     try {
-        // Fetch Arabic (Primary)
         var resAr = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-${b}/${n}.json`);
-        if(!resAr.ok) throw new Error("Hadith Not Found");
+        if(!resAr.ok) throw new Error("Not Found");
         var arData = await resAr.json();
-        
         var html = `<div class="arabic-text" style="font-size:30px; margin-bottom:15px; border:none;">${arData.hadiths[0].text}</div>`;
 
-        // Fetch English
         try {
             var resEn = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/eng-${b}/${n}.json`); 
-            if(resEn.ok) {
-                var enData = await resEn.json();
-                html += `<hr><div style="font-size:18px; line-height:1.6; color:#222;"><b>English:</b> ${enData.hadiths[0].text}</div>`;
-            }
+            if(resEn.ok) { var enData = await resEn.json(); html += `<hr><div style="font-size:18px; line-height:1.6; color:#222;"><b>English:</b> ${enData.hadiths[0].text}</div>`; }
         } catch(e) {}
 
-        // Fetch Urdu (New Addition)
         try {
             var resUr = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/urd-${b}/${n}.json`); 
-            if(resUr.ok) {
-                var urData = await resUr.json();
-                html += `<hr><div class="urdu-font" style="font-size:20px; line-height:1.8; color:#111;"><b>اردو:</b> ${urData.hadiths[0].text}</div>`;
-            }
+            if(resUr.ok) { var urData = await resUr.json(); html += `<hr><div class="urdu-font" style="font-size:20px; line-height:1.8; color:#111;"><b>اردو:</b> ${urData.hadiths[0].text}</div>`; }
         } catch(e) {}
 
-        // Fetch Hindi (New Addition)
         try {
             var resHi = await fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/hin-${b}/${n}.json`); 
-            if(resHi.ok) {
-                var hiData = await resHi.json();
-                html += `<hr><div style="font-size:18px; line-height:1.6; color:#333;"><b>हिंदी:</b> ${hiData.hadiths[0].text}</div>`;
-            }
+            if(resHi.ok) { var hiData = await resHi.json(); html += `<hr><div style="font-size:18px; line-height:1.6; color:#333;"><b>हिंदी:</b> ${hiData.hadiths[0].text}</div>`; }
         } catch(e) {}
 
         div.innerHTML = html;
-
-    } catch(e) { 
-        div.innerHTML = '<span style="color:red;">Hadith not found in this book. Please try a different number.</span>'; 
-    }
+    } catch(e) { div.innerHTML = '<span style="color:red;">Hadith not found in this book.</span>'; }
     showLoad(false);
 }
