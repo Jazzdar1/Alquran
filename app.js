@@ -1,5 +1,6 @@
 var playlist = [], currentTrackIndex = 0, isPlaying = false;
 var audioEngine = document.getElementById("audioEngine") || new Audio();
+var preloader = new Audio(); // THE MAGIC FIX FOR BACKGROUND PLAYBACK
 var azanAudio = document.getElementById("azanAudio");
 var lastPlayedMinute = ""; 
 
@@ -168,18 +169,15 @@ function triggerAzan(name) {
     showToast("🕌 Azan Time: " + name); 
 }
 
-// --- MUSHAF LOGIC FIXED ---
+// --- MUSHAF LOGIC (GROUPED PLAYBACK FIX) ---
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
 async function loadSurah() {
-    // Failsafe selectors
     var modeElement = document.getElementById("readMode");
     var numElement = document.getElementById("readNumber");
-    
     var mode = modeElement ? modeElement.value : 'surah';
     var num = numElement ? numElement.value : 1;
-    
     var r = document.getElementById("arReciter").value;
     var l = document.getElementById("textLang").value;
     var u = document.getElementById("urReciter").value;
@@ -187,7 +185,7 @@ async function loadSurah() {
     if(num < 1) return;
     
     showLoad(true); document.getElementById("quranContainer").style.display = "none";
-    audioEngine.pause(); playlist = []; currentTrackIndex = 0; isPlaying = false;
+    audioEngine.pause(); preloader.pause(); playlist = []; currentTrackIndex = 0; isPlaying = false;
     document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
 
     try {
@@ -202,42 +200,45 @@ async function loadSurah() {
         var ayahsTr = mode === 'ayah' ? [dataTr.data] : dataTr.data.ayahs;
 
         var titleText = "";
-        if (mode === 'surah') {
-            titleText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
-        } else if (mode === 'ruku') {
-            titleText = 'رُكُوع ' + num + ' - ' + ayahsAr[0].surah.name; 
-        } else if (mode === 'ayah') {
-            titleText = 'آيَة ' + num + ' - ' + dataAr.data.surah.name;
-        }
+        if (mode === 'surah') { titleText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', ''); } 
+        else if (mode === 'ruku') { titleText = 'رُكُوع ' + num + ' - ' + ayahsAr[0].surah.name; } 
+        else if (mode === 'ayah') { titleText = 'آيَة ' + num + ' - ' + dataAr.data.surah.name; }
 
         var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
-        var ayahsPerPage = 4; // 4 Ayats Per Page limit
+        var ayahsPerPage = 6; // User requested 6 Ayahs
         
         for (var i = 0; i < ayahsAr.length; i += ayahsPerPage) {
             var chunkAr = ayahsAr.slice(i, i + ayahsPerPage);
             html += `<div class="mushaf-frame"><div class="mushaf-inner">`;
             if(i === 0) { html += `<h2 class="surah-title">${titleText}</h2>`; }
 
+            // 1. CREATE HTML FOR PAGE
             chunkAr.forEach((ayah, j) => {
                 var globalIndex = i + j;
-                
-                // BULLET-PROOF BUG FIX HERE
                 var sNum = ayah.surah ? ayah.surah.number : (mode === 'surah' ? num : 1);
                 var aNum = ayah.numberInSurah;
                 
-                playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${sNum}-${aNum}` });
-                
-                if(u !== 'none') {
-                    playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(sNum)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${sNum}-${aNum}` });
-                }
-
                 html += `<div class="ayah-row" id="ayah-${sNum}-${aNum}">
                             <div class="arabic-text">${ayah.text} <span class="ayah-marker">۝${toArabicNum(aNum)}</span></div>
                             <div class="urdu-font" style="direction:${isRTL ? 'rtl' : 'ltr'}">${ayahsTr[globalIndex].text}</div>
                          </div>`;
             });
             html += `</div></div>`;
+
+            // 2. PLAYLIST LOGIC: ALL 6 ARABIC FIRST
+            chunkAr.forEach((ayah) => {
+                var sNum = ayah.surah ? ayah.surah.number : (mode === 'surah' ? num : 1);
+                playlist.push({ url: ayah.audio, num: ayah.numberInSurah, type: 'Arabic', id: `ayah-${sNum}-${ayah.numberInSurah}` });
+            });
+
+            // 3. PLAYLIST LOGIC: ALL 6 URDU SECOND
+            if(u !== 'none') {
+                chunkAr.forEach((ayah) => {
+                    var sNum = ayah.surah ? ayah.surah.number : (mode === 'surah' ? num : 1);
+                    playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(sNum)}${padNum(ayah.numberInSurah)}.mp3`, num: ayah.numberInSurah, type: 'Translation', id: `ayah-${sNum}-${ayah.numberInSurah}` });
+                });
+            }
         }
 
         document.getElementById("quranContainer").innerHTML = html;
@@ -265,10 +266,16 @@ function playTrack() {
     if(p !== undefined) {
         p.then(() => {
             isPlaying = true; 
+            document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
             
-            // SCREEN OFF BACKGROUND PLAY FIX
+            // PRELOADER: Background Play Fix (Downloads next track instantly)
+            if (currentTrackIndex + 1 < playlist.length) {
+                preloader.src = playlist[currentTrackIndex + 1].url;
+                preloader.load(); 
+            }
+            
+            // DOM manipulation only when screen is ON
             if (!document.hidden) {
-                document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
                 document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
                 document.querySelectorAll('.ayah-row').forEach(el => el.classList.remove('playing-active'));
                 var row = document.getElementById(track.id);
@@ -304,7 +311,12 @@ audioEngine.onerror = function() {
     currentTrackIndex++; 
     if(currentTrackIndex < playlist.length) playTrack(); 
 };
-audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
+
+// When current audio finishes, it instantly plays the next pre-loaded one.
+audioEngine.onended = function() { 
+    currentTrackIndex++; 
+    playTrack(); 
+};
 
 // Dictionary & Hadith
 async function searchQuran() {
