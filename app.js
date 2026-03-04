@@ -25,6 +25,15 @@ function toggleMenu() {
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }
 
 // ==========================================
+// ISLAMIC PORTAL LOADER
+// ==========================================
+function loadPortal(url) {
+    showLoad(true);
+    document.getElementById("portalIframe").src = url;
+    setTimeout(() => { showLoad(false); }, 1500);
+}
+
+// ==========================================
 // 1. BAYANAT API (WORKING iTUNES LAZY LOAD)
 // ==========================================
 async function fetchBayanatAPI() {
@@ -333,7 +342,7 @@ function playTrack() {
                 var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah";
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: `Ayah ${track.num} (${track.type})`,
-                    artist: 'Al-Hikmah Player',
+                    artist: 'Al-Hikmah',
                     album: surahNameText,
                     artwork: [ { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' } ]
                 });
@@ -357,7 +366,7 @@ audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
 
 // ==========================================
-// HADITH ENGINE (WITH URDU & HINDI)
+// HADITH ENGINE (WITH URDU & HINDI RESTORED)
 // ==========================================
 async function searchQuran() {
     var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
