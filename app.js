@@ -25,7 +25,7 @@ function toggleMenu() {
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }
 
 // ==========================================
-// 1. BAYANAT API (WORKING iTUNES)
+// 1. BAYANAT API (WORKING iTUNES LAZY LOAD)
 // ==========================================
 async function fetchBayanatAPI() {
     var query = document.getElementById("alimSelect").value;
@@ -76,61 +76,11 @@ function playBayan() {
 }
 
 // ==========================================
-// 2. NAATS (LOCAL FAIL-PROOF MP3 DATABASE)
-// ==========================================
-// Using 100% verified working Direct Archive.org MP3 links!
-var localNaatDb = {
-    "Junaid Jamshed": [
-        { title: "Mera Dil Badal De", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MeraDilBadalDe.mp3" },
-        { title: "Mohammad Ka Roza", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MohammadKaRoza.mp3" },
-        { title: "Ilahi Teri Chokhat Pe", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/IlahiTeriChokhatPe.mp3" },
-        { title: "Jalwa-e-Janan", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/Jalwa-e-Janan.mp3" },
-        { title: "Aei Taiba", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/AeiTaiba.mp3" },
-        { title: "Aei Rasool-e-Ameen", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/AeiRasool-e-ameen.mp3" }
-    ],
-    "Awais Raza Qadri": [
-        { title: "Tajdar E Haram Ae Shehenshah", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Tajdar%20E%20Haram%20Ae%20Shehenshah%20E%20Deen.mp3" },
-        { title: "Mera Waliyon Ke Imam", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Mera%20Waliyon%20Ke%20Imam.mp3" },
-        { title: "Subha Taiba Mein Hui", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Subha%20Taiba%20Mein%20Hui.mp3" },
-        { title: "Pukaro Ya Rasool Allah", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Pukaro%20Ya%20Rasool%20Allah.mp3" }
-    ],
-    "Sami Yusuf": [
-        { title: "Hasbi Rabbi", url: "https://archive.org/download/HasbiRabbiJallallahSamiYusuf_201708/Hasbi%20Rabbi%20Jallallah%20Sami%20Yusuf.mp3" },
-        { title: "Asma Allah", url: "https://archive.org/download/SamiYusuf-AsmaAllah/Sami%20Yusuf%20-%20Asma%20Allah.mp3" }
-    ]
-};
-
-function loadLocalNaats() {
-    var khawan = document.getElementById("naatKhawanSelect").value;
-    var nSelect = document.getElementById("naatSelect");
-    nSelect.innerHTML = "";
-    
-    var naats = localNaatDb[khawan] || [];
-    if(naats.length === 0) { nSelect.add(new Option("No Naats Found", "")); return; }
-
-    naats.forEach(function(item, index) {
-        nSelect.add(new Option(item.title, index)); 
-    });
-}
-
-function playNaat() {
-    var khawan = document.getElementById("naatKhawanSelect").value;
-    var index = document.getElementById("naatSelect").value;
-    var item = localNaatDb[khawan][index];
-    if(!item) return;
-
-    document.getElementById("currentNaatTitle").innerText = item.title;
-    var player = document.getElementById("naatPlayer");
-    player.src = item.url;
-    player.play().catch(e => showToast("Audio URL restricted."));
-}
-
-// ==========================================
-// 3. RESTORED DUAS
+// 2. RESTORED DUAS
 // ==========================================
 var dailyDuas = [
-    {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
-    {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، main ne Allah par bharosa kiya, aur gunahon se bachne ki taqat... hai.", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
+    {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا aur usi ki taraf uth kar jana hai.", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
+    {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"Allah ke naam se, main ne Allah par bharosa kiya...", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
     {title:"Safar Ki Dua", ar:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ", ur:"Pak hai wo zaat jis ne is (sawari) ko hamare tabe kar diya...", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_04.mp3"}
 ];
 
@@ -151,7 +101,6 @@ window.onload = async function() {
     try {
         renderDuas();
         fetchBayanatAPI(); 
-        loadLocalNaats(); // Load from Local DB    
 
         var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
         var arData = await arRes.json();
@@ -225,7 +174,6 @@ async function fetchPrayerTimes(forceOverwrite) {
         }
 
         var d = new Date();
-        // BROWSER SAFE CITY CALENDAR ENDPOINT
         var calRes = await fetch(`https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
         var calData = await calRes.json();
         var html = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
@@ -409,7 +357,7 @@ audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
 
 // ==========================================
-// HADITH ENGINE (WITH URDU & HINDI RESTORED)
+// HADITH ENGINE (WITH URDU & HINDI)
 // ==========================================
 async function searchQuran() {
     var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
