@@ -1,0 +1,17 @@
+{
+  "name": "Al-Hikmah Islamic Hub",
+  "short_name": "Al-Hikmah",
+  "description": "Global Islamic Dashboard with Timings, Quran, and Hadith.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3073/3073860.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
