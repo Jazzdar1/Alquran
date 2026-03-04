@@ -50,32 +50,8 @@
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
         .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 15px;}
         
-        /* ========================================================= */
-        /* PERFECT MUSHAF PAGE BOUNDARIES (HEADERS/FOOTERS PROTECTED)*/
-        /* ========================================================= */
-        .mushaf-frame { 
-            max-width: 850px; 
-            margin: 0 auto 40px auto; 
-            background-color: var(--mushaf-paper); 
-            background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); 
-            background-size: 100% 100%; 
-            background-position: center; 
-            
-            /* FIXED PIXEL PADDING: Ensures text NEVER covers the top/bottom floral designs */
-            padding: 120px 70px 120px 70px; 
-            
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8); 
-            border-radius: 5px; 
-            box-sizing: border-box;
-        }
-        .mushaf-inner { 
-            background-color: transparent; 
-            padding: 0; /* Removed inner padding to utilize space efficiently */
-            border: none; 
-            outline: none;
-        }
-        
-        /* REDUCED FONTS & SPACING FOR PERFECT FIT */
+        .mushaf-frame { max-width: 850px; margin: 0 auto 40px auto; background-color: var(--mushaf-paper); background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); background-size: 100% 100%; background-position: center; padding: 120px 70px 120px 70px; box-shadow: 0 15px 50px rgba(0,0,0,0.8); border-radius: 5px; box-sizing: border-box;}
+        .mushaf-inner { background-color: transparent; padding: 0; border: none; outline: none;}
         .surah-title { text-align: center; font-family: 'Amiri Quran', serif; font-size: 2rem; color: #b33939; margin-bottom: 10px; border-bottom: 1px dashed rgba(179, 57, 57, 0.4); padding-bottom: 5px; }
         .arabic-text { font-family: 'Amiri Quran', serif; font-size: 26px; line-height: 1.8; direction: rtl; text-align: center; color: #111; }
         .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 15px; line-height: 1.7; direction: rtl; text-align: center; color: #444; border-top: 1px dashed rgba(179, 57, 57, 0.2); margin-top: 8px; padding-top: 8px; }
@@ -93,7 +69,6 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 100px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* MOBILE CSS: PROTECTING BOUNDARIES */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow-y: auto; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
@@ -105,19 +80,11 @@
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
-            
-            /* Strict padding on mobile so text never overlaps decorative borders */
-            .mushaf-frame { 
-                padding: 100px 30px 100px 30px !important; 
-                margin: 0 auto 25px auto !important; 
-                width: 98%; 
-                border-radius: 5px;
-            }
+            .mushaf-frame { padding: 100px 30px 100px 30px !important; margin: 0 auto 25px auto !important; width: 98%; border-radius: 5px;}
             .surah-title { font-size: 1.5rem; margin-bottom: 8px; padding-bottom: 5px; }
             .arabic-text { font-size: 20px; line-height: 1.7; }
             .urdu-font { font-size: 13px; line-height: 1.6; margin-top: 6px; padding-top: 6px; }
             .ayah-marker { font-size: 18px; }
-            
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid { grid-template-columns: 1fr; }
             .controls-bar { flex-direction: column; }
@@ -172,7 +139,6 @@
                 <select id="azanVoice" onchange="saveSettings()">
                     <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah Azan</option>
                     <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Madinah Azan</option>
-                    <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">Al-Aqsa Azan</option>
                 </select>
             </div>
             <div class="control-group" style="justify-content: flex-end;">
@@ -212,7 +178,19 @@
 
     <div id="quranTab" class="section">
         <div class="controls-bar">
-            <div class="control-group"><label>Surah (1-114)</label><input type="number" id="surahNumber" value="1" min="1" max="114"></div>
+            <div class="control-group">
+                <label>Read By</label>
+                <select id="readMode">
+                    <option value="surah">Surah (1-114)</option>
+                    <option value="ruku">Ruku (1-558)</option>
+                    <option value="ayah">Ayah (1-6236)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Number</label>
+                <input type="number" id="readNumber" value="1" min="1" max="6236">
+            </div>
+
             <div class="control-group"><label>Arabic Reciter</label><select id="arReciter"></select></div>
             <div class="control-group">
                 <label>Text Translation</label>
@@ -243,7 +221,7 @@
     </div>
 
     <div id="khatmTab" class="section">
-        <div class="mushaf-frame" style="max-width:900px;">
+        <div class="mushaf-frame" style="max-width:900px; padding:120px 70px;">
             <div class="mushaf-inner" style="text-align:center;">
                 <h2 style="color:#b33939; font-family:'Amiri Quran', serif; font-size:2.2rem; border-bottom:1px dashed rgba(179,57,57,0.4); padding-bottom:10px;">دعاء ختم القرآن</h2>
                 <audio controls style="width:100%; margin: 25px 0;">
