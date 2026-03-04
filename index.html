@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>🕌 Al-Hikmah Islamic Master Hub</title>
     <meta name="theme-color" content="#1a1a1a">
     
@@ -50,7 +54,18 @@
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
         .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 15px;}
         
-        .mushaf-frame { max-width: 850px; margin: 0 auto 40px auto; background-color: var(--mushaf-paper); background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); background-size: 100% 100%; background-position: center; padding: 120px 70px 120px 70px; box-shadow: 0 15px 50px rgba(0,0,0,0.8); border-radius: 5px; box-sizing: border-box;}
+        .mushaf-frame { 
+            max-width: 850px; 
+            margin: 0 auto 40px auto; 
+            background-color: var(--mushaf-paper); 
+            background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); 
+            background-size: 100% 100%; 
+            background-position: center; 
+            padding: 120px 70px 120px 70px; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.8); 
+            border-radius: 5px; 
+            box-sizing: border-box;
+        }
         .mushaf-inner { background-color: transparent; padding: 0; border: none; outline: none;}
         .surah-title { text-align: center; font-family: 'Amiri Quran', serif; font-size: 2rem; color: #b33939; margin-bottom: 10px; border-bottom: 1px dashed rgba(179, 57, 57, 0.4); padding-bottom: 5px; }
         .arabic-text { font-family: 'Amiri Quran', serif; font-size: 26px; line-height: 1.8; direction: rtl; text-align: center; color: #111; }
@@ -80,11 +95,18 @@
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
-            .mushaf-frame { padding: 100px 30px 100px 30px !important; margin: 0 auto 25px auto !important; width: 98%; border-radius: 5px;}
+            
+            .mushaf-frame { 
+                padding: 100px 30px 100px 30px !important; 
+                margin: 0 auto 25px auto !important; 
+                width: 98%; 
+                border-radius: 5px;
+            }
             .surah-title { font-size: 1.5rem; margin-bottom: 8px; padding-bottom: 5px; }
             .arabic-text { font-size: 20px; line-height: 1.7; }
             .urdu-font { font-size: 13px; line-height: 1.6; margin-top: 6px; padding-top: 6px; }
             .ayah-marker { font-size: 18px; }
+            
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid { grid-template-columns: 1fr; }
             .controls-bar { flex-direction: column; }
@@ -165,13 +187,6 @@
                         <label style="color:var(--gold); font-weight:bold;"><input type="checkbox" id="toggleJummah" checked onchange="saveSettings()"> Jumu'ah:</label> <input type="time" id="timeJummah" class="time-input" style="background:var(--gold); color:black;" onchange="saveSettings()">
                     </div>
                 </div>
-            </div>
-            
-            <div class="widget-card" style="grid-column: 1 / -1; overflow-x:auto;">
-                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-calendar-alt"></i> Full Hijri Calendar</h3>
-                <table class="calendar-table" id="calendarTable">
-                    <tr><th>Gregorian Date</th><th>Hijri Date</th><th>Day</th></tr>
-                </table>
             </div>
         </div>
     </div>
@@ -299,7 +314,7 @@
     </div>
 </div>
 
-<script src="./app.js"></script>
+<script src="./app.js?v=2"></script>
 
 </body>
 </html>
