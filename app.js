@@ -69,7 +69,6 @@ window.onload = async function() {
             if(ed.identifier === 'ar.abdurrahmaansudais') { opt.selected = true; opt.text = "⭐ " + opt.text + " (Sudais)"; }
             arSelect.add(opt);
         });
-
         document.getElementById("splashQuote").innerText = '"App is Ready."';
         document.getElementById("enterBtn").style.display = "block";
     } catch(e) { document.getElementById("splashQuote").innerText = "Network Issue. Basic features will still work."; document.getElementById("enterBtn").style.display = "block"; }
@@ -208,8 +207,8 @@ async function loadSurah() {
         var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
 
-        // DIVIDING SURAH INTO 7 AYAHS PER PAGE
-        var ayahsPerPage = 7;
+        // [FIX] STRICTLY DIVIDING SURAH INTO 4 AYAHS PER PAGE SO FRAME NEVER OVERFLOWS
+        var ayahsPerPage = 4; 
         
         for (var i = 0; i < dataAr.data.ayahs.length; i += ayahsPerPage) {
             var chunk = dataAr.data.ayahs.slice(i, i + ayahsPerPage);
@@ -230,7 +229,7 @@ async function loadSurah() {
                 
                 playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${aNum}` });
                 
-                // Old Working Links applied exactly as they were!
+                // Audio Links
                 if(u !== 'none') {
                     playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(s)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${aNum}` });
                 }
@@ -322,6 +321,6 @@ async function loadHadith() {
         if(resAr.ok && resUr.ok) {
             var arData = await resAr.json(); var urData = await resUr.json();
             div.innerHTML = `<div class="arabic-text" style="font-size:30px; margin-bottom:15px; border:none;">${arData.hadiths[0].text}</div><hr><div style="font-size:18px; line-height:1.6;">${urData.hadiths[0].text}</div>`;
-        } else { div.innerHTML = 'Hadith not found.'; }
+        } else { div.innerHTML = 'Hadith not found in this book.'; }
     } catch(e) {} showLoad(false);
 }
