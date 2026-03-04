@@ -34,7 +34,7 @@ function installAppPrompt() {
     }
 }
 
-// DUAS DATABASE WITH NATIVE PLAYER (NO BLOCKS)
+// DUAS DATABASE 
 var dailyDuas = [
     {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
     {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
@@ -113,7 +113,6 @@ function loadSettings() {
         ["toggleFajr", "toggleDhuhr", "toggleAsr", "toggleMaghrib", "toggleIsha", "toggleJummah"].forEach(id => {
             if(localStorage.getItem(id) !== null) document.getElementById(id).checked = (localStorage.getItem(id) === "true");
         });
-
         fetchPrayerTimes(false); 
     } else { fetchPrayerTimes(true); } 
 }
@@ -124,7 +123,6 @@ async function fetchPrayerTimes(forceOverwrite) {
     try {
         var res = await fetch(`https://api.aladhan.com/v1/timingsByAddress?address=${encodeURIComponent(city + ', ' + country)}&method=1`);
         var data = await res.json();
-        
         document.getElementById("hijriDateDisplay").innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.en + " " + data.data.date.hijri.year + " AH";
 
         if(forceOverwrite) {
@@ -165,7 +163,6 @@ function checkAlarms() {
         {name: "Maghrib", timeId: "timeMaghrib", toggleId: "toggleMaghrib"},
         {name: "Isha", timeId: "timeIsha", toggleId: "toggleIsha"}
     ];
-    
     if (day === 5) { prayers.push({name: "Jumu'ah", timeId: "timeJummah", toggleId: "toggleJummah"}); } 
     else { prayers.push({name: "Dhuhr", timeId: "timeDhuhr", toggleId: "toggleDhuhr"}); }
 
@@ -181,17 +178,20 @@ function checkAlarms() {
 
 function triggerAzan(name) {
     azanAudio.src = document.getElementById("azanVoice").value; 
-    audioEngine.pause();
+    audioEngine.pause(); 
     azanAudio.play().catch(e => showToast("Azan blocked by browser. Please tap anywhere.")); 
     showToast("🕌 Azan Time: " + name); 
 }
 
-// THE ORIGINAL EVERYAYAH LOGIC RESTORED
+// --- NEW MUSHAF LOGIC (PAGINATION / SAFHAS) ---
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
 async function loadSurah() {
-    var s = document.getElementById("surahNumber").value, r = document.getElementById("arReciter").value, l = document.getElementById("textLang").value, u = document.getElementById("urReciter").value;
+    var s = document.getElementById("surahNumber").value;
+    var r = document.getElementById("arReciter").value;
+    var l = document.getElementById("textLang").value;
+    var u = document.getElementById("urReciter").value;
     if(s < 1 || s > 114) return;
     
     showLoad(true); document.getElementById("quranContainer").style.display = "none";
@@ -204,27 +204,49 @@ async function loadSurah() {
         var resTr = await fetch(`https://api.alquran.cloud/v1/surah/${s}/${l}`);
         var dataTr = await resTr.json();
 
-        document.getElementById("surahTitle").innerText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
+        var surahName = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
         var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
 
-        dataAr.data.ayahs.forEach((ayah, i) => {
-            var aNum = ayah.numberInSurah;
+        // DIVIDING SURAH INTO 7 AYAHS PER PAGE
+        var ayahsPerPage = 7;
+        
+        for (var i = 0; i < dataAr.data.ayahs.length; i += ayahsPerPage) {
+            var chunk = dataAr.data.ayahs.slice(i, i + ayahsPerPage);
             
-            // Push Arabic Audio
-            playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${aNum}` });
+            // Start a new Page (Frame)
+            html += `<div class="mushaf-frame">
+                        <div class="mushaf-inner">`;
             
-            // Push Translation Audio exactly like the old working version
-            if(u !== 'none') {
-                playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(s)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${aNum}` });
+            // Show Title only on the first page
+            if(i === 0) {
+                html += `<h2 class="surah-title">${surahName}</h2>`;
             }
 
-            html += `<div class="ayah-row" id="ayah-${aNum}">
-                        <div class="arabic-text">${ayah.text} <span class="ayah-marker">۝${toArabicNum(aNum)}</span></div>
-                        <div class="urdu-font" style="direction:${isRTL ? 'rtl' : 'ltr'}">${dataTr.data.ayahs[i].text}</div>
-                     </div>`;
-        });
-        document.getElementById("mushafContent").innerHTML = html;
+            // Render Ayahs for this page
+            chunk.forEach((ayah, j) => {
+                var globalIndex = i + j;
+                var aNum = ayah.numberInSurah;
+                
+                playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${aNum}` });
+                
+                // Old Working Links applied exactly as they were!
+                if(u !== 'none') {
+                    playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(s)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${aNum}` });
+                }
+
+                html += `<div class="ayah-row" id="ayah-${aNum}">
+                            <div class="arabic-text">${ayah.text} <span class="ayah-marker">۝${toArabicNum(aNum)}</span></div>
+                            <div class="urdu-font" style="direction:${isRTL ? 'rtl' : 'ltr'}">${dataTr.data.ayahs[globalIndex].text}</div>
+                         </div>`;
+            });
+
+            // End Page (Frame)
+            html += `   </div>
+                      </div>`;
+        }
+
+        document.getElementById("quranContainer").innerHTML = html;
         document.getElementById("quranContainer").style.display = "block";
         document.getElementById("playerTitle").innerText = "Surah Loaded successfully.";
     } catch(e) { showToast("Failed to load Surah."); }
@@ -255,7 +277,7 @@ function playTrack() {
         }).catch(e => { 
             isPlaying = false; 
             document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
-            showToast("Audio paused. Please tap Play to continue."); 
+            showToast("Audio stopped. Press Play."); 
         });
     }
 }
@@ -267,17 +289,11 @@ function skipTrack(dir) {
     playTrack();
 }
 
-// Error handling fixed: If 404 is hit, skip automatically without locking the system
 audioEngine.onerror = function() { 
-    showToast("File missing, skipping...");
     currentTrackIndex++; 
     if(currentTrackIndex < playlist.length) playTrack(); 
 };
-
-audioEngine.onended = function() { 
-    currentTrackIndex++; 
-    playTrack(); 
-};
+audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
 // Dictionary & Hadith
 async function searchQuran() {
