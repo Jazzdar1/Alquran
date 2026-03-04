@@ -1,9 +1,11 @@
+// Global Variables
 var playlist = [], currentTrackIndex = 0, isPlaying = false;
 var audioEngine = document.getElementById("audioEngine") || new Audio();
 var azanAudio = document.getElementById("azanAudio");
 var duaAudio = document.getElementById("duaAudio");
 var lastPlayedMinute = ""; 
 
+// Toast Notification System
 function showToast(msg) {
     var t = document.getElementById("toastMsg");
     t.innerText = msg;
@@ -11,15 +13,18 @@ function showToast(msg) {
     setTimeout(function(){ t.className = t.className.replace("show", ""); }, 5000);
 }
 
+// Mobile Menu Toggle
 function toggleMenu() {
     var links = document.getElementById("navLinks");
     if (links.className.indexOf("show") == -1) { links.className += " show"; } else { links.className = links.className.replace(" show", ""); }
 }
 
+// PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(function() { console.log("PWA Ready"); });
 }
 
+// Install Prompt Logic
 var deferredPrompt;
 window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault(); deferredPrompt = e;
@@ -35,6 +40,10 @@ function installAppPrompt() {
     }
 }
 
+// Live Clock
+setInterval(() => { document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
+
+// Duas Database
 var dailyDuas = [
     {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
     {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
@@ -49,23 +58,20 @@ function renderDuas() {
     document.getElementById("duasContainer").innerHTML = html;
 }
 
+// [CRITICAL FIX] Removed the infinite retry loop that caused "Buffering"
 function playExternalAudio(url) {
     audioEngine.pause();
     duaAudio.pause();
     duaAudio.src = url;
-    // Removed duaAudio.load() to fix the Abort Error
     var p = duaAudio.play();
     if(p !== undefined) {
         p.catch(e => {
-            showToast("Buffering audio...");
-            setTimeout(() => { duaAudio.play() }, 1000); // Retry logic
+            showToast("Tap 'Listen' again to allow audio playback.");
         });
     }
-    showToast("Playing Audio...");
 }
 
-setInterval(() => { document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
-
+// Initialize App
 window.onload = async function() {
     try {
         renderDuas();
@@ -100,6 +106,7 @@ function switchTab(id) {
 
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
+// Timings & Alarms
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
     localStorage.setItem("country", document.getElementById("countryName").value);
@@ -190,10 +197,11 @@ function checkAlarms() {
 function triggerAzan(name) {
     azanAudio.src = document.getElementById("azanVoice").value; 
     audioEngine.pause(); duaAudio.pause();
-    azanAudio.play().catch(e => showToast("Azan blocked by browser. Tap to allow.")); 
+    azanAudio.play().catch(e => showToast("Azan blocked by browser. Please tap anywhere.")); 
     showToast("🕌 Azan Time: " + name); 
 }
 
+// --- QURAN ENGINE ---
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
@@ -203,6 +211,7 @@ async function loadSurah() {
     
     showLoad(true); document.getElementById("quranContainer").style.display = "none";
     audioEngine.pause(); playlist = []; currentTrackIndex = 0; isPlaying = false;
+    document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
 
     try {
         var resAr = await fetch(`https://api.alquran.cloud/v1/surah/${s}/${r}`);
@@ -218,6 +227,7 @@ async function loadSurah() {
             var aNum = ayah.numberInSurah;
             playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${aNum}` });
             
+            // Push Translation Audio
             if(u !== 'none') {
                 playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(s)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${aNum}` });
             }
@@ -240,23 +250,26 @@ function togglePlay() {
     else { playTrack(); }
 }
 
+// [CRITICAL FIX] Removed infinite loop here as well!
 function playTrack() {
     if (currentTrackIndex >= playlist.length) { isPlaying = false; currentTrackIndex = 0; document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>'; return; }
+    
     var track = playlist[currentTrackIndex];
     audioEngine.src = track.url;
-    // Removed audioEngine.load() to fix the Abort Error
     var p = audioEngine.play();
+    
     if(p !== undefined) {
         p.then(() => {
-            isPlaying = true; document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
+            isPlaying = true; 
+            document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
             document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
             document.querySelectorAll('.ayah-row').forEach(el => el.classList.remove('playing-active'));
             var row = document.getElementById(track.id);
             if(row) { row.classList.add('playing-active'); row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         }).catch(e => { 
             isPlaying = false; 
-            showToast("Buffering audio..."); 
-            setTimeout(() => { audioEngine.play(); }, 1500); // Retry logic
+            document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
+            showToast("Please tap Play to start audio."); 
         });
     }
 }
@@ -268,13 +281,21 @@ function skipTrack(dir) {
     playTrack();
 }
 
-audioEngine.onerror = function() { currentTrackIndex++; if(currentTrackIndex < playlist.length) playTrack(); };
-audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
+// Graceful Audio Skip on Missing File (404 Error)
+audioEngine.onerror = function() { 
+    showToast("Translation audio missing, skipping...");
+    currentTrackIndex++; 
+    if(currentTrackIndex < playlist.length) playTrack(); 
+};
+
+audioEngine.onended = function() { 
+    currentTrackIndex++; 
+    playTrack(); 
+};
 
 // Dictionary & Hadith
 async function searchQuran() {
-    var k = document.getElementById("searchKeyword").value;
-    var e = document.getElementById("searchEdition").value; 
+    var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
     if(!k) return; showLoad(true); var div = document.getElementById("searchContent"); div.innerHTML = "";
     try {
         var res = await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(k)}/all/${e}`);
@@ -287,7 +308,7 @@ async function searchQuran() {
             });
             div.innerHTML = html;
         } else { div.innerHTML = 'No records found.'; }
-    } catch(e) { div.innerHTML = 'Search Error. Try another word.'; } showLoad(false);
+    } catch(e) { div.innerHTML = 'Search Error.'; } showLoad(false);
 }
 
 async function loadHadith() {
