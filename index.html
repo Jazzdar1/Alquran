@@ -54,43 +54,14 @@
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
         .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 15px;}
         
-        /* ========================================================================= */
-        /* BULLET-PROOF STRICT MUSHAF BOUNDARY (IMAGE WILL NEVER STRETCH OR OVERFLOW) */
-        /* ========================================================================= */
         .mushaf-frame { 
-            width: 100%;
-            max-width: 850px; 
-            margin: 0 auto 40px auto; 
-            background-color: var(--mushaf-paper); 
+            width: 100%; max-width: 850px; margin: 0 auto 40px auto; background-color: var(--mushaf-paper); 
             background-image: url('https://raw.githubusercontent.com/Jazzdar1/Alquran/main/image_60cc7d.jpg'); 
-            background-size: 100% 100%; 
-            background-position: center; 
-            
-            /* FIXED ASPECT RATIO: The frame stays strictly in book shape */
-            aspect-ratio: 1 / 1.45;
-            
-            /* PADDING BASED ON PROPORTION */
-            padding: 13% 10%; 
-            
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8); 
-            border-radius: 5px; 
-            box-sizing: border-box;
-            position: relative;
+            background-size: 100% 100%; background-position: center; aspect-ratio: 1 / 1.45; padding: 13% 10%; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.8); border-radius: 5px; box-sizing: border-box; position: relative;
         }
-        .mushaf-inner { 
-            background-color: transparent; 
-            width: 100%;
-            height: 100%; /* STRICT: Fills only the available padded space */
-            padding: 0 10px; 
-            border: none; 
-            outline: none;
-            
-            /* IF TEXT IS LONG, IT SCROLLS INSIDE THE FRAME, PREVENTING OVERFLOW */
-            overflow-y: auto; 
-            scrollbar-width: none; 
-        }
-        .mushaf-inner::-webkit-scrollbar { display: none; } /* Hide scrollbar for real book feel */
-
+        .mushaf-inner { background-color: transparent; width: 100%; height: 100%; padding: 0 10px; border: none; outline: none; overflow-y: auto; scrollbar-width: none; }
+        .mushaf-inner::-webkit-scrollbar { display: none; }
         .surah-title { text-align: center; font-family: 'Amiri Quran', serif; font-size: 2rem; color: #b33939; margin-bottom: 10px; border-bottom: 1px dashed rgba(179, 57, 57, 0.4); padding-bottom: 5px; }
         .arabic-text { font-family: 'Amiri Quran', serif; font-size: 26px; line-height: 1.8; direction: rtl; text-align: center; color: #111; }
         .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 15px; line-height: 1.7; direction: rtl; text-align: center; color: #444; border-top: 1px dashed rgba(179, 57, 57, 0.2); margin-top: 8px; padding-top: 8px; }
@@ -102,7 +73,6 @@
         .dua-card h4 { color: #b33939; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top:0;}
         audio { width: 100%; margin-top: 15px; outline: none; border-radius: 30px; }
 
-        /* LIVE TV GRID */
         .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
         .video-card { background: #000; border: 2px solid var(--gold); border-radius: 10px; overflow: hidden; }
         .video-card iframe { width: 100%; aspect-ratio: 16/9; border: none; }
@@ -125,12 +95,7 @@
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
-            
-            .mushaf-frame { 
-                padding: 16% 12% !important; /* Perfect mobile ratio boundaries */
-                margin: 0 auto 25px auto !important; 
-                width: 98%; 
-            }
+            .mushaf-frame { padding: 16% 12% !important; margin: 0 auto 25px auto !important; width: 98%; }
             .surah-title { font-size: 1.5rem; margin-bottom: 8px; padding-bottom: 5px; }
             .arabic-text { font-size: 20px; line-height: 1.7; }
             .urdu-font { font-size: 13px; line-height: 1.6; margin-top: 6px; padding-top: 6px; }
@@ -160,22 +125,14 @@
     <div class="nav-links" id="navLinks">
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-clock"></i> Timings & Calendar</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Read Mushaf</button>
-        
         <button class="nav-btn" onclick="switchTab('audioTab')"><i class="fas fa-headphones"></i> Bayanat Library</button>
         <button class="nav-btn" onclick="switchTab('naatTab')"><i class="fas fa-microphone"></i> Naat Collection</button>
         <button class="nav-btn" onclick="switchTab('tvTab')"><i class="fas fa-tv"></i> Live Islamic TV</button>
-
         <button class="nav-btn" onclick="switchTab('duasTab')"><i class="fas fa-hands-praying"></i> Masnoon Duain</button>
         <button class="nav-btn" onclick="switchTab('khatmTab')"><i class="fas fa-scroll"></i> Khatm-ul-Quran</button>
         <button class="nav-btn" onclick="switchTab('hadithTab')"><i class="fas fa-feather-alt"></i> Hadith Collection</button>
         <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
         <button class="nav-btn" onclick="switchTab('knowledgeTab')"><i class="fas fa-globe"></i> Islamic Links</button>
-        
-        <div class="install-box" id="installBox">
-            <i class="fas fa-mobile-alt" style="font-size:20px; color:var(--gold);"></i>
-            <p style="font-size:12px; margin:5px 0;">Install App for Best</p>
-            <button onclick="installAppPrompt()">Install Now</button>
-        </div>
     </div>
 </div>
 
@@ -195,9 +152,7 @@
                     <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Madinah Azan</option>
                 </select>
             </div>
-            <div class="control-group" style="justify-content: flex-end;">
-                <button class="action-btn" onclick="fetchPrayerTimes(true)"><i class="fas fa-sync"></i> Refresh API</button>
-            </div>
+            <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="fetchPrayerTimes(true)"><i class="fas fa-sync"></i> Refresh API</button></div>
         </div>
 
         <div class="widget-grid">
@@ -220,40 +175,15 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="widget-card" style="grid-column: 1 / -1; overflow-x:auto;">
-                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-calendar-alt"></i> Full Hijri Calendar</h3>
-                <table class="calendar-table" id="calendarTable">
-                    <tr><th>Gregorian Date</th><th>Hijri Date</th><th>Day</th></tr>
-                </table>
-            </div>
         </div>
     </div>
 
     <div id="quranTab" class="section">
         <div class="controls-bar">
-            <div class="control-group">
-                <label>Read By</label>
-                <select id="readMode">
-                    <option value="surah">Surah (1-114)</option>
-                    <option value="ruku">Ruku (1-558)</option>
-                    <option value="ayah">Ayah (1-6236)</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>Number</label>
-                <input type="number" id="readNumber" value="1" min="1" max="6236">
-            </div>
-
+            <div class="control-group"><label>Read By</label><select id="readMode"><option value="surah">Surah (1-114)</option><option value="ruku">Ruku (1-558)</option><option value="ayah">Ayah (1-6236)</option></select></div>
+            <div class="control-group"><label>Number</label><input type="number" id="readNumber" value="1" min="1" max="6236"></div>
             <div class="control-group"><label>Arabic Reciter</label><select id="arReciter"></select></div>
-            <div class="control-group">
-                <label>Text Translation</label>
-                <select id="textLang">
-                    <option value="ur.jalandhry">Urdu (Jalandhry)</option>
-                    <option value="hi.hindi">Hindi</option>
-                    <option value="en.sahih">English (Sahih)</option>
-                </select>
-            </div>
+            <div class="control-group"><label>Text Translation</label><select id="textLang"><option value="ur.jalandhry">Urdu (Jalandhry)</option><option value="hi.hindi">Hindi</option><option value="en.sahih">English (Sahih)</option></select></div>
             <div class="control-group">
                 <label>Audio Translation</label>
                 <select id="urReciter">
@@ -265,7 +195,6 @@
             </div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="loadSurah()">Load Mushaf</button></div>
         </div>
-        
         <div id="quranContainer" style="display:none;"></div>
     </div>
 
@@ -275,16 +204,21 @@
             <div class="control-group">
                 <label>Select Speaker</label>
                 <select id="alimSelect" onchange="fetchBayanatAPI()">
+                    <option value="Dr Israr Ahmed">Dr. Israr Ahmed</option>
                     <option value="Tariq Jameel Bayan">Maulana Tariq Jameel</option>
-                    <option value="Mufti Menk Urdu">Mufti Menk</option>
+                    <option value="Mufti Menk">Mufti Menk</option>
                     <option value="Tariq Masood">Mufti Tariq Masood</option>
                     <option value="Saqib Raza Mustafai">Saqib Raza Mustafai</option>
+                    <option value="Nouman Ali Khan">Nouman Ali Khan</option>
+                    <option value="Mufti Taqi Usmani">Mufti Taqi Usmani</option>
+                    <option value="Peer Zulfiqar Ahmed">Peer Zulfiqar Ahmed</option>
+                    <option value="Yasir Qadhi">Yasir Qadhi</option>
                     <option value="Islamic Lectures Urdu">General Urdu Bayanat</option>
                 </select>
             </div>
             <div class="control-group" style="flex-grow:2;">
-                <label>Select Topic</label>
-                <select id="bayanSelect"></select>
+                <label>Select Topic (Lazy Load)</label>
+                <select id="bayanSelect" onchange="handleBayanSelect()"></select>
             </div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playBayan()">Play Bayan</button></div>
         </div>
@@ -301,15 +235,20 @@
                 <label>Select Naat Khawan</label>
                 <select id="naatKhawanSelect" onchange="fetchNaatAPI()">
                     <option value="Junaid Jamshed Naat">Junaid Jamshed</option>
-                    <option value="Fasihuddin Soharwardi">Fasihuddin Soharwardi</option>
                     <option value="Awais Raza Qadri">Awais Raza Qadri</option>
+                    <option value="Fasihuddin Soharwardi">Fasihuddin Soharwardi</option>
                     <option value="Sami Yusuf">Sami Yusuf</option>
+                    <option value="Maher Zain">Maher Zain</option>
+                    <option value="Hafiz Tahir Qadri">Hafiz Tahir Qadri</option>
+                    <option value="Farhan Ali Qadri">Farhan Ali Qadri</option>
+                    <option value="Siddiq Ismail Naat">Siddiq Ismail</option>
+                    <option value="Atif Aslam Naat">Atif Aslam (Naats)</option>
                     <option value="Urdu Naat 2024">Latest Famous Naats</option>
                 </select>
             </div>
             <div class="control-group" style="flex-grow:2;">
-                <label>Select Naat</label>
-                <select id="naatSelect"></select>
+                <label>Select Naat (Lazy Load)</label>
+                <select id="naatSelect" onchange="handleNaatSelect()"></select>
             </div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playNaat()">Play Naat</button></div>
         </div>
@@ -322,34 +261,20 @@
     <div id="tvTab" class="section">
         <h2 style="color:var(--gold); text-align: center;">Live Islamic Channels (Free to Air)</h2>
         <div class="video-grid">
-            <div class="video-card">
-                <div class="video-title">Makkah Live (Masjid Al-Haram)</div>
-                <iframe src="https://www.youtube.com/embed/live_stream?channel=UC85Vp28oP4qNks1KxndK_RQ" allowfullscreen></iframe>
-            </div>
-            <div class="video-card">
-                <div class="video-title">Madinah Live (Masjid An-Nabawi)</div>
-                <iframe src="https://www.youtube.com/embed/live_stream?channel=UCAL4_m5bEqyM2vYw3E0nL4Q" allowfullscreen></iframe>
-            </div>
-            <div class="video-card">
-                <div class="video-title">Madani Channel Live</div>
-                <iframe src="https://www.youtube.com/embed/live_stream?channel=UC0hQ0k8l88E5F9Y85H4O_Gg" allowfullscreen></iframe>
-            </div>
+            <div class="video-card"><div class="video-title">Makkah Live (Masjid Al-Haram)</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC85Vp28oP4qNks1KxndK_RQ" allowfullscreen></iframe></div>
+            <div class="video-card"><div class="video-title">Madinah Live (Masjid An-Nabawi)</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UCAL4_m5bEqyM2vYw3E0nL4Q" allowfullscreen></iframe></div>
+            <div class="video-card"><div class="video-title">Madani Channel Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC0hQ0k8l88E5F9Y85H4O_Gg" allowfullscreen></iframe></div>
         </div>
     </div>
 
-    <div id="duasTab" class="section">
-        <h2 style="color:var(--gold);">Masnoon Duain (Daily Supplications)</h2>
-        <div id="duasContainer"></div>
-    </div>
+    <div id="duasTab" class="section"><h2 style="color:var(--gold);">Masnoon Duain</h2><div id="duasContainer"></div></div>
 
     <div id="khatmTab" class="section">
         <div class="mushaf-frame" style="padding:15% 10%;">
             <div class="mushaf-inner" style="text-align:center;">
                 <h2 style="color:#b33939; font-family:'Amiri Quran', serif; font-size:2.2rem; border-bottom:1px dashed rgba(179,57,57,0.4); padding-bottom:10px;">دعاء ختم القرآن</h2>
-                <audio controls style="width:100%; margin: 25px 0;">
-                    <source src="https://download.quranicaudio.com/quran/khatm/sudais_khatm_1434.mp3" type="audio/mpeg">
-                </audio>
-                <p class="arabic-text">اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً<br>اللَّهُمَّ ذَكِّرْنِي مِنْهُ مَا نَسِيتُ وَعَلِّمْنِي مِنْهُ مَا جَهِلْتُ</p>
+                <audio controls style="width:100%; margin: 25px 0;"><source src="https://download.quranicaudio.com/quran/khatm/sudais_khatm_1434.mp3" type="audio/mpeg"></audio>
+                <p class="arabic-text">اللَّهُمَّ ارْحَمْنِي بِالْقُرْآنِ وَاجْعَلْهُ لِي إِمَامًا وَنُورًا وَهُدًى وَرَحْمَةً</p>
                 <p class="urdu-font">اے اللہ! قرآن کی برکت سے مجھ پر رحم فرما اور اسے میرے لیے امام، نور، ہدایت اور رحمت بنا دے۔</p>
             </div>
         </div>
@@ -377,37 +302,13 @@
     <div id="searchTab" class="section">
         <h2 style="color:var(--gold);">Dictionary Search</h2>
         <div class="controls-bar">
-            <div class="control-group">
-                <label>Language</label>
-                <select id="searchEdition"><option value="ur.jalandhry">Urdu</option><option value="en.sahih">English</option><option value="hi.hindi">Hindi</option></select>
-            </div>
+            <div class="control-group"><label>Language</label><select id="searchEdition"><option value="ur.jalandhry">Urdu</option><option value="en.sahih">English</option><option value="hi.hindi">Hindi</option></select></div>
             <div class="control-group" style="flex-grow:2;"><label>Keyword</label><input type="text" id="searchKeyword" placeholder="Type word..."></div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="searchQuran()">Search</button></div>
         </div>
         <div id="searchContent" style="background:#fff; color:#000; padding:20px; border-radius:8px;"></div>
     </div>
 
-    <div id="knowledgeTab" class="section">
-        <h2 style="color:var(--gold);">More Islamic Knowledge</h2>
-        <div class="widget-grid">
-            <div class="widget-card" style="text-align:left;">
-                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;">Quran & Hadith</h3>
-                <ul style="line-height: 2.2;">
-                    <li><a href="https://quran.com" target="_blank" class="ext-link">Quran.com</a></li>
-                    <li><a href="https://sunnah.com" target="_blank" class="ext-link">Sunnah.com</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div id="aboutTab" class="section">
-        <div class="widget-card" style="max-width: 600px; margin: 0 auto; text-align: left;">
-            <h2 style="color:var(--gold); text-align: center;">Contact & Privacy</h2>
-            <hr style="border-color:var(--gold); opacity:0.3; margin-bottom: 20px;">
-            <p><i class="fas fa-phone"></i> <b>Call/WhatsApp:</b> +91 7006686584</p>
-            <p><i class="fas fa-envelope"></i> <b>Email:</b> darajazb@gmail.com</p>
-        </div>
-    </div>
 </div>
 
 <div class="audio-player" id="globalPlayer">
@@ -421,7 +322,7 @@
     </div>
 </div>
 
-<script src="./app.js?v=7"></script>
+<script src="./app.js?v=8"></script>
 
 </body>
 </html>
