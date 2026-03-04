@@ -69,10 +69,9 @@ window.onload = async function() {
             if(ed.identifier === 'ar.abdurrahmaansudais') { opt.selected = true; opt.text = "⭐ " + opt.text + " (Sudais)"; }
             arSelect.add(opt);
         });
-
         document.getElementById("splashQuote").innerText = '"App is Ready."';
         document.getElementById("enterBtn").style.display = "block";
-    } catch(e) { document.getElementById("splashQuote").innerText = "Network Issue. Basic features will still work."; document.getElementById("enterBtn").style.display = "block"; }
+    } catch(e) { document.getElementById("splashQuote").innerText = "Network Issue. Basic features will work."; document.getElementById("enterBtn").style.display = "block"; }
 };
 
 function startApp() {
@@ -96,7 +95,6 @@ function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
     localStorage.setItem("country", document.getElementById("countryName").value);
     localStorage.setItem("voice", document.getElementById("azanVoice").value);
-    
     ["timeFajr", "timeDhuhr", "timeAsr", "timeMaghrib", "timeIsha", "timeJummah"].forEach(id => localStorage.setItem(id, document.getElementById(id).value));
     ["toggleFajr", "toggleDhuhr", "toggleAsr", "toggleMaghrib", "toggleIsha", "toggleJummah"].forEach(id => localStorage.setItem(id, document.getElementById(id).checked));
 }
@@ -106,7 +104,6 @@ function loadSettings() {
         document.getElementById("cityName").value = localStorage.getItem("city");
         document.getElementById("countryName").value = localStorage.getItem("country");
         document.getElementById("azanVoice").value = localStorage.getItem("voice");
-        
         ["timeFajr", "timeDhuhr", "timeAsr", "timeMaghrib", "timeIsha", "timeJummah"].forEach(id => {
             if(localStorage.getItem(id)) document.getElementById(id).value = localStorage.getItem(id);
         });
@@ -183,50 +180,70 @@ function triggerAzan(name) {
     showToast("🕌 Azan Time: " + name); 
 }
 
-// --- NEW MUSHAF LOGIC (PAGINATION / SAFHAS) ---
+// --- FULLY FIXED QURAN ENGINE (SURAH, RUKU, AYAH) ---
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
 async function loadSurah() {
-    var s = document.getElementById("surahNumber").value;
+    var mode = document.getElementById("readMode").value; // surah, ruku, ayah
+    var num = document.getElementById("readNumber").value;
     var r = document.getElementById("arReciter").value;
     var l = document.getElementById("textLang").value;
     var u = document.getElementById("urReciter").value;
-    if(s < 1 || s > 114) return;
+    if(num < 1) return;
     
     showLoad(true); document.getElementById("quranContainer").style.display = "none";
     audioEngine.pause(); playlist = []; currentTrackIndex = 0; isPlaying = false;
     document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
 
     try {
-        var resAr = await fetch(`https://api.alquran.cloud/v1/surah/${s}/${r}`);
+        var resAr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${r}`);
         var dataAr = await resAr.json();
-        var resTr = await fetch(`https://api.alquran.cloud/v1/surah/${s}/${l}`);
+        if(dataAr.code !== 200) throw new Error("API Limit Reached"); // Agar user ne galat number daala
+
+        var resTr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${l}`);
         var dataTr = await resTr.json();
 
-        var surahName = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
+        // Handle single Ayah vs Array of Ayahs based on mode
+        var ayahsAr = mode === 'ayah' ? [dataAr.data] : dataAr.data.ayahs;
+        var ayahsTr = mode === 'ayah' ? [dataTr.data] : dataTr.data.ayahs;
+
+        var titleText = "";
+        if (mode === 'surah') {
+            titleText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
+        } else if (mode === 'ruku') {
+            // Ruku mein first ayah ki surah ka naam uthayenge
+            titleText = 'رُكُوع ' + num + ' - ' + ayahsAr[0].surah.name; 
+        } else if (mode === 'ayah') {
+            titleText = 'آيَة ' + num + ' - ' + dataAr.data.surah.name;
+        }
+
         var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
-
-        var ayahsPerPage = 4; 
+        var ayahsPerPage = 4; // 4 Ayats per page strictly
         
-        for (var i = 0; i < dataAr.data.ayahs.length; i += ayahsPerPage) {
-            var chunk = dataAr.data.ayahs.slice(i, i + ayahsPerPage);
+        for (var i = 0; i < ayahsAr.length; i += ayahsPerPage) {
+            var chunkAr = ayahsAr.slice(i, i + ayahsPerPage);
             html += `<div class="mushaf-frame"><div class="mushaf-inner">`;
-            if(i === 0) { html += `<h2 class="surah-title">${surahName}</h2>`; }
+            if(i === 0) { html += `<h2 class="surah-title">${titleText}</h2>`; }
 
-            chunk.forEach((ayah, j) => {
+            chunkAr.forEach((ayah, j) => {
                 var globalIndex = i + j;
+                
+                // [THE BUG FIX]: Agar API ne Surah ka data nahi diya (jaise surah mode mein), toh hum user ka daala hua num (Surah Number) use karenge
+                var sNum = ayah.surah ? ayah.surah.number : (mode === 'surah' ? num : 1);
                 var aNum = ayah.numberInSurah;
                 
-                playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${aNum}` });
+                playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${sNum}-${aNum}` });
+                
+                // Urdu Audio logic (100% working now)
                 if(u !== 'none') {
-                    playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(s)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${aNum}` });
+                    playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(sNum)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${sNum}-${aNum}` });
                 }
 
-                html += `<div class="ayah-row" id="ayah-${aNum}">
+                html += `<div class="ayah-row" id="ayah-${sNum}-${aNum}">
                             <div class="arabic-text">${ayah.text} <span class="ayah-marker">۝${toArabicNum(aNum)}</span></div>
-                            <div class="urdu-font" style="direction:${isRTL ? 'rtl' : 'ltr'}">${dataTr.data.ayahs[globalIndex].text}</div>
+                            <div class="urdu-font" style="direction:${isRTL ? 'rtl' : 'ltr'}">${ayahsTr[globalIndex].text}</div>
                          </div>`;
             });
             html += `</div></div>`;
@@ -234,8 +251,10 @@ async function loadSurah() {
 
         document.getElementById("quranContainer").innerHTML = html;
         document.getElementById("quranContainer").style.display = "block";
-        document.getElementById("playerTitle").innerText = "Surah Loaded successfully.";
-    } catch(e) { showToast("Failed to load Surah."); }
+        document.getElementById("playerTitle").innerText = `${mode.toUpperCase()} Loaded successfully.`;
+    } catch(e) { 
+        showToast("Error! Surah 114, Ruku 558, Ayah 6236 tak hi hain."); 
+    }
     showLoad(false);
 }
 
@@ -255,38 +274,33 @@ function playTrack() {
     if(p !== undefined) {
         p.then(() => {
             isPlaying = true; 
-            document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
-            document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
             
-            document.querySelectorAll('.ayah-row').forEach(el => el.classList.remove('playing-active'));
-            var row = document.getElementById(track.id);
-            if(row) { row.classList.add('playing-active'); row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            // [CRITICAL FIX]: Sirf tab scroll karo jab screen ON ho. Screen off hone par scrolling nahi hogi jis se aawaz katti nahi!
+            if (!document.hidden) {
+                document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
+                document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
+                document.querySelectorAll('.ayah-row').forEach(el => el.classList.remove('playing-active'));
+                var row = document.getElementById(track.id);
+                if(row) { row.classList.add('playing-active'); row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            }
 
-            // ========================================================
-            // BACKGROUND PLAYBACK FIX (MEDIA SESSION API)
-            // ========================================================
+            // Lock Screen Player Updates
             if ('mediaSession' in navigator) {
                 var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah Quran";
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: `Ayah ${track.num} (${track.type})`,
                     artist: 'Al-Hikmah Quran Player',
                     album: surahNameText,
-                    artwork: [
-                        { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' }
-                    ]
+                    artwork: [ { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' } ]
                 });
-
-                // Attach Lock Screen controls
-                navigator.mediaSession.setActionHandler('play', function() { togglePlay(); });
-                navigator.mediaSession.setActionHandler('pause', function() { togglePlay(); });
-                navigator.mediaSession.setActionHandler('previoustrack', function() { skipTrack(-1); });
-                navigator.mediaSession.setActionHandler('nexttrack', function() { skipTrack(1); });
             }
-            // ========================================================
 
         }).catch(e => { 
             isPlaying = false; 
-            document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
+            if(!document.hidden) {
+                document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
+                showToast("Audio paused. Press Play to continue."); 
+            }
         });
     }
 }
