@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🕌 Al-Hikmah Islamic Hub</title>
+    <title>🕌 Al-Hikmah Islamic Master Hub</title>
     <meta name="theme-color" content="#1a1a1a">
     
     <link rel="manifest" href="./manifest.json">
@@ -58,8 +58,19 @@
         .today-cell { background: var(--gold); color: #000; font-weight: bold; }
         .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 15px;}
         
-        /* MUSHAF (Unbreakable Border Fix) */
-        .mushaf-frame { max-width: 850px; margin: 0 auto; background-color: var(--mushaf-paper); background-image: url('image_60cc7d.jpg'), url('https://raw.githubusercontent.com/x0r5/x0r5.github.io/master/islamic-border.png'); background-size: 100% 100%; padding: 12% 10%; box-shadow: 0 15px 50px rgba(0,0,0,0.8); border: 15px solid #b33939; border-image: repeating-linear-gradient(45deg, #b33939, #b33939 10px, #8b0000 10px, #8b0000 20px) 15; border-radius: 10px; }
+        /* MUSHAF (Fixed Background Path) */
+        .mushaf-frame { 
+            max-width: 850px; 
+            margin: 0 auto; 
+            background-color: var(--mushaf-paper); 
+            background-image: url('./image_60cc7d.jpg'); /* Fixed Path for local image */
+            background-size: 100% 100%; 
+            background-position: center;
+            padding: 12% 10%; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.8); 
+            border: 5px solid #8b0000; 
+            border-radius: 10px; 
+        }
         .mushaf-inner { background-color: rgba(253, 246, 227, 0.95); padding: 30px; border: 3px double var(--gold); outline: 2px solid #b33939; outline-offset: 5px; min-height: 500px;}
         .arabic-text { font-family: 'Amiri Quran', serif; font-size: 34px; line-height: 2.2; direction: rtl; text-align: center; color: #000; }
         .urdu-font { font-family: 'Noto Nastaliq Urdu', serif; font-size: 24px; line-height: 2.2; direction: rtl; text-align: center; color: #444; border-top: 1px dashed #ccc; margin-top: 10px; padding-top: 10px;}
@@ -68,6 +79,7 @@
 
         /* DUA CARDS */
         .dua-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--gold); }
+        .dua-card h4 { color: #b33939; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-top:0;}
 
         /* PLAYER & TOAST */
         .audio-player { position: fixed; bottom: 0; left: 260px; right: 0; background: #050505; border-top: 2px solid var(--gold); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; transition: 0.3s; }
@@ -76,7 +88,7 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 100px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* MOBILE RESPONSIVE CSS */
+        /* MOBILE CSS */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow-y: auto; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
@@ -88,8 +100,7 @@
             .audio-player { left: 0; flex-direction: column; padding: 10px; gap: 10px; }
             .player-title { width: 100%; text-align: center; font-size: 12px !important; }
             .player-controls { width: 100%; text-align: center !important; }
-            .mushaf-frame { padding: 5px; border-width: 5px;}
-            .mushaf-inner { padding: 15px; }
+            .mushaf-frame { padding: 5%; background-image: none; background-color: var(--mushaf-paper); border: 2px solid #8b0000; }
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid { grid-template-columns: 1fr; }
             .controls-bar { flex-direction: column; }
@@ -106,8 +117,8 @@
 
 <div id="toastMsg">Notification</div>
 
-<audio id="azanAudio" preload="none"></audio>
-<audio id="duaAudio" preload="none"></audio>
+<audio id="azanAudio"></audio>
+<audio id="duaAudio"></audio>
 
 <div class="sidebar">
     <div class="logo">
