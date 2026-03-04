@@ -34,7 +34,6 @@ function installAppPrompt() {
     }
 }
 
-// DUAS DATABASE 
 var dailyDuas = [
     {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
     {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
@@ -132,17 +131,6 @@ async function fetchPrayerTimes(forceOverwrite) {
             document.getElementById("timeJummah").value = t.Dhuhr;
             saveSettings();
         }
-
-        var d = new Date();
-        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByAddress?address=${encodeURIComponent(city + ', ' + country)}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
-        var calData = await calRes.json();
-        var html = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
-        var todayStr = String(d.getDate()).padStart(2, '0');
-        calData.data.forEach(day => {
-            var isToday = (day.date.gregorian.day === todayStr) ? "today-cell" : "";
-            html += `<tr class="${isToday}"><td>${day.date.gregorian.date}</td><td>${day.date.hijri.date} ${day.date.hijri.month.en}</td><td>${day.date.gregorian.weekday.en}</td></tr>`;
-        });
-        document.getElementById("calendarTable").innerHTML = html;
     } catch(e) { showToast("Location Not Found."); }
     showLoad(false);
 }
@@ -180,16 +168,22 @@ function triggerAzan(name) {
     showToast("🕌 Azan Time: " + name); 
 }
 
-// --- FULLY FIXED QURAN ENGINE (SURAH, RUKU, AYAH) ---
+// --- MUSHAF LOGIC FIXED ---
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
 async function loadSurah() {
-    var mode = document.getElementById("readMode").value; // surah, ruku, ayah
-    var num = document.getElementById("readNumber").value;
+    // Failsafe selectors
+    var modeElement = document.getElementById("readMode");
+    var numElement = document.getElementById("readNumber");
+    
+    var mode = modeElement ? modeElement.value : 'surah';
+    var num = numElement ? numElement.value : 1;
+    
     var r = document.getElementById("arReciter").value;
     var l = document.getElementById("textLang").value;
     var u = document.getElementById("urReciter").value;
+    
     if(num < 1) return;
     
     showLoad(true); document.getElementById("quranContainer").style.display = "none";
@@ -199,12 +193,11 @@ async function loadSurah() {
     try {
         var resAr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${r}`);
         var dataAr = await resAr.json();
-        if(dataAr.code !== 200) throw new Error("API Limit Reached"); // Agar user ne galat number daala
+        if(dataAr.code !== 200) throw new Error("API Limit Reached"); 
 
         var resTr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${l}`);
         var dataTr = await resTr.json();
 
-        // Handle single Ayah vs Array of Ayahs based on mode
         var ayahsAr = mode === 'ayah' ? [dataAr.data] : dataAr.data.ayahs;
         var ayahsTr = mode === 'ayah' ? [dataTr.data] : dataTr.data.ayahs;
 
@@ -212,7 +205,6 @@ async function loadSurah() {
         if (mode === 'surah') {
             titleText = 'سُورَة ' + dataAr.data.name.replace('سُورَةُ ', '');
         } else if (mode === 'ruku') {
-            // Ruku mein first ayah ki surah ka naam uthayenge
             titleText = 'رُكُوع ' + num + ' - ' + ayahsAr[0].surah.name; 
         } else if (mode === 'ayah') {
             titleText = 'آيَة ' + num + ' - ' + dataAr.data.surah.name;
@@ -220,7 +212,7 @@ async function loadSurah() {
 
         var isRTL = l.includes('ur.') || l.includes('ar.') || l.includes('fa.');
         var html = "";
-        var ayahsPerPage = 4; // 4 Ayats per page strictly
+        var ayahsPerPage = 4; // 4 Ayats Per Page limit
         
         for (var i = 0; i < ayahsAr.length; i += ayahsPerPage) {
             var chunkAr = ayahsAr.slice(i, i + ayahsPerPage);
@@ -230,13 +222,12 @@ async function loadSurah() {
             chunkAr.forEach((ayah, j) => {
                 var globalIndex = i + j;
                 
-                // [THE BUG FIX]: Agar API ne Surah ka data nahi diya (jaise surah mode mein), toh hum user ka daala hua num (Surah Number) use karenge
+                // BULLET-PROOF BUG FIX HERE
                 var sNum = ayah.surah ? ayah.surah.number : (mode === 'surah' ? num : 1);
                 var aNum = ayah.numberInSurah;
                 
                 playlist.push({ url: ayah.audio, num: aNum, type: 'Arabic', id: `ayah-${sNum}-${aNum}` });
                 
-                // Urdu Audio logic (100% working now)
                 if(u !== 'none') {
                     playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(sNum)}${padNum(aNum)}.mp3`, num: aNum, type: 'Translation', id: `ayah-${sNum}-${aNum}` });
                 }
@@ -253,7 +244,7 @@ async function loadSurah() {
         document.getElementById("quranContainer").style.display = "block";
         document.getElementById("playerTitle").innerText = `${mode.toUpperCase()} Loaded successfully.`;
     } catch(e) { 
-        showToast("Error! Surah 114, Ruku 558, Ayah 6236 tak hi hain."); 
+        showToast("Error! Check Number (Surah:1-114, Ruku:1-558, Ayah:1-6236)."); 
     }
     showLoad(false);
 }
@@ -275,7 +266,7 @@ function playTrack() {
         p.then(() => {
             isPlaying = true; 
             
-            // [CRITICAL FIX]: Sirf tab scroll karo jab screen ON ho. Screen off hone par scrolling nahi hogi jis se aawaz katti nahi!
+            // SCREEN OFF BACKGROUND PLAY FIX
             if (!document.hidden) {
                 document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
                 document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
@@ -284,7 +275,6 @@ function playTrack() {
                 if(row) { row.classList.add('playing-active'); row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
             }
 
-            // Lock Screen Player Updates
             if ('mediaSession' in navigator) {
                 var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah Quran";
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -294,12 +284,10 @@ function playTrack() {
                     artwork: [ { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' } ]
                 });
             }
-
         }).catch(e => { 
             isPlaying = false; 
             if(!document.hidden) {
                 document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
-                showToast("Audio paused. Press Play to continue."); 
             }
         });
     }
