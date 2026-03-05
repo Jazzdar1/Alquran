@@ -103,13 +103,8 @@
         .video-card iframe { width: 100%; aspect-ratio: 16/9; border: none; }
         .video-title { padding: 10px; text-align: center; font-weight: bold; background: rgba(212,175,55,0.2); color: var(--gold); font-size: 14px;}
 
-        /* ADVANCED IFRAME & BUTTON STYLES */
-        .naatcity-container { width: 100%; height: calc(100vh - 200px); border: 2px solid var(--gold); border-radius: 10px; overflow: hidden; background: #fff; position: relative;}
-        .links-scroll-bar { display: flex; overflow-x: auto; gap: 10px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 1px solid var(--gold); margin-bottom: 15px;}
-        .links-scroll-bar::-webkit-scrollbar { height: 6px; }
-        .links-scroll-bar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-        .link-btn { white-space: nowrap; background: transparent; color: #fff; border: 1px solid var(--gold); padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
-        .link-btn:hover { background: var(--gold); color: #000; font-weight: bold; }
+        .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 16px; display: block; padding: 8px 0; border-bottom: 1px solid rgba(212,175,55,0.2);}
+        .ext-link:hover { color: #fff; padding-left: 5px; }
 
         .about-wrapper { background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 30px; border-radius: 15px; max-width: 800px; margin: 0 auto; line-height: 1.8;}
         .about-wrapper h3 { color: var(--gold); border-bottom: 1px dashed var(--gold); padding-bottom: 10px;}
@@ -137,7 +132,6 @@
             .urdu-font { font-size: 13px; line-height: 1.6; margin-top: 6px; padding-top: 6px; }
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid, .video-grid { grid-template-columns: 1fr; }
-            .naatcity-container { height: calc(100vh - 250px); }
         }
     </style>
 </head>
@@ -176,9 +170,7 @@
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-clock"></i> Timings & Calendar</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Alquran With Tafseer</button>
         <button class="nav-btn" onclick="switchTab('audioTab')"><i class="fas fa-headphones"></i> Bayanat Library</button>
-        
         <button class="nav-btn" onclick="switchTab('naatTab')"><i class="fas fa-microphone"></i> Naat Collection</button>
-        
         <button class="nav-btn" onclick="switchTab('tvTab')"><i class="fas fa-tv"></i> Live Islamic TV</button>
         <button class="nav-btn" onclick="switchTab('kidsTab')"><i class="fas fa-child"></i> Kids Zone (Qaida)</button>
         <button class="nav-btn" onclick="switchTab('namesTab')"><i class="fas fa-list-ol"></i> 99 Names (Talk Back)</button>
@@ -189,9 +181,7 @@
         <button class="nav-btn" onclick="switchTab('khatmTab')"><i class="fas fa-scroll"></i> Khatm-ul-Quran</button>
         <button class="nav-btn" onclick="switchTab('hadithTab')"><i class="fas fa-feather-alt"></i> Hadith Collection</button>
         <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
-        
         <button class="nav-btn" onclick="switchTab('knowledgeTab')"><i class="fas fa-globe"></i> Islamic Portals</button>
-        
         <button class="nav-btn" onclick="switchTab('aboutTab')"><i class="fas fa-info-circle"></i> About, Privacy & Contact</button>
     </div>
 </div>
@@ -205,7 +195,16 @@
         <div class="controls-bar">
             <div class="control-group"><label>City</label><input type="text" id="cityName" value="Srinagar" onchange="saveSettings()"></div>
             <div class="control-group"><label>Country</label><input type="text" id="countryName" value="India" onchange="saveSettings()"></div>
-            <div class="control-group"><label>Auto-Azan Voice</label><select id="azanVoice" onchange="saveSettings()"><option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah Azan</option><option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Madinah Azan</option></select></div>
+            <div class="control-group">
+                <label>Hijri Adjust (Days)</label>
+                <select id="hijriAdjustment" onchange="saveSettings(); fetchPrayerTimes(true);">
+                    <option value="1">+1 Day</option>
+                    <option value="0">0 (Auto)</option>
+                    <option value="-1" selected>-1 Day</option>
+                    <option value="-2">-2 Days</option>
+                </select>
+            </div>
+            <div class="control-group"><label>Auto-Azan</label><select id="azanVoice" onchange="saveSettings()"><option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah</option><option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Madinah</option></select></div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="fetchPrayerTimes(true)"><i class="fas fa-sync"></i> Refresh API</button></div>
         </div>
 
@@ -238,7 +237,7 @@
             </div>
 
             <div class="widget-card" style="grid-column: 1 / -1;">
-                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-bell"></i> Namaz Alarms (Background Enabled)</h3>
+                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-bell"></i> Namaz Alarms</h3>
                 <div style="text-align:left; line-height:2.8; font-size:1.1rem; width:100%; display:flex; flex-wrap:wrap; justify-content:space-between;">
                     <div style="width:48%;"><label><input type="checkbox" id="toggleFajr" onchange="saveSettings()"> Fajr:</label> <input type="time" id="timeFajr" class="time-input" onchange="saveSettings()"></div>
                     <div style="width:48%;"><label><input type="checkbox" id="toggleDhuhr" onchange="saveSettings()"> Dhuhr:</label> <input type="time" id="timeDhuhr" class="time-input" onchange="saveSettings()"></div>
@@ -304,10 +303,15 @@
     </div>
 
     <div id="naatTab" class="section">
-        <h2 style="color:var(--gold); text-align:center; margin-top:0;">NaatCity Live Portal</h2>
-        <p style="color:#ddd; text-align:center; font-size:13px; margin-top:-10px;">Play Naats directly inside the app</p>
-        <div class="naatcity-container">
-            <iframe src="https://naatcity.com/naatkhawans" style="width:100%; height:100%; border:none; background:#fff;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" loading="lazy"></iframe>
+        <h2 style="color:var(--gold);">Naat Collection</h2>
+        <div class="controls-bar">
+            <div class="control-group"><label>Select Naat Khawan</label><select id="naatKhawanSelect" onchange="loadLocalNaats()"><option value="Junaid Jamshed">Junaid Jamshed</option><option value="Awais Raza Qadri">Awais Raza Qadri</option><option value="Sami Yusuf">Sami Yusuf</option><option value="Fasihuddin Soharwardi">Fasihuddin Soharwardi</option><option value="Maher Zain">Maher Zain</option><option value="General Famous Naats">General Famous Naats</option></select></div>
+            <div class="control-group" style="flex-grow:2;"><label>Select Naat</label><select id="naatSelect"></select></div>
+            <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playNaat()">Play Naat</button></div>
+        </div>
+        <div class="widget-card" style="margin-top:20px;">
+            <h3 id="currentNaatTitle" style="color:#b33939; margin-top:0;">Select a Naat from above</h3>
+            <audio id="naatPlayer" controls style="width:100%; outline:none; border-radius:30px;"></audio>
         </div>
     </div>
 
@@ -316,6 +320,7 @@
         <div class="video-grid">
             <div class="video-card"><div class="video-title">Makkah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC85Vp28oP4qNks1KxndK_RQ" allowfullscreen></iframe></div>
             <div class="video-card"><div class="video-title">Madinah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UCAL4_m5bEqyM2vYw3E0nL4Q" allowfullscreen></iframe></div>
+            <div class="video-card"><div class="video-title">Madani Channel Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC0hQ0k8l88E5F9Y85H4O_Gg" allowfullscreen></iframe></div>
         </div>
     </div>
 
@@ -384,16 +389,20 @@
     </div>
 
     <div id="knowledgeTab" class="section">
-        <h2 style="color:var(--gold); text-align:center; margin-top:0;">Global Islamic Portals</h2>
-        <div class="links-scroll-bar">
-            <button class="link-btn" onclick="loadPortal('https://quranx.com/')">QuranX</button>
-            <button class="link-btn" onclick="loadPortal('https://corpus.quran.com/')">Corpus Quran</button>
-            <button class="link-btn" onclick="loadPortal('https://www.islamicfinder.org/')">IslamicFinder</button>
-            <button class="link-btn" onclick="loadPortal('https://hadithcollection.com/')">Hadith Collection</button>
-            <button class="link-btn" onclick="loadPortal('https://islamqa.info/en')">IslamQA</button>
-        </div>
-        <div class="naatcity-container">
-            <iframe id="portalIframe" src="https://quranx.com/" style="width:100%; height:100%; border:none; background:#fff;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" loading="lazy"></iframe>
+        <h2 style="color:var(--gold); margin-top:0;">Global Islamic Portals</h2>
+        <p style="color:#ddd; font-size:13px; margin-top:-10px;">Select to open securely (Prevents block/white screen)</p>
+        <div class="widget-grid">
+            <div class="widget-card" style="text-align:left;">
+                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;">Quran, Hadith & Fatwa</h3>
+                <ul style="line-height: 2.2; font-size: 16px;">
+                    <li><a href="https://quran.com" target="_blank" class="ext-link"><i class="fas fa-external-link-alt"></i> Quran.com (Read & Listen)</a></li>
+                    <li><a href="https://sunnah.com" target="_blank" class="ext-link"><i class="fas fa-external-link-alt"></i> Sunnah.com (Hadith Collection)</a></li>
+                    <li><a href="https://quranx.com" target="_blank" class="ext-link"><i class="fas fa-external-link-alt"></i> QuranX (Tafseer & Search)</a></li>
+                    <li><a href="https://corpus.quran.com" target="_blank" class="ext-link"><i class="fas fa-external-link-alt"></i> Corpus Quran (Arabic Grammar)</a></li>
+                    <li><a href="https://islamqa.info/en" target="_blank" class="ext-link"><i class="fas fa-external-link-alt"></i> IslamQA (Fatwa & Answers)</a></li>
+                    <li><a href="https://www.islamicfinder.org" target="_blank" class="ext-link"><i class="fas fa-external-link-alt"></i> Islamic Finder (Global Data)</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -428,7 +437,7 @@
     <div class="player-controls" style="text-align:center; margin-top:5px; width:100%;"><button onclick="skipTrack(-1)"><i class="fas fa-step-backward"></i></button><button id="playBtn" onclick="togglePlay()" style="color:var(--gold); font-size:40px;"><i class="fas fa-play-circle"></i></button><button onclick="skipTrack(1)"><i class="fas fa-step-forward"></i></button></div>
 </div>
 
-<script src="./app.js?v=23"></script>
+<script src="./app.js?v=24"></script>
 
 </body>
 </html>
