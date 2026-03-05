@@ -30,6 +30,13 @@ function toggleMobileMenu() {
 }
 function toggleMenu() { toggleMobileMenu(); }
 
+// ADVANCED IFRAME LOADER
+function loadPortal(url) {
+    showLoad(true);
+    document.getElementById("portalIframe").src = url;
+    setTimeout(() => { showLoad(false); }, 1500);
+}
+
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }
 
 // APP INSTALL PROMPT
@@ -72,7 +79,7 @@ function speakArabic(text) {
         if(arVoice) { msg.voice = arVoice; }
 
         window.speechSynthesis.speak(msg);
-        showToast("🔊 Playing Arabic...");
+        showToast("🔊 Playing Voice...");
     } else {
         showToast("TTS not supported on this browser.");
     }
@@ -116,8 +123,6 @@ var dailyDuas = [
     {title:"Namaz-e-Janaza (Nabaligh Larka)", ar:"اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطًا وَاجْعَلْهُ لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهُ لَنَا شَافِعًا وَمُشَفَّعًا", ur:"اے اللہ! اس لڑکے کو ہمارے لیے آگے پہنچ کر سامان کرنے والا بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والا اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
     {title:"Namaz-e-Janaza (Nabaligh Larki)", ar:"اللَّهُمَّ اجْعَلْهَا لَنَا فَرَطًا وَاجْعَلْهَا لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهَا لَنَا شَافِعَةً وَمُشَفَّعَةً", ur:"اے اللہ! اس لڑکی کو ہمارے لیے آگے پہنچ کر سامان کرنے والی بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والی اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
     {title:"Mayyat ko Qabar mein Utarne ki Dua", ar:"بِسْمِ اللَّهِ وَعَلَى مِلَّةِ رَسُولِ اللَّهِ", ur:"اللہ کے نام سے اور رسول اللہ ﷺ کے دین پر (دفن کرتا ہوں)۔"},
-    {title:"Khana Khane se Pehle", ar:"بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", ur:"اللہ کے نام اور اللہ کی برکت پر کھاتا ہوں۔"},
-    {title:"Khana Khane ke Baad", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", ur:"سب تعریفیں اس اللہ کے لیے ہیں جس نے ہمیں کھلایا، پلایا اور مسلمان بنایا۔"},
     {title:"Sone se Pehle ki Dua", ar:"اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا", ur:"اے اللہ! میں تیرے ہی نام کے ساتھ مرتا (سوتا) اور جیتا (جاگتا) ہوں۔"}
 ];
 
@@ -198,7 +203,7 @@ function renderZikr() {
 }
 
 // ==========================================
-// INITIALIZATION (CRASH SAFE)
+// INITIALIZATION
 // ==========================================
 setInterval(() => { document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
 
@@ -221,7 +226,7 @@ window.onload = async function() {
         document.getElementById("splashQuote").innerText = '"App is Ready."';
         document.getElementById("enterBtn").style.display = "block";
     } catch(e) { 
-        document.getElementById("splashQuote").innerText = "Starting App..."; 
+        document.getElementById("splashQuote").innerText = "Network Issue. Basic features will work."; 
         document.getElementById("enterBtn").style.display = "block"; 
     }
 };
@@ -231,11 +236,9 @@ function startApp() {
     azanAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
     azanAudio.play().catch(e=>{});
     
-    // SAFE NOTIFICATION TRIGGER (USER INITIATED - FIXES CRASH!)
-    if ('Notification' in window) {
-        if (Notification.permission !== "granted" && Notification.permission !== "denied") { 
-            Notification.requestPermission().catch(e=>{}); 
-        }
+    // SAFE NOTIFICATION TRIGGER (USER INITIATED)
+    if ('Notification' in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission().catch(e=>{}); 
     }
 
     loadSettings();
@@ -256,7 +259,7 @@ function switchTab(id) {
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
 // ==========================================
-// ALARMS DEFAULT ON
+// ALARMS & CALENDAR
 // ==========================================
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
@@ -286,8 +289,10 @@ async function fetchPrayerTimes(forceOverwrite) {
     showLoad(true);
     var city = document.getElementById("cityName").value || "Srinagar";
     var country = document.getElementById("countryName").value || "India";
+    var addressQuery = encodeURIComponent(city + ", " + country);
+
     try {
-        var res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`);
+        var res = await fetch(`https://api.aladhan.com/v1/timingsByAddress?address=${addressQuery}&method=1`);
         if(!res.ok) throw new Error("API Limit");
         var data = await res.json();
         
@@ -307,7 +312,7 @@ async function fetchPrayerTimes(forceOverwrite) {
         }
 
         var d = new Date();
-        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
+        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByAddress?address=${addressQuery}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
         var calData = await calRes.json();
         var html = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
         var todayStr = String(d.getDate()).padStart(2, '0');
@@ -316,7 +321,9 @@ async function fetchPrayerTimes(forceOverwrite) {
             html += `<tr class="${isToday}"><td>${day.date.gregorian.date}</td><td>${day.date.hijri.date} ${day.date.hijri.month.en}</td><td>${day.date.gregorian.weekday.en}</td></tr>`;
         });
         document.getElementById("calendarTable").innerHTML = html;
-    } catch(e) { showToast("Using Backup Location Data."); }
+    } catch(e) { 
+        showToast("Using Saved/Backup Location."); 
+    }
     showLoad(false);
 }
 
@@ -409,7 +416,7 @@ function playBayan() {
 }
 
 // ==========================================
-// QURAN ENGINE
+// QURAN ENGINE 
 // ==========================================
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
@@ -429,7 +436,7 @@ async function loadSurah() {
 
     try {
         var resAr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${r}`);
-        if(!resAr.ok) throw new Error("API Limit");
+        if(!resAr.ok) throw new Error("API Limit"); 
         var dataAr = await resAr.json();
 
         var resTr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${l}`);
@@ -480,7 +487,8 @@ async function loadSurah() {
                 playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(sNum)}${padNum(ayah.numberInSurah)}.mp3`, num: ayah.numberInSurah, type: 'Translation', id: `ayah-${sNum}-${ayah.numberInSurah}` });
             });
         }
-    } catch(e) { showToast("Error loading Quran. Try again."); }
+
+    } catch(e) { showToast("Error! Check Number."); }
     showLoad(false);
 }
 
