@@ -23,6 +23,7 @@
         #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0a05, #1a1a1a); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .enter-btn { background: var(--gold); color: #000; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 30px; cursor: pointer; transition: 0.3s; }
 
+        /* INSTALL APP BANNER FOR MOBILE & DESKTOP */
         .install-banner { background: linear-gradient(45deg, #d4af37, #b38b22); color: #000; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; font-size: 14px; z-index: 3000; display: none; box-shadow: 0 4px 10px rgba(212,175,55,0.4); animation: pulse 2s infinite;}
         
         .mobile-top-bar { display: none; background: var(--sidebar-bg); border-bottom: 2px solid var(--gold); padding: 15px 20px; justify-content: space-between; align-items: center; z-index: 1500; width: 100%; box-sizing: border-box;}
@@ -39,8 +40,8 @@
         .nav-btn { width: 100%; background: none; border: none; color: #ddd; padding: 15px 20px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
         .nav-btn:hover, .nav-btn.active { background-color: rgba(212, 175, 55, 0.15); color: var(--gold); border-right: 4px solid var(--gold); }
         
-        /* INSTALL BOX ALWAYS VISIBLE NOW */
-        .install-box { margin: 10px; padding: 15px; background: linear-gradient(45deg, #d4af37, #b38b22); border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(212,175,55,0.4); cursor: pointer; animation: pulse 2s infinite; }
+        /* INSTALL BOX ALWAYS VISIBLE FIX */
+        .install-box { margin: 10px; padding: 15px; background: linear-gradient(45deg, #d4af37, #b38b22); border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(212,175,55,0.4); cursor: pointer; animation: pulse 2s infinite; display:block; }
         .install-box h4 { margin: 0; color: #000; font-weight: bold; font-size: 16px; }
         .install-box p { color: #222; font-size: 12px; margin: 5px 0 0 0; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
@@ -145,7 +146,7 @@
 <audio id="azanAudio" preload="none"></audio>
 
 <div class="install-banner" id="topInstallBanner" onclick="installAppPrompt()">
-    <i class="fas fa-download"></i> TAP TO INSTALL APP (Required for Background Alarms)
+    <i class="fas fa-download"></i> INSTALL AL-HIKMAH APP (Required for Background Notification Alarms)
 </div>
 
 <div class="mobile-top-bar">
@@ -159,6 +160,7 @@
         <div><h2 style="margin-bottom:0;">Al-Hikmah</h2><p style="font-size:11px; margin:0; color:#aaa;">Islamic Master Hub</p></div>
     </div>
     <div class="nav-links" id="navLinks">
+        
         <div class="install-box" id="installBox" onclick="installAppPrompt()">
             <h4><i class="fas fa-download"></i> Install Al-Hikmah</h4>
             <p>Get Offline Access & Alarms</p>
@@ -225,7 +227,7 @@
             </div>
 
             <div class="widget-card" style="grid-column: 1 / -1;">
-                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-bell"></i> Namaz Alarms</h3>
+                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-bell"></i> Namaz Alarms (Background Enabled)</h3>
                 <div style="text-align:left; line-height:2.8; font-size:1.1rem; width:100%; display:flex; flex-wrap:wrap; justify-content:space-between;">
                     <div style="width:48%;"><label><input type="checkbox" id="toggleFajr" onchange="saveSettings()"> Fajr:</label> <input type="time" id="timeFajr" class="time-input" onchange="saveSettings()"></div>
                     <div style="width:48%;"><label><input type="checkbox" id="toggleDhuhr" onchange="saveSettings()"> Dhuhr:</label> <input type="time" id="timeDhuhr" class="time-input" onchange="saveSettings()"></div>
@@ -325,7 +327,7 @@
         <h2 style="color:var(--gold);">Bayanat Audio Library (Live API)</h2>
         <div class="controls-bar">
             <div class="control-group"><label>Select Speaker</label><select id="alimSelect" onchange="fetchBayanatAPI()"><option value="Dr Israr Ahmed">Dr. Israr Ahmed</option><option value="Tariq Jameel Bayan">Maulana Tariq Jameel</option><option value="Mufti Menk">Mufti Menk</option><option value="Tariq Masood">Mufti Tariq Masood</option><option value="Saqib Raza Mustafai">Saqib Raza Mustafai</option><option value="Nouman Ali Khan">Nouman Ali Khan</option></select></div>
-            <div class="control-group" style="flex-grow:2;"><label>Select Topic</label><select id="bayanSelect" onchange="handleBayanSelect()"></select></div>
+            <div class="control-group" style="flex-grow:2;"><label>Select Topic (Lazy Load)</label><select id="bayanSelect" onchange="handleBayanSelect()"></select></div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playBayan()">Play</button></div>
         </div>
         <div class="widget-card" style="margin-top:20px;">
@@ -405,7 +407,7 @@
     <div class="player-controls" style="text-align:center; margin-top:5px; width:100%;"><button onclick="skipTrack(-1)"><i class="fas fa-step-backward"></i></button><button id="playBtn" onclick="togglePlay()" style="color:var(--gold); font-size:40px;"><i class="fas fa-play-circle"></i></button><button onclick="skipTrack(1)"><i class="fas fa-step-forward"></i></button></div>
 </div>
 
-<script src="./app.js?v=20"></script>
+<script src="./app.js?v=21"></script>
 
 </body>
 </html>
