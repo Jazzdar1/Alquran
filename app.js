@@ -30,13 +30,6 @@ function toggleMobileMenu() {
 }
 function toggleMenu() { toggleMobileMenu(); }
 
-// ADVANCED IFRAME LOADER
-function loadPortal(url) {
-    showLoad(true);
-    document.getElementById("portalIframe").src = url;
-    setTimeout(() => { showLoad(false); }, 1500);
-}
-
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }
 
 // APP INSTALL PROMPT
@@ -79,7 +72,7 @@ function speakArabic(text) {
         if(arVoice) { msg.voice = arVoice; }
 
         window.speechSynthesis.speak(msg);
-        showToast("🔊 Playing Voice...");
+        showToast("🔊 Playing Arabic...");
     } else {
         showToast("TTS not supported on this browser.");
     }
@@ -123,6 +116,11 @@ var dailyDuas = [
     {title:"Namaz-e-Janaza (Nabaligh Larka)", ar:"اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطًا وَاجْعَلْهُ لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهُ لَنَا شَافِعًا وَمُشَفَّعًا", ur:"اے اللہ! اس لڑکے کو ہمارے لیے آگے پہنچ کر سامان کرنے والا بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والا اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
     {title:"Namaz-e-Janaza (Nabaligh Larki)", ar:"اللَّهُمَّ اجْعَلْهَا لَنَا فَرَطًا وَاجْعَلْهَا لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهَا لَنَا شَافِعَةً وَمُشَفَّعَةً", ur:"اے اللہ! اس لڑکی کو ہمارے لیے آگے پہنچ کر سامان کرنے والی بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والی اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
     {title:"Mayyat ko Qabar mein Utarne ki Dua", ar:"بِسْمِ اللَّهِ وَعَلَى مِلَّةِ رَسُولِ اللَّهِ", ur:"اللہ کے نام سے اور رسول اللہ ﷺ کے دین پر (دفن کرتا ہوں)۔"},
+    {title:"Khana Khane se Pehle", ar:"بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", ur:"اللہ کے نام اور اللہ کی برکت پر کھاتا ہوں۔"},
+    {title:"Khana Khane ke Baad", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", ur:"سب تعریفیں اس اللہ کے لیے ہیں جس نے ہمیں کھلایا، پلایا اور مسلمان بنایا۔"},
+    {title:"Masjid mein Dakhil hone ki Dua", ar:"اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ", ur:"اے اللہ! میرے لیے اپنی رحمت کے دروازے کھول دے۔"},
+    {title:"Bimari aur Takleef ki Dua", ar:"أَذْهِبِ الْبَاسَ رَبَّ النَّاسِ، اشْفِ وَأَنْتَ الشَّافِي", ur:"اے لوگوں کے رب! اس بیماری کو دور فرما، شفا دے تو ہی شفا دینے والا ہے۔"},
+    {title:"So Kar Uthne ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا اور اسی کی طرف اٹھ کر جانا ہے۔"},
     {title:"Sone se Pehle ki Dua", ar:"اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا", ur:"اے اللہ! میں تیرے ہی نام کے ساتھ مرتا (سوتا) اور جیتا (جاگتا) ہوں۔"}
 ];
 
@@ -214,6 +212,7 @@ window.onload = async function() {
         renderZikr();
         renderKidsZone();
         fetchBayanatAPI(); 
+        loadLocalNaats();
 
         var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
         var arData = await arRes.json();
@@ -236,7 +235,6 @@ function startApp() {
     azanAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
     azanAudio.play().catch(e=>{});
     
-    // SAFE NOTIFICATION TRIGGER (USER INITIATED)
     if ('Notification' in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
         Notification.requestPermission().catch(e=>{}); 
     }
@@ -259,12 +257,18 @@ function switchTab(id) {
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
 // ==========================================
-// ALARMS & CALENDAR
+// ALARMS & HIJRI CALENDAR ADJUSTMENT
 // ==========================================
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
     localStorage.setItem("country", document.getElementById("countryName").value);
     localStorage.setItem("voice", document.getElementById("azanVoice").value);
+    
+    // SAVE HIJRI ADJUSTMENT
+    if(document.getElementById("hijriAdjustment")) {
+        localStorage.setItem("hijriAdj", document.getElementById("hijriAdjustment").value);
+    }
+
     ["timeFajr", "timeDhuhr", "timeAsr", "timeMaghrib", "timeIsha", "timeJummah"].forEach(id => localStorage.setItem(id, document.getElementById(id).value));
     ["toggleFajr", "toggleDhuhr", "toggleAsr", "toggleMaghrib", "toggleIsha", "toggleJummah"].forEach(id => localStorage.setItem(id, document.getElementById(id).checked));
 }
@@ -273,6 +277,13 @@ function loadSettings() {
     if(localStorage.getItem("appInstalledOnce") !== "true") {
         ["toggleFajr", "toggleDhuhr", "toggleAsr", "toggleMaghrib", "toggleIsha", "toggleJummah"].forEach(id => localStorage.setItem(id, "true"));
         localStorage.setItem("appInstalledOnce", "true");
+    }
+
+    // LOAD HIJRI ADJUSTMENT
+    if(localStorage.getItem("hijriAdj") !== null && document.getElementById("hijriAdjustment")) {
+        document.getElementById("hijriAdjustment").value = localStorage.getItem("hijriAdj");
+    } else if(document.getElementById("hijriAdjustment")) {
+        document.getElementById("hijriAdjustment").value = "-1"; // Default to -1 day for region
     }
 
     if(localStorage.getItem("city")) {
@@ -290,9 +301,11 @@ async function fetchPrayerTimes(forceOverwrite) {
     var city = document.getElementById("cityName").value || "Srinagar";
     var country = document.getElementById("countryName").value || "India";
     var addressQuery = encodeURIComponent(city + ", " + country);
+    var adj = document.getElementById("hijriAdjustment") ? document.getElementById("hijriAdjustment").value : "-1";
 
     try {
-        var res = await fetch(`https://api.aladhan.com/v1/timingsByAddress?address=${addressQuery}&method=1`);
+        // API FETCH WITH HIJRI ADJUSTMENT PARAMETER
+        var res = await fetch(`https://api.aladhan.com/v1/timingsByAddress?address=${addressQuery}&method=1&adjustment=${adj}`);
         if(!res.ok) throw new Error("API Limit");
         var data = await res.json();
         
@@ -312,7 +325,7 @@ async function fetchPrayerTimes(forceOverwrite) {
         }
 
         var d = new Date();
-        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByAddress?address=${addressQuery}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}`);
+        var calRes = await fetch(`https://api.aladhan.com/v1/calendarByAddress?address=${addressQuery}&method=1&month=${d.getMonth()+1}&year=${d.getFullYear()}&adjustment=${adj}`);
         var calData = await calRes.json();
         var html = "<tr><th>Gregorian</th><th>Hijri Date</th><th>Day</th></tr>";
         var todayStr = String(d.getDate()).padStart(2, '0');
@@ -413,6 +426,38 @@ function playBayan() {
     var player = document.getElementById("bayanPlayer");
     player.src = item.episodeUrl;
     player.play().catch(e => showToast("Audio restricted by provider."));
+}
+
+// ==========================================
+// NAAT LOCAL DB (NATIVE AUDIO)
+// ==========================================
+var localNaatDb = {
+    "Junaid Jamshed": [{ title: "Mera Dil Badal De", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MeraDilBadalDe.mp3" }, { title: "Mohammad Ka Roza", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MohammadKaRoza.mp3" }, { title: "Ilahi Teri Chokhat Pe", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/IlahiTeriChokhatPe.mp3" }],
+    "Awais Raza Qadri": [{ title: "Tajdar E Haram", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Tajdar%20E%20Haram%20Ae%20Shehenshah%20E%20Deen.mp3" }, { title: "Mera Waliyon Ke Imam", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Mera%20Waliyon%20Ke%20Imam.mp3" }],
+    "Sami Yusuf": [{ title: "Hasbi Rabbi", url: "https://archive.org/download/HasbiRabbiJallallahSamiYusuf_201708/Hasbi%20Rabbi%20Jallallah%20Sami%20Yusuf.mp3" }, { title: "Ya Mustafa", url: "https://archive.org/download/SamiYusuf/Ya_Mustafa.mp3" }],
+    "Fasihuddin Soharwardi": [{ title: "Main Behak Sakun", url: "https://archive.org/download/Fasihuddin/Main_Behak.mp3" }],
+    "Maher Zain": [{ title: "Ya Nabi Salam Alayka", url: "https://archive.org/download/MaherZain/Ya_Nabi.mp3" }],
+    "General Famous Naats": [{ title: "Qaseeda Burda Shareef", url: "https://archive.org/download/QaseedaBurda/Qaseeda.mp3" }, { title: "Bhar Do Jholi", url: "https://archive.org/download/BharDoJholi/Bhar_Do.mp3" }]
+};
+
+function loadLocalNaats() {
+    var khawan = document.getElementById("naatKhawanSelect").value;
+    var nSelect = document.getElementById("naatSelect");
+    nSelect.innerHTML = "";
+    var naats = localNaatDb[khawan] || [];
+    if(naats.length === 0) { nSelect.add(new Option("No Naats Found", "")); return; }
+    naats.forEach(function(item, index) { nSelect.add(new Option(item.title, index)); });
+}
+
+function playNaat() {
+    var khawan = document.getElementById("naatKhawanSelect").value;
+    var index = document.getElementById("naatSelect").value;
+    var item = localNaatDb[khawan][index];
+    if(!item) return;
+    document.getElementById("currentNaatTitle").innerText = item.title;
+    var player = document.getElementById("naatPlayer");
+    player.src = item.url;
+    player.play().catch(e => showToast("Audio URL restricted."));
 }
 
 // ==========================================
