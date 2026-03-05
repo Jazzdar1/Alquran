@@ -23,7 +23,6 @@
         #splashScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f0a05, #1a1a1a); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .enter-btn { background: var(--gold); color: #000; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 30px; cursor: pointer; transition: 0.3s; }
 
-        /* INSTALL APP BANNER FOR MOBILE & DESKTOP */
         .install-banner { background: linear-gradient(45deg, #d4af37, #b38b22); color: #000; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; font-size: 14px; z-index: 3000; display: none; box-shadow: 0 4px 10px rgba(212,175,55,0.4); animation: pulse 2s infinite;}
         
         .mobile-top-bar { display: none; background: var(--sidebar-bg); border-bottom: 2px solid var(--gold); padding: 15px 20px; justify-content: space-between; align-items: center; z-index: 1500; width: 100%; box-sizing: border-box;}
@@ -40,7 +39,6 @@
         .nav-btn { width: 100%; background: none; border: none; color: #ddd; padding: 15px 20px; text-align: left; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 15px; }
         .nav-btn:hover, .nav-btn.active { background-color: rgba(212, 175, 55, 0.15); color: var(--gold); border-right: 4px solid var(--gold); }
         
-        /* INSTALL BOX ALWAYS VISIBLE FIX */
         .install-box { margin: 10px; padding: 15px; background: linear-gradient(45deg, #d4af37, #b38b22); border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(212,175,55,0.4); cursor: pointer; animation: pulse 2s infinite; display:block; }
         .install-box h4 { margin: 0; color: #000; font-weight: bold; font-size: 16px; }
         .install-box p { color: #222; font-size: 12px; margin: 5px 0 0 0; }
@@ -105,6 +103,14 @@
         .video-card iframe { width: 100%; aspect-ratio: 16/9; border: none; }
         .video-title { padding: 10px; text-align: center; font-weight: bold; background: rgba(212,175,55,0.2); color: var(--gold); font-size: 14px;}
 
+        /* ADVANCED IFRAME & BUTTON STYLES */
+        .naatcity-container { width: 100%; height: calc(100vh - 200px); border: 2px solid var(--gold); border-radius: 10px; overflow: hidden; background: #fff; position: relative;}
+        .links-scroll-bar { display: flex; overflow-x: auto; gap: 10px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 1px solid var(--gold); margin-bottom: 15px;}
+        .links-scroll-bar::-webkit-scrollbar { height: 6px; }
+        .links-scroll-bar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        .link-btn { white-space: nowrap; background: transparent; color: #fff; border: 1px solid var(--gold); padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .link-btn:hover { background: var(--gold); color: #000; font-weight: bold; }
+
         .about-wrapper { background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 30px; border-radius: 15px; max-width: 800px; margin: 0 auto; line-height: 1.8;}
         .about-wrapper h3 { color: var(--gold); border-bottom: 1px dashed var(--gold); padding-bottom: 10px;}
         .contact-box { background: #111; padding: 20px; border-left: 4px solid var(--gold); margin-top: 20px; border-radius: 5px;}
@@ -131,6 +137,7 @@
             .urdu-font { font-size: 13px; line-height: 1.6; margin-top: 6px; padding-top: 6px; }
             .time-input { width: 85px; font-size: 14px; }
             .widget-grid, .video-grid { grid-template-columns: 1fr; }
+            .naatcity-container { height: calc(100vh - 250px); }
         }
     </style>
 </head>
@@ -146,7 +153,7 @@
 <audio id="azanAudio" preload="none"></audio>
 
 <div class="install-banner" id="topInstallBanner" onclick="installAppPrompt()">
-    <i class="fas fa-download"></i> INSTALL AL-HIKMAH APP (Required for Background Notification Alarms)
+    <i class="fas fa-download"></i> TAP TO INSTALL APP (Required for Background Alarms)
 </div>
 
 <div class="mobile-top-bar">
@@ -169,7 +176,9 @@
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-clock"></i> Timings & Calendar</button>
         <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Alquran With Tafseer</button>
         <button class="nav-btn" onclick="switchTab('audioTab')"><i class="fas fa-headphones"></i> Bayanat Library</button>
+        
         <button class="nav-btn" onclick="switchTab('naatTab')"><i class="fas fa-microphone"></i> Naat Collection</button>
+        
         <button class="nav-btn" onclick="switchTab('tvTab')"><i class="fas fa-tv"></i> Live Islamic TV</button>
         <button class="nav-btn" onclick="switchTab('kidsTab')"><i class="fas fa-child"></i> Kids Zone (Qaida)</button>
         <button class="nav-btn" onclick="switchTab('namesTab')"><i class="fas fa-list-ol"></i> 99 Names (Talk Back)</button>
@@ -180,7 +189,9 @@
         <button class="nav-btn" onclick="switchTab('khatmTab')"><i class="fas fa-scroll"></i> Khatm-ul-Quran</button>
         <button class="nav-btn" onclick="switchTab('hadithTab')"><i class="fas fa-feather-alt"></i> Hadith Collection</button>
         <button class="nav-btn" onclick="switchTab('searchTab')"><i class="fas fa-search"></i> Dictionary</button>
+        
         <button class="nav-btn" onclick="switchTab('knowledgeTab')"><i class="fas fa-globe"></i> Islamic Portals</button>
+        
         <button class="nav-btn" onclick="switchTab('aboutTab')"><i class="fas fa-info-circle"></i> About, Privacy & Contact</button>
     </div>
 </div>
@@ -279,8 +290,37 @@
         <div id="quranContainer" style="display:none;"></div>
     </div>
 
+    <div id="audioTab" class="section">
+        <h2 style="color:var(--gold);">Bayanat Audio Library (Live API)</h2>
+        <div class="controls-bar">
+            <div class="control-group"><label>Select Speaker</label><select id="alimSelect" onchange="fetchBayanatAPI()"><option value="Dr Israr Ahmed">Dr. Israr Ahmed</option><option value="Tariq Jameel Bayan">Maulana Tariq Jameel</option><option value="Mufti Menk">Mufti Menk</option><option value="Tariq Masood">Mufti Tariq Masood</option><option value="Saqib Raza Mustafai">Saqib Raza Mustafai</option><option value="Nouman Ali Khan">Nouman Ali Khan</option></select></div>
+            <div class="control-group" style="flex-grow:2;"><label>Select Topic (Lazy Load)</label><select id="bayanSelect" onchange="handleBayanSelect()"></select></div>
+            <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playBayan()">Play</button></div>
+        </div>
+        <div class="widget-card" style="margin-top:20px;">
+            <h3 id="currentBayanTitle" style="color:#b33939; margin-top:0;">Select a Bayan</h3>
+            <audio id="bayanPlayer" controls style="width:100%; outline:none; border-radius:30px;"></audio>
+        </div>
+    </div>
+
+    <div id="naatTab" class="section">
+        <h2 style="color:var(--gold); text-align:center; margin-top:0;">NaatCity Live Portal</h2>
+        <p style="color:#ddd; text-align:center; font-size:13px; margin-top:-10px;">Play Naats directly inside the app</p>
+        <div class="naatcity-container">
+            <iframe src="https://naatcity.com/naatkhawans" style="width:100%; height:100%; border:none; background:#fff;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <div id="tvTab" class="section">
+        <h2 style="color:var(--gold); text-align: center;">Live Islamic Channels</h2>
+        <div class="video-grid">
+            <div class="video-card"><div class="video-title">Makkah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC85Vp28oP4qNks1KxndK_RQ" allowfullscreen></iframe></div>
+            <div class="video-card"><div class="video-title">Madinah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UCAL4_m5bEqyM2vYw3E0nL4Q" allowfullscreen></iframe></div>
+        </div>
+    </div>
+
     <div id="kidsTab" class="section">
-        <h2 style="color:var(--gold); text-align:center;">Kids Zone: Noorani Qaida</h2>
+        <h2 style="color:var(--gold); text-align:center;">Kids Zone: Noorani Qaida (Talk Back)</h2>
         <p style="text-align:center; color:#ddd; font-size:14px; margin-top:-10px;">Tap any letter or symbol to hear its proper pronunciation</p>
         <div id="kidsContainer"></div>
     </div>
@@ -323,32 +363,6 @@
         </div>
     </div>
 
-    <div id="audioTab" class="section">
-        <h2 style="color:var(--gold);">Bayanat Audio Library (Live API)</h2>
-        <div class="controls-bar">
-            <div class="control-group"><label>Select Speaker</label><select id="alimSelect" onchange="fetchBayanatAPI()"><option value="Dr Israr Ahmed">Dr. Israr Ahmed</option><option value="Tariq Jameel Bayan">Maulana Tariq Jameel</option><option value="Mufti Menk">Mufti Menk</option><option value="Tariq Masood">Mufti Tariq Masood</option><option value="Saqib Raza Mustafai">Saqib Raza Mustafai</option><option value="Nouman Ali Khan">Nouman Ali Khan</option></select></div>
-            <div class="control-group" style="flex-grow:2;"><label>Select Topic (Lazy Load)</label><select id="bayanSelect" onchange="handleBayanSelect()"></select></div>
-            <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="playBayan()">Play</button></div>
-        </div>
-        <div class="widget-card" style="margin-top:20px;">
-            <h3 id="currentBayanTitle" style="color:#b33939; margin-top:0;">Select a Bayan</h3>
-            <audio id="bayanPlayer" controls style="width:100%; outline:none; border-radius:30px;"></audio>
-        </div>
-    </div>
-
-    <div id="naatTab" class="section">
-        <h2 style="color:var(--gold); text-align:center; margin-top:0;">NaatCity Live Portal</h2>
-        <div class="naatcity-container"><iframe src="https://naatcity.com/naatkhawans" style="width:100%; height:100%; border:none;" loading="lazy"></iframe></div>
-    </div>
-
-    <div id="tvTab" class="section">
-        <h2 style="color:var(--gold); text-align: center;">Live Islamic Channels</h2>
-        <div class="video-grid">
-            <div class="video-card"><div class="video-title">Makkah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC85Vp28oP4qNks1KxndK_RQ" allowfullscreen></iframe></div>
-            <div class="video-card"><div class="video-title">Madinah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UCAL4_m5bEqyM2vYw3E0nL4Q" allowfullscreen></iframe></div>
-        </div>
-    </div>
-
     <div id="hadithTab" class="section">
         <h2 style="color:var(--gold);">Authentic Hadith Books</h2>
         <div class="controls-bar">
@@ -371,8 +385,15 @@
 
     <div id="knowledgeTab" class="section">
         <h2 style="color:var(--gold); text-align:center; margin-top:0;">Global Islamic Portals</h2>
+        <div class="links-scroll-bar">
+            <button class="link-btn" onclick="loadPortal('https://quranx.com/')">QuranX</button>
+            <button class="link-btn" onclick="loadPortal('https://corpus.quran.com/')">Corpus Quran</button>
+            <button class="link-btn" onclick="loadPortal('https://www.islamicfinder.org/')">IslamicFinder</button>
+            <button class="link-btn" onclick="loadPortal('https://hadithcollection.com/')">Hadith Collection</button>
+            <button class="link-btn" onclick="loadPortal('https://islamqa.info/en')">IslamQA</button>
+        </div>
         <div class="naatcity-container">
-            <iframe id="portalIframe" src="https://quranx.com/" style="width:100%; height:100%; border:none; background:#fff;" loading="lazy"></iframe>
+            <iframe id="portalIframe" src="https://quranx.com/" style="width:100%; height:100%; border:none; background:#fff;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" loading="lazy"></iframe>
         </div>
     </div>
 
@@ -407,7 +428,7 @@
     <div class="player-controls" style="text-align:center; margin-top:5px; width:100%;"><button onclick="skipTrack(-1)"><i class="fas fa-step-backward"></i></button><button id="playBtn" onclick="togglePlay()" style="color:var(--gold); font-size:40px;"><i class="fas fa-play-circle"></i></button><button onclick="skipTrack(1)"><i class="fas fa-step-forward"></i></button></div>
 </div>
 
-<script src="./app.js?v=21"></script>
+<script src="./app.js?v=23"></script>
 
 </body>
 </html>
