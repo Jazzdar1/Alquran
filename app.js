@@ -30,7 +30,9 @@ function toggleMobileMenu() {
 }
 function toggleMenu() { toggleMobileMenu(); }
 
-// INSTALL APP ENGINE
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }
+
+// APP INSTALL PROMPT
 window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault(); 
     globalDeferredPrompt = e;
@@ -52,7 +54,7 @@ function installAppPrompt() {
 }
 
 // ==========================================
-// TALK BACK VOICE ENGINE (BULLET PROOF)
+// TALK BACK VOICE ENGINE
 // ==========================================
 if ('speechSynthesis' in window) { window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); }; }
 
@@ -70,14 +72,14 @@ function speakArabic(text) {
         if(arVoice) { msg.voice = arVoice; }
 
         window.speechSynthesis.speak(msg);
-        showToast("🔊 Playing Voice...");
+        showToast("🔊 Playing Arabic...");
     } else {
         showToast("TTS not supported on this browser.");
     }
 }
 
 // ==========================================
-// FULL NOORANI QAIDA
+// FULL NOORANI QAIDA (3 STAGES)
 // ==========================================
 var qaidaStage1 = [{t:"أ", l:"Alif"},{t:"ب", l:"Baa"},{t:"ت", l:"Taa"},{t:"ث", l:"Saa"},{t:"ج", l:"Jeem"},{t:"ح", l:"Haa"},{t:"خ", l:"Khaa"},{t:"د", l:"Daal"},{t:"ذ", l:"Zaal"},{t:"ر", l:"Raa"},{t:"ز", l:"Zaa"},{t:"س", l:"Seen"},{t:"ش", l:"Sheen"},{t:"ص", l:"Swaad"},{t:"ض", l:"Zwaad"},{t:"ط", l:"Twaa"},{t:"ظ", l:"Zwaa"},{t:"ع", l:"Ain"},{t:"غ", l:"Ghayn"},{t:"ف", l:"Faa"},{t:"ق", l:"Qaaf"},{t:"ك", l:"Kaaf"},{t:"ل", l:"Laam"},{t:"م", l:"Meem"},{t:"ن", l:"Noon"},{t:"و", l:"Waaw"},{t:"هـ", l:"Haa"},{t:"ء", l:"Hamzah"},{t:"ي", l:"Yaa"}];
 var qaidaStage2 = [{t:"بَ", l:"Baa Zabar Ba", v:"بَا فَتْحَة بَا"},{t:"بِ", l:"Baa Zer Bi", v:"بَا كَسْرَة بِي"},{t:"بُ", l:"Baa Pesh Bu", v:"بَا ضَمَّة بُو"}];
@@ -101,7 +103,7 @@ var kalimaData = [
     {title: "1. Kalima Tayyibah", ar: "لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَسُولُ اللهِ", ur: "اللہ کے سوا کوئی معبود نہیں، محمد (صلی اللہ علیہ وسلم) اللہ کے رسول ہیں۔"},
     {title: "2. Kalima Shahadah", ar: "أَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ", ur: "میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی عبادت کے لائق نہیں، اور میں گواہی دیتا ہوں کہ محمد ﷺ اس کے بندے اور رسول ہیں۔"},
     {title: "3. Kalima Tamjeed", ar: "سُبْحَانَ اللهِ وَالْحَمْدُ لِلّٰهِ وَلَا إِلٰهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ", ur: "اللہ پاک ہے اور سب تعریف اللہ ہی کے لیے ہے۔"},
-    {title: "4. Kalima Tauheed", ar: "لَا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ", ur: "اللہ کے سوا کوئی معبود نہیں وہ اکیلا ہے، بادشاہی اسی کی ہے اور اسی کے لیے تعریف ہے۔"},
+    {title: "4. Kalima Tauheed", ar: "لَا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ حَىٌّ لَّا يَمُوْتُ اَبَدًا اَبَدًا", ur: "اللہ کے سوا کوئی معبود نہیں وہ اکیلا ہے، بادشاہی اسی کی ہے اور اسی کے لیے تعریف ہے۔"},
     {title: "5. Kalima Astaghfar", ar: "أَسْتَغْفِرُ اللهَ رَبِّي مِنْ كُلِّ ذَنْبٍ أَذْنَبْتُهُ عَمَدًا أَوْ خَطَأً", ur: "میں اللہ سے اپنے تمام گناہوں کی معافی مانگتا ہوں جو میں نے جان بوجھ کر یا بھول کر کیے۔"},
     {title: "6. Kalima Rad-e-Kufr", ar: "اَللّٰهُمَّ اِنِّيْ أَعُوْذُ بِكَ مِنْ أَنْ أُشْرِكَ بِكَ شَيْئًا وَأَنَا أَعْلَمُ بِهِ", ur: "اے اللہ! میں تیری پناہ مانگتا ہوں اس بات سے کہ میں جان بوجھ کر کسی کو تیرا شریک ٹھہراؤں۔"}
 ];
@@ -111,9 +113,11 @@ var dailyDuas = [
     {title:"⭐ Dua-e-Qunoot (Namaz-e-Witr)", ar:"اللَّهُمَّ إِنَّا نَسْتَعِينُكَ وَنَسْتَغْفِرُكَ وَنُؤْمِنُ بِكَ وَنَتَوَكَّلُ عَلَيْكَ وَنُثْنِي عَلَيْكَ الْخَيْرَ، وَنَشْكُرُكَ وَلَا نَكْفُرُكَ، وَنَخْلَعُ وَنَتْرُكُ مَنْ يَّفْجُرُكَ۔ اللَّهُمَّ إِيَّاكَ نَعْبُدُ وَلَكَ نُصَلِّي وَنَسْجُدُ وَإِلَيْكَ نَسْعَى وَنَحْفِدُ، وَنَرْجُو رَحْمَتَكَ وَنَخْشَى عَذَابَكَ، إِنَّ عَذَابَكَ بِالْكُفَّارِ مُلْحِقٌ", ur:"اے اللہ! ہم تجھ سے مدد مانگتے ہیں، اور تجھ سے بخشش طلب کرتے ہیں، تجھ پر ایمان لاتے ہیں، تجھ پر بھروسہ کرتے ہیں اور تیری بہترین تعریف کرتے ہیں، اور ہم تیرا شکر ادا کرتے ہیں اور تیری ناشکری نہیں کرتے، اور جو تیری نافرمانی کرے ہم اس سے الگ ہوتے ہیں اور اسے چھوڑتے ہیں۔ اے اللہ! ہم تیری ہی عبادت کرتے ہیں، اور تیرے ہی لیے نماز پڑھتے اور سجدہ کرتے ہیں، اور تیری ہی طرف دوڑتے ہیں، اور تیری رحمت کے امیدوار ہیں اور تیرے عذاب سے ڈرتے ہیں، بیشک تیرا عذاب کافروں کو پہنچنے والا ہے۔"},
     {title:"⭐ Qunoot-e-Nazila (Fajr/Museebat)", ar:"اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ، وَعَافِنِي فِيمَنْ عَافَيْتَ، وَتَوَلَّنِي فِيمَنْ تَوَلَّيْتَ، وَبَارِكْ لِي فِيمَا أَعْطَيْتَ، وَقِنِي شَرَّ مَا قَضَيْتَ، إِنَّكَ تَقْضِي وَلَا يُقْضَى عَلَيْكَ، وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ، وَلَا يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ", ur:"اے اللہ! مجھے ہدایت دے ان لوگوں میں جنہیں تو نے ہدایت دی ہے، اور مجھے عافیت دے ان میں جنہیں تو نے عافیت دی، اور میرا کارساز بن ان میں جن کا تو کارساز بنا، اور مجھے برکت دے اس میں جو تو نے عطا کیا، اور مجھے بچا اس برائی سے جو تو نے مقدر کی ہے، بے شک تو ہی فیصلہ کرتا ہے اور تیرے خلاف فیصلہ نہیں کیا جا سکتا۔ جس کا تو دوست بنے وہ ذلیل نہیں ہوتا، اور جس کا تو دشمن بنے وہ عزت نہیں پاتا۔ اے ہمارے رب! تو بابرکت اور بہت بلند ہے۔"},
     {title:"Namaz-e-Janaza (Baligh Mard/Aurat)", ar:"اللَّهُمَّ اغْفِرْ لِحَيِّنَا وَمَيِّتِنَا وَشَاهِدِنَا وَغَائِبِنَا وَصَغِيرِنَا وَكَبِيرِنَا وَذَكَرِنَا وَأُنْثَانَا. اللَّهُمَّ مَنْ أَحْيَيْتَهُ مِنَّا فَأَحْيِهِ عَلَى الْإِسْلَامِ، وَمَنْ تَوَفَّيْتَهُ مِنَّا فَتَوَفَّهُ عَلَى الْإِيمَانِ", ur:"اے اللہ! ہمارے زندوں، مردوں، حاضر، غائب، چھوٹوں، بڑوں، مردوں اور عورتوں کو بخش دے۔ اے اللہ! ہم میں سے جسے تو زندہ رکھے اسے اسلام پر زندہ رکھ اور جسے تو موت دے اسے ایمان پر موت دے۔"},
-    {title:"Namaz-e-Janaza (Nabaligh Larka/Boy)", ar:"اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطًا وَاجْعَلْهُ لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهُ لَنَا شَافِعًا وَمُشَفَّعًا", ur:"اے اللہ! اس لڑکے کو ہمارے لیے آگے پہنچ کر سامان کرنے والا بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والا اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
-    {title:"Namaz-e-Janaza (Nabaligh Larki/Girl)", ar:"اللَّهُمَّ اجْعَلْهَا لَنَا فَرَطًا وَاجْعَلْهَا لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهَا لَنَا شَافِعَةً وَمُشَفَّعَةً", ur:"اے اللہ! اس لڑکی کو ہمارے لیے آگے پہنچ کر سامان کرنے والی بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والی اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
+    {title:"Namaz-e-Janaza (Nabaligh Larka)", ar:"اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطًا وَاجْعَلْهُ لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهُ لَنَا شَافِعًا وَمُشَفَّعًا", ur:"اے اللہ! اس لڑکے کو ہمارے لیے آگے پہنچ کر سامان کرنے والا بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والا اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
+    {title:"Namaz-e-Janaza (Nabaligh Larki)", ar:"اللَّهُمَّ اجْعَلْهَا لَنَا فَرَطًا وَاجْعَلْهَا لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهَا لَنَا شَافِعَةً وَمُشَفَّعَةً", ur:"اے اللہ! اس لڑکی کو ہمارے لیے آگے پہنچ کر سامان کرنے والی بنا دے، اور اجر اور ذخیرہ بنا دے، اور اسے ہمارے لیے سفارش کرنے والی اور وہ جس کی سفارش قبول کی جائے، بنا دے۔"},
     {title:"Mayyat ko Qabar mein Utarne ki Dua", ar:"بِسْمِ اللَّهِ وَعَلَى مِلَّةِ رَسُولِ اللَّهِ", ur:"اللہ کے نام سے اور رسول اللہ ﷺ کے دین پر (دفن کرتا ہوں)۔"},
+    {title:"Khana Khane se Pehle", ar:"بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", ur:"اللہ کے نام اور اللہ کی برکت پر کھاتا ہوں۔"},
+    {title:"Khana Khane ke Baad", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", ur:"سب تعریفیں اس اللہ کے لیے ہیں جس نے ہمیں کھلایا، پلایا اور مسلمان بنایا۔"},
     {title:"Sone se Pehle ki Dua", ar:"اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا", ur:"اے اللہ! میں تیرے ہی نام کے ساتھ مرتا (سوتا) اور جیتا (جاگتا) ہوں۔"}
 ];
 
@@ -174,7 +178,7 @@ function renderNames(type) {
 }
 
 // ==========================================
-// ZIKR O AZKAR 
+// ZIKR O AZKAR
 // ==========================================
 var zikrData = [
     {ar: "سُبْحَانَ اللهِ", ur: "اللہ پاک ہے", count: "33 Times"},
@@ -206,13 +210,6 @@ window.onload = async function() {
         renderKidsZone();
         fetchBayanatAPI(); 
 
-        // SAFE NOTIFICATION CHECK (Fixes the 5G crash!)
-        if ('Notification' in window) {
-            if (Notification.permission !== "granted" && Notification.permission !== "denied") { 
-                Notification.requestPermission().catch(e=>{}); 
-            }
-        }
-
         var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
         var arData = await arRes.json();
         var arSelect = document.getElementById("arReciter");
@@ -224,7 +221,6 @@ window.onload = async function() {
         document.getElementById("splashQuote").innerText = '"App is Ready."';
         document.getElementById("enterBtn").style.display = "block";
     } catch(e) { 
-        console.error(e);
         document.getElementById("splashQuote").innerText = "Starting App..."; 
         document.getElementById("enterBtn").style.display = "block"; 
     }
@@ -234,6 +230,14 @@ function startApp() {
     document.getElementById("splashScreen").style.display = "none";
     azanAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
     azanAudio.play().catch(e=>{});
+    
+    // SAFE NOTIFICATION TRIGGER (USER INITIATED - FIXES CRASH!)
+    if ('Notification' in window) {
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") { 
+            Notification.requestPermission().catch(e=>{}); 
+        }
+    }
+
     loadSettings();
     setInterval(checkAlarms, 60000); 
 }
@@ -243,11 +247,10 @@ function switchTab(id) {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     
-    // CLOSE MOBILE DRAWER ON TAB CLICK
     var sidebar = document.getElementById("sidebar");
     var overlay = document.getElementById("sidebarOverlay");
-    sidebar.className = sidebar.className.replace(" open", "");
-    overlay.className = overlay.className.replace(" open", "");
+    if(sidebar) sidebar.className = sidebar.className.replace(" open", "");
+    if(overlay) overlay.className = overlay.className.replace(" open", "");
 }
 
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
@@ -281,10 +284,13 @@ function loadSettings() {
 
 async function fetchPrayerTimes(forceOverwrite) {
     showLoad(true);
-    var city = document.getElementById("cityName").value, country = document.getElementById("countryName").value;
+    var city = document.getElementById("cityName").value || "Srinagar";
+    var country = document.getElementById("countryName").value || "India";
     try {
         var res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`);
+        if(!res.ok) throw new Error("API Limit");
         var data = await res.json();
+        
         document.getElementById("hijriDateDisplay").innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.en + " " + data.data.date.hijri.year + " AH";
         document.getElementById("sehriTime").innerText = data.data.timings.Imsak;
         document.getElementById("iftaarTime").innerText = data.data.timings.Maghrib;
@@ -310,7 +316,7 @@ async function fetchPrayerTimes(forceOverwrite) {
             html += `<tr class="${isToday}"><td>${day.date.gregorian.date}</td><td>${day.date.hijri.date} ${day.date.hijri.month.en}</td><td>${day.date.gregorian.weekday.en}</td></tr>`;
         });
         document.getElementById("calendarTable").innerHTML = html;
-    } catch(e) { showToast("Location Not Found."); }
+    } catch(e) { showToast("Using Backup Location Data."); }
     showLoad(false);
 }
 
@@ -359,7 +365,51 @@ function triggerAzan(name) {
 }
 
 // ==========================================
-// QURAN ENGINE 
+// BAYANAT API
+// ==========================================
+async function fetchBayanatAPI() {
+    var query = document.getElementById("alimSelect").value;
+    showLoad(true);
+    try {
+        var res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=podcast&entity=podcastEpisode&limit=200`);
+        var data = await res.json();
+        window.bayanData = data.results.filter(item => item.episodeUrl); 
+        window.bayanDisplayCount = 30; 
+        renderBayanList();
+    } catch(e) { showToast("Failed to load Bayanat."); }
+    showLoad(false);
+}
+
+function renderBayanList() {
+    var bSelect = document.getElementById("bayanSelect");
+    bSelect.innerHTML = ""; 
+    var limit = Math.min(window.bayanData.length, window.bayanDisplayCount);
+    if(window.bayanData.length === 0) { bSelect.add(new Option("No Audio Found", "")); return; }
+    for (var i = 0; i < limit; i++) { bSelect.add(new Option(window.bayanData[i].trackName || window.bayanData[i].collectionName, i)); }
+    if (window.bayanData.length > window.bayanDisplayCount) { bSelect.add(new Option("⬇️ --- Load More Bayans --- ⬇️", "load_more")); }
+}
+
+function handleBayanSelect() {
+    var val = document.getElementById("bayanSelect").value;
+    if (val === 'load_more') {
+        window.bayanDisplayCount += 30; 
+        renderBayanList();
+        document.getElementById("bayanSelect").value = window.bayanDisplayCount - 30; 
+    }
+}
+
+function playBayan() {
+    var index = document.getElementById("bayanSelect").value;
+    if(index === 'load_more' || !window.bayanData[index]) return;
+    var item = window.bayanData[index];
+    document.getElementById("currentBayanTitle").innerText = item.trackName;
+    var player = document.getElementById("bayanPlayer");
+    player.src = item.episodeUrl;
+    player.play().catch(e => showToast("Audio restricted by provider."));
+}
+
+// ==========================================
+// QURAN ENGINE
 // ==========================================
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
@@ -379,8 +429,8 @@ async function loadSurah() {
 
     try {
         var resAr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${r}`);
+        if(!resAr.ok) throw new Error("API Limit");
         var dataAr = await resAr.json();
-        if(dataAr.code !== 200) throw new Error("API Limit"); 
 
         var resTr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${l}`);
         var dataTr = await resTr.json();
@@ -430,8 +480,7 @@ async function loadSurah() {
                 playlist.push({ url: `https://everyayah.com/data/${u}/${padNum(sNum)}${padNum(ayah.numberInSurah)}.mp3`, num: ayah.numberInSurah, type: 'Translation', id: `ayah-${sNum}-${ayah.numberInSurah}` });
             });
         }
-
-    } catch(e) { showToast("Error! Check Number."); }
+    } catch(e) { showToast("Error loading Quran. Try again."); }
     showLoad(false);
 }
 
