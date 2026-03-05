@@ -3,7 +3,6 @@ var audioEngine = document.getElementById("audioEngine") || new Audio();
 var azanAudio = document.getElementById("azanAudio");
 var lastPlayedMinute = ""; 
 
-// SILENT WAKELOCK TO PREVENT OS SLEEP
 var wakeLockAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
 wakeLockAudio.loop = true;
 
@@ -24,9 +23,21 @@ function toggleMenu() {
 
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }
 
-// ==========================================
-// ISLAMIC PORTAL LOADER
-// ==========================================
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault(); deferredPrompt = e;
+    document.getElementById('installBox').style.display = 'block';
+});
+
+function installAppPrompt() {
+    if(deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(res) { document.getElementById('installBox').style.display = 'none'; deferredPrompt = null; });
+    } else {
+        alert("To Install:\n📱 Android: Chrome menu -> 'Add to Home Screen'\n🍎 iOS: Safari share menu -> 'Add to Home Screen'");
+    }
+}
+
 function loadPortal(url) {
     showLoad(true);
     document.getElementById("portalIframe").src = url;
@@ -34,7 +45,7 @@ function loadPortal(url) {
 }
 
 // ==========================================
-// 1. BAYANAT API (WORKING iTUNES LAZY LOAD)
+// BAYANAT API & NAATS LOCAL DB
 // ==========================================
 async function fetchBayanatAPI() {
     var query = document.getElementById("alimSelect").value;
@@ -53,16 +64,9 @@ function renderBayanList() {
     var bSelect = document.getElementById("bayanSelect");
     bSelect.innerHTML = ""; 
     var limit = Math.min(window.bayanData.length, window.bayanDisplayCount);
-    
     if(window.bayanData.length === 0) { bSelect.add(new Option("No Audio Found", "")); return; }
-
-    for (var i = 0; i < limit; i++) {
-        var item = window.bayanData[i];
-        bSelect.add(new Option(item.trackName || item.collectionName, i));
-    }
-    if (window.bayanData.length > window.bayanDisplayCount) {
-        bSelect.add(new Option("⬇️ --- Load More Bayans --- ⬇️", "load_more"));
-    }
+    for (var i = 0; i < limit; i++) { bSelect.add(new Option(window.bayanData[i].trackName || window.bayanData[i].collectionName, i)); }
+    if (window.bayanData.length > window.bayanDisplayCount) { bSelect.add(new Option("⬇️ --- Load More Bayans --- ⬇️", "load_more")); }
 }
 
 function handleBayanSelect() {
@@ -84,32 +88,80 @@ function playBayan() {
     player.play().catch(e => showToast("Audio restricted by provider."));
 }
 
-// ==========================================
-// 2. RESTORED DUAS
-// ==========================================
-var dailyDuas = [
-    {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا aur usi ki taraf uth kar jana hai.", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
-    {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"Allah ke naam se, main ne Allah par bharosa kiya...", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"},
-    {title:"Safar Ki Dua", ar:"سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ", ur:"Pak hai wo zaat jis ne is (sawari) ko hamare tabe kar diya...", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_04.mp3"}
-];
+var localNaatDb = {
+    "Junaid Jamshed": [{ title: "Mera Dil Badal De", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MeraDilBadalDe.mp3" }, { title: "Mohammad Ka Roza", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MohammadKaRoza.mp3" }],
+    "Awais Raza Qadri": [{ title: "Tajdar E Haram", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Tajdar%20E%20Haram%20Ae%20Shehenshah%20E%20Deen.mp3" }, { title: "Mera Waliyon Ke Imam", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Mera%20Waliyon%20Ke%20Imam.mp3" }],
+    "Sami Yusuf": [{ title: "Hasbi Rabbi", url: "https://archive.org/download/HasbiRabbiJallallahSamiYusuf_201708/Hasbi%20Rabbi%20Jallallah%20Sami%20Yusuf.mp3" }]
+};
 
-function renderDuas() {
-    var html = "";
-    dailyDuas.forEach(d => {
-        html += `<div class="dua-card"><h4 style="color:#b33939; margin-top:0; border-bottom:1px solid #eee; padding-bottom:5px;">${d.title}</h4><p class="arabic-text" style="color:#000;">${d.ar}</p><p class="urdu-font" style="border:none;">${d.ur}</p><audio controls style="width: 100%; outline: none; border-radius: 5px; margin-top:10px;"><source src="${d.audio}" type="audio/mpeg"></audio></div>`;
-    });
-    document.getElementById("duasContainer").innerHTML = html;
+function loadLocalNaats() {
+    var khawan = document.getElementById("naatKhawanSelect").value;
+    var nSelect = document.getElementById("naatSelect");
+    nSelect.innerHTML = "";
+    var naats = localNaatDb[khawan] || [];
+    if(naats.length === 0) { nSelect.add(new Option("No Naats Found", "")); return; }
+    naats.forEach(function(item, index) { nSelect.add(new Option(item.title, index)); });
+}
+
+function playNaat() {
+    var khawan = document.getElementById("naatKhawanSelect").value;
+    var index = document.getElementById("naatSelect").value;
+    var item = localNaatDb[khawan][index];
+    if(!item) return;
+    document.getElementById("currentNaatTitle").innerText = item.title;
+    var player = document.getElementById("naatPlayer");
+    player.src = item.url;
+    player.play().catch(e => showToast("Audio URL restricted."));
 }
 
 // ==========================================
-// INITIALIZATION
+// 6 KALIMAS & DUAS (ADDED QUNOOT NAZILA)
+// ==========================================
+var kalimaData = [
+    {title: "1. Kalima Tayyibah", ar: "لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَسُولُ اللهِ", ur: "اللہ کے سوا کوئی معبود نہیں، محمد (صلی اللہ علیہ وسلم) اللہ کے رسول ہیں۔"},
+    {title: "2. Kalima Shahadah", ar: "أَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ", ur: "میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی عبادت کے لائق نہیں، اور میں گواہی دیتا ہوں کہ محمد ﷺ اس کے بندے اور رسول ہیں۔"},
+    {title: "3. Kalima Tamjeed", ar: "سُبْحَانَ اللهِ وَالْحَمْدُ لِلّٰهِ وَلَا إِلٰهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ", ur: "اللہ پاک ہے اور سب تعریف اللہ ہی کے لیے ہے۔"},
+    {title: "4. Kalima Tauheed", ar: "لَا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ", ur: "اللہ کے سوا کوئی معبود نہیں وہ اکیلا ہے، بادشاہی اسی کی ہے اور اسی کے لیے تعریف ہے۔"},
+    {title: "5. Kalima Astaghfar", ar: "أَسْتَغْفِرُ اللهَ رَبِّي مِنْ كُلِّ ذَنْبٍ أَذْنَبْتُهُ", ur: "میں اللہ سے اپنے تمام گناہوں کی معافی مانگتا ہوں۔"},
+    {title: "6. Kalima Rad-e-Kufr", ar: "اَللّٰهُمَّ اِنِّيْ أَعُوْذُ بِكَ مِنْ أَنْ أُشْرِكَ بِكَ شَيْئًا وَأَنَا أَعْلَمُ بِهِ", ur: "اے اللہ! میں تیری پناہ مانگتا ہوں اس بات سے کہ میں جان بوجھ کر کسی کو تیرا شریک ٹھہراؤں۔"}
+];
+
+var dailyDuas = [
+    {title:"⭐ Qunoot-e-Nazila (Special Dua)", ar:"اللَّهُمَّ إِنَّا نَسْتَعِينُكَ وَنَسْتَغْفِرُكَ وَنُؤْمِنُ بِكَ وَنَتَوَكَّلُ عَلَيْكَ وَنُثْنِي عَلَيْكَ الْخَيْرَ", ur:"اے اللہ! ہم تجھ سے مدد مانگتے ہیں، اور تجھ سے بخشش طلب کرتے ہیں...", audio:""},
+    {title:"So Kar Uthne Ki Dua", ar:"الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", ur:"سب تعریف اللہ کے لیے ہے جس نے ہمیں مارنے کے بعد زندہ کیا...", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_02.mp3"},
+    {title:"Ghar Se Nikalne Ki Dua", ar:"بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", ur:"اللہ کے نام سے، main ne Allah par bharosa kiya...", audio:"https://www.hisnulmuslim.com/audio/ar/ar_01_03.mp3"}
+];
+
+function renderKalimaAndDuas() {
+    var kHtml = "";
+    kalimaData.forEach(k => {
+        kHtml += `<div class="dua-card"><h4 style="color:#b33939; margin-top:0;">${k.title}</h4><p class="arabic-text" style="font-size:28px;">${k.ar}</p><p class="urdu-font">${k.ur}</p></div>`;
+    });
+    document.getElementById("kalimaContainer").innerHTML = kHtml;
+
+    var dHtml = "";
+    dailyDuas.forEach(d => {
+        var audioTag = d.audio ? `<audio controls style="width:100%; margin-top:10px;"><source src="${d.audio}" type="audio/mpeg"></audio>` : "";
+        dHtml += `<div class="dua-card"><h4 style="color:#b33939; margin-top:0;">${d.title}</h4><p class="arabic-text" style="color:#000;">${d.ar}</p><p class="urdu-font">${d.ur}</p>${audioTag}</div>`;
+    });
+    document.getElementById("duasContainer").innerHTML = dHtml;
+}
+
+// ==========================================
+// INITIALIZATION & BACKGROUND DEFAULT FIX
 // ==========================================
 setInterval(() => { document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
 
 window.onload = async function() {
     try {
-        renderDuas();
+        renderKalimaAndDuas();
         fetchBayanatAPI(); 
+        loadLocalNaats();    
+
+        // Request Notification Permission for Background Alarms
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
 
         var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
         var arData = await arRes.json();
@@ -142,7 +194,7 @@ function switchTab(id) {
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
 // ==========================================
-// TIMINGS & FIXED HIJRI CALENDAR 
+// TIMINGS, IFTAR, AND DEFAULT ALARMS (ACTIVE BY DEFAULT)
 // ==========================================
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
@@ -153,6 +205,12 @@ function saveSettings() {
 }
 
 function loadSettings() {
+    // DEFAULT ALARMS ON FIX
+    if(localStorage.getItem("appInstalledOnce") !== "true") {
+        ["toggleFajr", "toggleDhuhr", "toggleAsr", "toggleMaghrib", "toggleIsha", "toggleJummah"].forEach(id => localStorage.setItem(id, "true"));
+        localStorage.setItem("appInstalledOnce", "true");
+    }
+
     if(localStorage.getItem("city")) {
         document.getElementById("cityName").value = localStorage.getItem("city");
         document.getElementById("countryName").value = localStorage.getItem("country");
@@ -170,6 +228,10 @@ async function fetchPrayerTimes(forceOverwrite) {
         var res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`);
         var data = await res.json();
         document.getElementById("hijriDateDisplay").innerText = data.data.date.hijri.date + " " + data.data.date.hijri.month.en + " " + data.data.date.hijri.year + " AH";
+
+        // SET SEHRI & IFTAR TIMES
+        document.getElementById("sehriTime").innerText = data.data.timings.Imsak;
+        document.getElementById("iftaarTime").innerText = data.data.timings.Maghrib;
 
         if(forceOverwrite) {
             var t = data.data.timings;
@@ -223,10 +285,23 @@ function checkAlarms() {
 }
 
 function triggerAzan(name) {
+    // 1. Play Audio if App is open
     azanAudio.src = document.getElementById("azanVoice").value; 
     audioEngine.pause(); 
-    azanAudio.play().catch(e => showToast("Azan blocked by browser. Please tap anywhere.")); 
+    azanAudio.play().catch(e => console.log("Audio Blocked")); 
     showToast("🕌 Azan Time: " + name); 
+
+    // 2. WAKE APP IN BACKGROUND USING SYSTEM PUSH NOTIFICATION
+    if (Notification.permission === "granted") {
+        navigator.serviceWorker.ready.then(function(registration) {
+            registration.showNotification("🕌 Azan Time: " + name, {
+                body: "It is time for " + name + " prayer.",
+                icon: "https://cdn-icons-png.flaticon.com/512/3073/3073860.png",
+                vibrate: [200, 100, 200, 100, 200],
+                requireInteraction: true
+            });
+        });
+    }
 }
 
 // ==========================================
@@ -329,23 +404,12 @@ function playTrack() {
     if(p !== undefined) {
         p.then(() => {
             isPlaying = true; 
-            
             if (document.visibilityState === 'visible') {
                 document.getElementById("playBtn").innerHTML = '<i class="fas fa-pause-circle"></i>';
                 document.getElementById("playerTitle").innerText = `Playing: Ayah ${track.num} (${track.type})`;
                 document.querySelectorAll('.ayah-row').forEach(el => el.classList.remove('playing-active'));
                 var row = document.getElementById(track.id);
                 if(row) { row.classList.add('playing-active'); row.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-            }
-
-            if ('mediaSession' in navigator) {
-                var surahNameText = document.querySelector(".surah-title") ? document.querySelector(".surah-title").innerText : "Al-Hikmah";
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: `Ayah ${track.num} (${track.type})`,
-                    artist: 'Al-Hikmah',
-                    album: surahNameText,
-                    artwork: [ { src: 'https://cdn-icons-png.flaticon.com/512/3073/3073860.png', sizes: '512x512', type: 'image/png' } ]
-                });
             }
         }).catch(e => { 
             isPlaying = false; 
@@ -364,9 +428,8 @@ function skipTrack(dir) {
 audioEngine.onerror = function() { currentTrackIndex++; if(currentTrackIndex < playlist.length) playTrack(); };
 audioEngine.onended = function() { currentTrackIndex++; playTrack(); };
 
-
 // ==========================================
-// HADITH ENGINE (WITH URDU & HINDI RESTORED)
+// HADITH ENGINE (WITH URDU & HINDI)
 // ==========================================
 async function searchQuran() {
     var k = document.getElementById("searchKeyword").value, e = document.getElementById("searchEdition").value; 
