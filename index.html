@@ -168,9 +168,10 @@
         </div>
 
         <button class="nav-btn active" onclick="switchTab('homeTab')"><i class="fas fa-clock"></i> Timings & Calendar</button>
-        <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Alquran With Tafseer</button>
-        <button class="nav-btn" onclick="switchTab('zakatTab')"><i class="fas fa-calculator"></i> Zakat Calculator</button>
+        <button class="nav-btn" onclick="switchTab('quranTab')"><i class="fas fa-book-open"></i> Alquran With Translation</button>
+        <button class="nav-btn" onclick="switchTab('tafseerTab')"><i class="fas fa-book-reader"></i> Global Tafseer Hub</button>
         
+        <button class="nav-btn" onclick="switchTab('zakatTab')"><i class="fas fa-calculator"></i> Zakat Calculator</button>
         <button class="nav-btn" onclick="switchTab('audioTab')"><i class="fas fa-headphones"></i> Bayanat Library</button>
         <button class="nav-btn" onclick="switchTab('naatTab')"><i class="fas fa-microphone"></i> Naat Collection</button>
         <button class="nav-btn" onclick="switchTab('tvTab')"><i class="fas fa-tv"></i> Live Islamic TV</button>
@@ -221,7 +222,6 @@
                     <div class="ramadan-time"><p>Iftaar Time (Maghrib)</p><h2 id="iftaarTime">--:--</h2></div>
                 </div>
                 <p id="iftarCountdown" style="color:var(--gold); font-size:22px; font-weight:bold; margin: 15px 0 5px 0; text-align:center; background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; border:1px solid var(--gold);">Loading Countdown...</p>
-                
                 <div style="border-top: 1px dashed rgba(212,175,55,0.4); padding-top:15px; display:flex; justify-content:space-around; text-align:center;">
                     <div style="width:48%;">
                         <h4 style="color:var(--gold); margin:0 0 5px 0;">Sehri Dua</h4>
@@ -281,13 +281,10 @@
             <div class="control-group"><label>Number</label><input type="number" id="readNumber" value="1" min="1" max="6236"></div>
             <div class="control-group"><label>Arabic Reciter</label><select id="arReciter"></select></div>
             <div class="control-group">
-                <label>Text Translation / Tafseer</label>
+                <label>Text Translation</label>
                 <select id="textLang">
-                    <option value="ur.maududi">Tafheem-ul-Quran (Maududi) - UR</option>
-                    <option value="ur.kanzuliman">Kanz-ul-Iman (Ahmed Raza) - UR</option>
                     <option value="ur.jalandhry">Jalandhry Translation - UR</option>
-                    <option value="ar.jalalayn">Tafsir Al-Jalalayn - AR</option>
-                    <option value="en.yusufali">Yusuf Ali Translation - EN</option>
+                    <option value="en.sahih">Sahih International - EN</option>
                     <option value="hi.hindi">Hindi Translation - HI</option>
                 </select>
             </div>
@@ -300,9 +297,29 @@
                     <option value="English/Sahih_Intnl_Ibrahim_Walk_192kbps">Ibrahim Walk (English)</option>
                 </select>
             </div>
+            <div class="control-group">
+                <label style="color:#b33939;">Playback Style</label>
+                <select id="audioPlayStyle">
+                    <option value="ayahByAyah">Ayah by Ayah (Ar -> Trans)</option>
+                    <option value="fullBlock">Full Block (All Arabic -> All Trans)</option>
+                </select>
+            </div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="loadSurah()">Load Mushaf</button></div>
         </div>
         <div id="quranContainer" style="display:none;"></div>
+    </div>
+
+    <div id="tafseerTab" class="section">
+        <h2 style="color:var(--gold); text-align:center;">Global Tafseer Hub</h2>
+        <p style="text-align:center; color:#ddd; font-size:14px; margin-top:-10px;">Access authentic Tafseers from around the world</p>
+        <div class="controls-bar">
+            <div class="control-group"><label>Select Surah</label><select id="tafseerSurah" onchange="loadTafseer()"></select></div>
+            <div class="control-group"><label>Ayah Number</label><input type="number" id="tafseerAyah" value="1" min="1" max="286" onchange="loadTafseer()"></div>
+            <div class="control-group"><label>Select Tafseer</label><select id="tafseerEdition" onchange="loadTafseer()"></select></div>
+        </div>
+        <div id="tafseerContent" style="background:#fff; color:#000; padding:20px; border-radius:8px; font-size:18px; line-height:1.8; min-height: 200px;">
+            <p style="text-align:center; color:#666;">Select a Surah, Ayah, and Tafseer edition to read.</p>
+        </div>
     </div>
 
     <div id="audioTab" class="section">
@@ -334,8 +351,8 @@
     <div id="tvTab" class="section">
         <h2 style="color:var(--gold); text-align: center;">Live Islamic Channels (Worldwide)</h2>
         <div class="video-grid">
-            <div class="video-card"><div class="video-title">Makkah Live (Masjid Al-Haram)</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC85Vp28oP4qNks1KxndK_RQ" allowfullscreen></iframe></div>
-            <div class="video-card"><div class="video-title">Madinah Live (Masjid An-Nabawi)</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UCAL4_m5bEqyM2vYw3E0nL4Q" allowfullscreen></iframe></div>
+            <div class="video-card"><div class="video-title">Makkah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC85Vp28oP4qNks1KxndK_RQ" allowfullscreen></iframe></div>
+            <div class="video-card"><div class="video-title">Madinah Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UCAL4_m5bEqyM2vYw3E0nL4Q" allowfullscreen></iframe></div>
             <div class="video-card"><div class="video-title">Madani Channel Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC0hQ0k8l88E5F9Y85H4O_Gg" allowfullscreen></iframe></div>
             <div class="video-card"><div class="video-title">ARY QTV Live</div><iframe src="https://live.aryqtv.tv/" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe></div>
             <div class="video-card"><div class="video-title">Iqra TV Live</div><iframe src="https://www.youtube.com/embed/live_stream?channel=UC-47i75nQO-x-tP9P1Oioag" allowfullscreen></iframe></div>
@@ -410,7 +427,7 @@
 
     <div id="knowledgeTab" class="section">
         <h2 style="color:var(--gold); margin-top:0;">Global Islamic Portals</h2>
-        <p style="color:#ddd; font-size:13px; margin-top:-10px;">Select to open securely (Prevents block/white screen)</p>
+        <p style="color:#ddd; font-size:13px; margin-top:-10px;">Select to open securely</p>
         <div class="widget-grid">
             <div class="widget-card" style="text-align:left;">
                 <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;">Quran, Hadith & Fatwa</h3>
@@ -457,7 +474,7 @@
     <div class="player-controls" style="text-align:center; margin-top:5px; width:100%;"><button onclick="skipTrack(-1)"><i class="fas fa-step-backward"></i></button><button id="playBtn" onclick="togglePlay()" style="color:var(--gold); font-size:40px;"><i class="fas fa-play-circle"></i></button><button onclick="skipTrack(1)"><i class="fas fa-step-forward"></i></button></div>
 </div>
 
-<script src="./app.js?v=26"></script>
+<script src="./app.js?v=27"></script>
 
 </body>
 </html>
