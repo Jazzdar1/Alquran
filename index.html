@@ -103,12 +103,8 @@
         .video-card iframe { width: 100%; aspect-ratio: 16/9; border: none; }
         .video-title { padding: 10px; text-align: center; font-weight: bold; background: rgba(212,175,55,0.2); color: var(--gold); font-size: 14px;}
 
-        .naatcity-container { width: 100%; height: calc(100vh - 200px); border: 2px solid var(--gold); border-radius: 10px; overflow: hidden; background: #fff; position: relative;}
-        .links-scroll-bar { display: flex; overflow-x: auto; gap: 10px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 1px solid var(--gold); margin-bottom: 15px;}
-        .links-scroll-bar::-webkit-scrollbar { height: 6px; }
-        .links-scroll-bar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-        .link-btn { white-space: nowrap; background: transparent; color: #fff; border: 1px solid var(--gold); padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
-        .link-btn:hover { background: var(--gold); color: #000; font-weight: bold; }
+        .ext-link { color: var(--gold); text-decoration: none; transition: 0.3s; font-size: 16px; display: block; padding: 8px 0; border-bottom: 1px solid rgba(212,175,55,0.2);}
+        .ext-link:hover { color: #fff; padding-left: 5px; }
 
         .about-wrapper { background: rgba(0,0,0,0.5); border: 1px solid var(--gold); padding: 30px; border-radius: 15px; max-width: 800px; margin: 0 auto; line-height: 1.8;}
         .about-wrapper h3 { color: var(--gold); border-bottom: 1px dashed var(--gold); padding-bottom: 10px;}
@@ -194,7 +190,7 @@
 
 <div class="main-content">
     <div id="loading" style="display:none; text-align:center; color:var(--gold); margin-bottom: 20px;">
-        <i class="fas fa-spinner fa-spin fa-3x"></i><br>Processing Data API...
+        <i class="fas fa-spinner fa-spin fa-3x"></i><br>Loading Data Fast...
     </div>
 
     <div id="homeTab" class="section active">
@@ -247,7 +243,7 @@
             </div>
 
             <div class="widget-card" style="grid-column: 1 / -1;">
-                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-bell"></i> Namaz Alarms (Background Enabled)</h3>
+                <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;"><i class="fas fa-bell"></i> Namaz Alarms</h3>
                 <div style="text-align:left; line-height:2.8; font-size:1.1rem; width:100%; display:flex; flex-wrap:wrap; justify-content:space-between;">
                     <div style="width:48%;"><label><input type="checkbox" id="toggleFajr" onchange="saveSettings()"> Fajr:</label> <input type="time" id="timeFajr" class="time-input" onchange="saveSettings()"></div>
                     <div style="width:48%;"><label><input type="checkbox" id="toggleDhuhr" onchange="saveSettings()"> Dhuhr:</label> <input type="time" id="timeDhuhr" class="time-input" onchange="saveSettings()"></div>
@@ -291,12 +287,12 @@
             <div class="control-group">
                 <label>Text Translation</label>
                 <select id="textLang">
-                    <option value="ur.kanzuliman">Kanz-ul-Iman (Ahmed Raza) - UR</option>
+                    <option value="ur.kanzuliman">Kanz-ul-Iman (Ala Hazrat) - UR</option>
                     <option value="ur.jalandhry">Jalandhry Translation - UR</option>
                     <option value="ur.maududi">Tafheem-ul-Quran (Maududi) - UR</option>
                     <option value="en.yusufali">Yusuf Ali Translation - EN</option>
                     <option value="en.sahih">Sahih International - EN</option>
-                    <option value="hi.hindi">Hindi Translation - HI</option>
+                    <option value="hi.hindi">Suhel Farooq Khan - HI</option>
                 </select>
             </div>
             <div class="control-group">
@@ -329,12 +325,29 @@
             <div class="control-group">
                 <label>Select Tafseer</label>
                 <select id="tafseerEdition">
-                    <option value="ar.jalalayn">Tafsir Al-Jalalayn (Arabic)</option>
-                    <option value="ar.qurtubi">Tafsir Al-Qurtubi (Arabic)</option>
-                    <option value="ar.miqbas">Tafsir Ibn Abbas (Arabic)</option>
-                    <option value="ur.maududi">Tafheem-ul-Quran (Urdu)</option>
-                    <option disabled>----------------------</option>
-                    </select>
+                    <optgroup label="Urdu Tafseer & Translations">
+                        <option value="ur.kanzuliman">Kanz-ul-Iman (Ala Hazrat) - UR</option>
+                        <option value="ur.maududi">Tafheem-ul-Quran (Maududi) - UR</option>
+                        <option value="ur.jalandhry">Fateh Muhammad Jalandhry - UR</option>
+                        <option value="ur.qadri">Irfan-ul-Quran (Tahir ul Qadri) - UR</option>
+                    </optgroup>
+                    <optgroup label="Hindi Tafseer & Translations">
+                        <option value="hi.hindi">Suhel Farooq Khan & Nadwi - HI</option>
+                        <option value="hi.farooq">Muhammad Farooq Khan - HI</option>
+                    </optgroup>
+                    <optgroup label="Arabic Authentic Tafseers">
+                        <option value="ar.jalalayn">Tafsir Al-Jalalayn (Arabic)</option>
+                        <option value="ar.qurtubi">Tafsir Al-Qurtubi (Arabic)</option>
+                        <option value="ar.miqbas">Tafsir Ibn Abbas (Arabic)</option>
+                        <option value="ar.muyassar">Tafsir Al-Muyassar (Arabic)</option>
+                        <option value="ar.baghawi">Tafsir Al-Baghawi (Arabic)</option>
+                    </optgroup>
+                    <optgroup label="English Tafseer & Translations">
+                        <option value="en.maududi">Tafheem-ul-Quran - EN</option>
+                        <option value="en.yusufali">Abdullah Yusuf Ali - EN</option>
+                        <option value="en.sahih">Sahih International - EN</option>
+                    </optgroup>
+                </select>
             </div>
             <div class="control-group" style="justify-content: flex-end;"><button class="action-btn" onclick="loadTafseer()">Load Tafseer</button></div>
         </div>
@@ -448,7 +461,7 @@
 
     <div id="knowledgeTab" class="section">
         <h2 style="color:var(--gold); margin-top:0;">Global Islamic Portals</h2>
-        <p style="color:#ddd; font-size:13px; margin-top:-10px;">Select to open securely (Prevents block/white screen)</p>
+        <p style="color:#ddd; font-size:13px; margin-top:-10px;">Select to open securely</p>
         <div class="widget-grid">
             <div class="widget-card" style="text-align:left;">
                 <h3 style="border-bottom: 1px dashed var(--gold); padding-bottom:10px;">Quran, Hadith & Fatwa</h3>
@@ -495,7 +508,7 @@
     <div class="player-controls" style="text-align:center; margin-top:5px; width:100%;"><button onclick="skipTrack(-1)"><i class="fas fa-step-backward"></i></button><button id="playBtn" onclick="togglePlay()" style="color:var(--gold); font-size:40px;"><i class="fas fa-play-circle"></i></button><button onclick="skipTrack(1)"><i class="fas fa-step-forward"></i></button></div>
 </div>
 
-<script src="./app.js?v=28"></script>
+<script src="./app.js?v=29"></script>
 
 </body>
 </html>
