@@ -95,24 +95,18 @@ function speakArabic(text) {
 }
 
 // ==========================================
-// GLOBAL TAFSEER HUB (LOAD ON BUTTON CLICK)
+// GLOBAL TAFSEER HUB (LIGHTNING FAST - PARALLEL FETCH)
 // ==========================================
-async function initTafseer() {
-    try {
-        var tafRes = await fetch('https://api.alquran.cloud/v1/edition/type/tafsir');
-        var tafData = await tafRes.json();
-        var tSelect = document.getElementById("tafseerEdition");
-        tafData.data.forEach(t => {
-            tSelect.add(new Option(`${t.englishName} (${t.language.toUpperCase()})`, t.identifier));
-        });
+const surahsList = ["Al-Fatihah","Al-Baqarah","Aal-e-Imran","An-Nisa","Al-Ma'idah","Al-An'am","Al-A'raf","Al-Anfal","At-Tawbah","Yunus","Hud","Yusuf","Ar-Ra'd","Ibrahim","Al-Hijr","An-Nahl","Al-Isra","Al-Kahf","Maryam","Ta-Ha","Al-Anbiya","Al-Hajj","Al-Mu'minun","An-Nur","Al-Furqan","Ash-Shu'ara","An-Naml","Al-Qasas","Al-'Ankabut","Ar-Rum","Luqman","As-Sajdah","Al-Ahzab","Saba","Fatir","Ya-Sin","As-Saffat","Sad","Az-Zumar","Ghafir","Fussilat","Ash-Shura","Az-Zukhruf","Ad-Dukhan","Al-Jathiyah","Al-Ahqaf","Muhammad","Al-Fath","Al-Hujurat","Qaf","Ad-Dhariyat","At-Tur","An-Najm","Al-Qamar","Ar-Rahman","Al-Waqi'ah","Al-Hadid","Al-Mujadilah","Al-Hashr","Al-Mumtahanah","As-Saff","Al-Jumu'ah","Al-Munafiqun","At-Taghabun","At-Talaq","At-Tahrim","Al-Mulk","Al-Qalam","Al-Haqqah","Al-Ma'arij","Nuh","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyamah","Al-Insan","Al-Mursalat","An-Naba","An-Nazi'at","Abasa","At-Takwir","Al-Infitar","Al-Mutaffifin","Al-Inshiqaq","Al-Buruj","At-Tariq","Al-A'la","Al-Ghashiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Lail","Ad-Duha","Al-Inshirah","At-Tin","Al-'Alaq","Al-Qadr","Al-Bayyinah","Al-Zilzal","Al-'Adiyat","Al-Qari'ah","At-Takathur","Al-'Asr","Al-Humazah","Al-Fil","Al-Quraish","Al-Ma'un","Al-Kauthar","Al-Kafirun","An-Nasr","Al-Masad","Al-Ikhlas","Al-Falaq","An-Nas"];
+var tafseerCache = {};
 
-        var sRes = await fetch('https://api.alquran.cloud/v1/surah');
-        var sData = await sRes.json();
-        var sSelect = document.getElementById("tafseerSurah");
-        sData.data.forEach(s => {
-            sSelect.add(new Option(`${s.number}. ${s.englishName} - ${s.name}`, s.number));
+function initStaticData() {
+    var sSelect = document.getElementById("tafseerSurah");
+    if(sSelect) {
+        surahsList.forEach((name, index) => {
+            sSelect.add(new Option(`${index + 1}. ${name}`, index + 1));
         });
-    } catch(e) { console.log("Tafseer Init Error"); }
+    }
 }
 
 async function loadTafseer() {
@@ -123,20 +117,35 @@ async function loadTafseer() {
     
     if(!s || !a || !e) return;
     
+    var cacheKey = s + "-" + a + "-" + e;
+    if(tafseerCache[cacheKey]) {
+        div.innerHTML = tafseerCache[cacheKey];
+        return;
+    }
+    
     showLoad(true);
     try {
-        var arRes = await fetch(`https://api.alquran.cloud/v1/ayah/${s}:${a}/quran-uthmani`);
-        var arData = await arRes.json();
-        var tafRes = await fetch(`https://api.alquran.cloud/v1/ayah/${s}:${a}/${e}`);
-        var tafData = await tafRes.json();
+        // Parallel Fetch = 2x Speed
+        const [arRes, tafRes] = await Promise.all([
+            fetch(`https://api.alquran.cloud/v1/ayah/${s}:${a}/quran-uthmani`),
+            fetch(`https://api.alquran.cloud/v1/ayah/${s}:${a}/${e}`)
+        ]);
+        
+        const arData = await arRes.json();
+        const tafData = await tafRes.json();
         
         var lang = tafData.data.edition.language;
         var dir = (lang === 'ar' || lang === 'ur' || lang === 'fa') ? 'rtl' : 'ltr';
-        var font = dir === 'rtl' ? 'Noto Nastaliq Urdu' : 'Poppins';
+        if (lang === 'hi') dir = 'ltr'; // Hindi left-to-right fix
         
-        div.innerHTML = `<h3 style="text-align:center; color:#b33939; font-family:'Amiri Quran'; font-size:32px;">${arData.data.text} <span class="ayah-marker">۝${toArabicNum(arData.data.numberInSurah)}</span></h3><hr style="border-color:var(--gold); opacity:0.3; margin:20px 0;"><p style="direction:${dir}; font-family:'${font}', sans-serif; font-size:18px;">${tafData.data.text}</p>`;
+        var font = (dir === 'rtl' && lang !== 'hi') ? 'Noto Nastaliq Urdu' : 'Poppins';
+        
+        var html = `<h3 style="text-align:center; color:#b33939; font-family:'Amiri Quran'; font-size:32px;">${arData.data.text} <span class="ayah-marker">۝${toArabicNum(arData.data.numberInSurah)}</span></h3><hr style="border-color:var(--gold); opacity:0.3; margin:20px 0;"><p style="direction:${dir}; font-family:'${font}', sans-serif; font-size:18px;">${tafData.data.text}</p>`;
+        
+        tafseerCache[cacheKey] = html;
+        div.innerHTML = html;
     } catch(err) {
-        div.innerHTML = "<p style='color:red; text-align:center;'>Tafseer not found for this specific Ayah in the selected book. Try a different Ayah or Book.</p>";
+        div.innerHTML = "<p style='color:red; text-align:center;'>Tafseer not found for this specific Ayah in the selected book. Try a different Ayah.</p>";
     }
     showLoad(false);
 }
@@ -197,8 +206,34 @@ function renderKalimaAndDuas() {
 // ==========================================
 // FULL 99 NAMES OF ALLAH & MUHAMMAD (PBUH)
 // ==========================================
-var allahNames = [{ar:"ٱلرَّحْمَـٰنُ", ur:"بڑا مہربان"},{ar:"ٱلرَّحِيمُ", ur:"نہایت رحم والا"},{ar:"ٱلْمَلِكُ", ur:"بادشاہ"},{ar:"ٱلْقُدُّوسُ", ur:"پاک ذات"},{ar:"ٱلسَّلَامُ", ur:"سلامتی دینے والا"},{ar:"ٱلْمُؤْمِنُ", ur:"امن دینے والا"},{ar:"ٱلْمُهَيْمِنُ", ur:"نگہبان"},{ar:"ٱلْعَزِيزُ", ur:"غالب"},{ar:"ٱلْجَبَّارُ", ur:"زبردست"},{ar:"ٱلْمُتَكَبِّرُ", ur:"بڑائی والا"},{ar:"ٱلْخَالِقُ", ur:"پیدا کرنے والا"},{ar:"ٱلْبَارِئُ", ur:"جان ڈالنے والا"},{ar:"ٱلْمُصَوِّرُ", ur:"صورت بنانے والا"},{ar:"ٱلْغَفَّارُ", ur:"بڑا بخشنے والا"},{ar:"ٱلْقَهَّارُ", ur:"سب پر غالب"},{ar:"ٱلْوَهَّابُ", ur:"سب کچھ دینے والا"},{ar:"ٱلرَّزَّاقُ", ur:"روزی دینے والا"},{ar:"ٱلْفَتَّاحُ", ur:"دروازے کھولنے والا"},{ar:"ٱلْعَلِيمُ", ur:"سب کچھ جاننے والا"},{ar:"ٱلْقَابِضُ", ur:"روزی تنگ کرنے والا"},{ar:"ٱلْبَاسِطُ", ur:"روزی کشادہ کرنے والا"},{ar:"ٱلْخَافِضُ", ur:"پست کرنے والا"},{ar:"ٱلرَّافِعُ", ur:"بلند کرنے والا"},{ar:"ٱلْمُعِزُّ", ur:"عزت دینے والا"},{ar:"ٱلْمُذِلُّ", ur:"ذلت دینے والا"},{ar:"ٱلسَّمِيعُ", ur:"سب کچھ سننے والا"},{ar:"ٱلْبَصِيرُ", ur:"سب کچھ دیکھنے والا"},{ar:"ٱلْحَكَمُ", ur:"فیصلہ کرنے والا"},{ar:"ٱلْعَدْلُ", ur:"انصاف کرنے والا"},{ar:"ٱللَّطِيفُ", ur:"لطف و کرم کرنے والا"},{ar:"ٱلْخَبِيرُ", ur:"باخبر"},{ar:"ٱلْحَلِيمُ", ur:"بردبار"},{ar:"ٱلْعَظِيمُ", ur:"بزرگی والا"},{ar:"ٱلْغَفُورُ", ur:"بخشنے والا"},{ar:"ٱلشَّكُورُ", ur:"قدردان"},{ar:"ٱلْعَلِيُّ", ur:"بلند و بالا"},{ar:"ٱلْكَبِيرُ", ur:"بہت بڑا"},{ar:"ٱلْحَفِيظُ", ur:"حفاظت کرنے والا"},{ar:"ٱلْمُقِيتُ", ur:"قوت دینے والا"},{ar:"ٱلْحَسِيبُ", ur:"حساب لینے والا"},{ar:"ٱلْجَلِيلُ", ur:"بزرگ"},{ar:"ٱلْكَرِيمُ", ur:"کرم کرنے والا"},{ar:"ٱلرَّقِيبُ", ur:"نگہبان"},{ar:"ٱلْمُجِيبُ", ur:"دعا قبول کرنے والا"},{ar:"ٱلْوَاسِعُ", ur:"وسعت والا"},{ar:"ٱلْحَكِيمُ", ur:"حکمت والا"},{ar:"ٱلْوَدُودُ", ur:"محبت کرنے والا"},{ar:"ٱلْمَجِيدُ", ur:"بزرگی والا"},{ar:"ٱلْبَاعِثُ", ur:"اٹھانے والا"},{ar:"ٱلشَّهِيدُ", ur:"حاضر"},{ar:"ٱلْحَقُّ", ur:"سچا"},{ar:"ٱلْوَكِيلُ", ur:"کارساز"},{ar:"ٱلْقَوِيُّ", ur:"طاقتور"},{ar:"ٱلْمَتِينُ", ur:"مضبوط"},{ar:"ٱلْوَلِيُّ", ur:"دوست"},{ar:"ٱلْحَمِيدُ", ur:"تعریف کے لائق"},{ar:"ٱلْمُحْصِي", ur:"شمار کرنے والا"},{ar:"ٱلْمُبْدِئُ", ur:"پہلی بار پیدا کرنے والا"},{ar:"ٱلْمُعِيدُ", ur:"دوبارہ پیدا کرنے والا"},{ar:"ٱلْمُحْيِي", ur:"زندہ کرنے والا"},{ar:"ٱلْمُمِيتُ", ur:"موت دینے والا"},{ar:"ٱلْحَيُّ", ur:"ہمیشہ زندہ رہنے والا"},{ar:"ٱلْقَيُّومُ", ur:"سب کو قائم رکھنے والا"},{ar:"ٱلْوَاجِدُ", ur:"پانے والا"},{ar:"ٱلْمَاجِدُ", ur:"بزرگی والا"},{ar:"ٱلْوَاحِدُ", ur:"ایک"},{ar:"ٱلْأَحَد", ur:"اکیلا"},{ar:"ٱلصَّمَدُ", ur:"بے نیاز"},{ar:"ٱلْقَادِرُ", ur:"قدرت والا"},{ar:"ٱلْمُقْتَدِرُ", ur:"کامل قدرت والا"},{ar:"ٱلْمُقَدِّمُ", ur:"آگے کرنے والا"},{ar:"ٱلْمُؤَخِّرُ", ur:"پیچھے کرنے والا"},{ar:"ٱلْأَوَّلُ", ur:"سب سے پہلا"},{ar:"ٱلْآخِرُ", ur:"سب سے آخری"},{ar:"ٱلظَّاهِرُ", ur:"ظاہر"},{ar:"ٱلْبَاطِنُ", ur:"پوشیدہ"},{ar:"ٱلْوَالِي", ur:"مالک"},{ar:"ٱلْمُتَعَالِي", ur:"بلند و برتر"},{ar:"ٱلْبَرُّ", ur:"بھلائی کرنے والا"},{ar:"ٱلتَّوَّابُ", ur:"توبہ قبول کرنے والا"},{ar:"ٱلْمُنْتَقِمُ", ur:"بدلہ لینے والا"},{ar:"ٱلْعَفُوُّ", ur:"معاف کرنے والا"},{ar:"ٱلرَّءُوفُ", ur:"بہت مہربان"},{ar:"مَالِكُ ٱلْمُلْكِ", ur:"تمام ملک کا مالک"},{ar:"ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ", ur:"جلال اور انعام والا"},{ar:"ٱلْمُقْسِطُ", ur:"انصاف کرنے والا"},{ar:"ٱلْجَامِعُ", ur:"جمع کرنے والا"},{ar:"ٱلْغَنِيُّ", ur:"بے نیاز"},{ar:"ٱلْمُغْنِي", ur:"غنی کرنے والا"},{ar:"ٱلْمَانِعُ", ur:"روکنے والا"},{ar:"ٱلضَّارُّ", ur:"نقصان پہنچانے والا"},{ar:"ٱلنَّافِعُ", ur:"نفع پہنچانے والا"},{ar:"ٱلنُّورُ", ur:"روشن کرنے والا"},{ar:"ٱلْهَادِي", ur:"ہدایت دینے والا"},{ar:"ٱلْبَدِيعُ", ur:"نئی طرح پیدا کرنے والا"},{ar:"ٱلْبَاقِي", ur:"باقی رہنے والا"},{ar:"ٱلْوَارِثُ", ur:"سب کا وارث"},{ar:"ٱلرَّشِيدُ", ur:"رہنمائی کرنے والا"},{ar:"ٱلصَّبُورُ", ur:"صبر کرنے والا"}];
-var prophetNames = [{ar:"مُحَمَّدٌ", ur:"بہت تعریف کیا گیا"}, {ar:"أَحْمَدُ", ur:"سب سے زیادہ تعریف کرنے والا"}, {ar:"حَامِدٌ", ur:"اللہ کی تعریف کرنے والا"}, {ar:"مَحْمُودٌ", ur:"جس کی تعریف کی گئی ہو"}, {ar:"قَاسِمٌ", ur:"تقسیم کرنے والا"}, {ar:"عَاقِبٌ", ur:"سب سے آخر میں آنے والا"}, {ar:"فَاتِحٌ", ur:"فتح کرنے والا"}, {ar:"شَاهِدٌ", ur:"گواہی دینے والا"}, {ar:"حَاشِرٌ", ur:"جمع کرنے والا"}, {ar:"رَشِيدٌ", ur:"ہدایت یافتہ"}, {ar:"مَشْهُودٌ", ur:"جس کی گواہی دی گئی"}, {ar:"بَشِيرٌ", ur:"خوشخبری دینے والا"}, {ar:"نَذِيرٌ", ur:"ڈرانے والا"}, {ar:"دَاعٍ", ur:"بلانے والا"}, {ar:"شَافٍ", ur:"شفا دینے والا"}, {ar:"هَادٍ", ur:"ہدایت دینے والا"}, {ar:"مَهْدِيٌّ", ur:"ہدایت یافتہ"}, {ar:"مَاحٍ", ur:"کفر مٹانے والا"}, {ar:"مُنْجٍ", ur:"نجات دلانے والا"}, {ar:"نَاهٍ", ur:"منع کرنے والا"}, {ar:"رَسُولٌ", ur:"پیغام پہنچانے والا"}, {ar:"نَبِيٌّ", ur:"غیب کی خبر دینے والا"}, {ar:"أُمِّيٌّ", ur:"ان پڑھ"}, {ar:"تِهَامِيٌّ", ur:"تہامہ کا رہنے والا"}, {ar:"هَاشِمِيٌّ", ur:"بنی ہاشم سے"}, {ar:"أَبْطَحِيٌّ", ur:"بطحاء والا"}, {ar:"عَزِيزٌ", ur:"عزت والا"}, {ar:"حَرِيصٌ", ur:"بھلائی چاہنے والا"}, {ar:"رَءُوفٌ", ur:"بہت مہربان"}, {ar:"رَحِيمٌ", ur:"رحم کرنے والا"}, {ar:"طٰهٰ", ur:"طہٰ"}, {ar:"يٰسٓ", ur:"یس"}, {ar:"مُزَّمِّلٌ", ur:"چادر اوڑھنے والا"}, {ar:"مُدَّثِّرٌ", ur:"کمبل اوڑھنے والا"}, {ar:"مُصْطَفَىٰ", ur:"چنا ہوا"}, {ar:"مُجْتَبَىٰ", ur:"منتخب کیا گیا"}, {ar:"مُرْتَضَىٰ", ur:"پسندیدہ"}, {ar:"مُخْتَارٌ", ur:"چنا ہوا"}, {ar:"نَاصِرٌ", ur:"مددگار"}, {ar:"مَنْصُورٌ", ur:"جس کی مدد کی گئی ہو"}, {ar:"قَائِمٌ", ur:"قائم رہنے والا"}, {ar:"مُطِيعٌ", ur:"فرمانبردار"}, {ar:"مُخْبِتٌ", ur:"عاجزی کرنے والا"}, {ar:"خَاتَمٌ", ur:"ختم کرنے والا"}, {ar:"شَكُورٌ", ur:"شکر گزار"}, {ar:"قَرِيبٌ", ur:"قریب"}, {ar:"خَلِيلٌ", ur:"گہرا دوست"}, {ar:"صَفِيٌّ", ur:"خالص دوست"}, {ar:"طَاهِرٌ", ur:"پاک"}, {ar:"مُطَهَّرٌ", ur:"پاک کیا گیا"}, {ar:"طَيِّبٌ", ur:"پاکیزہ"}, {ar:"سَيِّدٌ", ur:"سردار"}, {ar:"مُبِينٌ", ur:"واضح کرنے والا"}, {ar:"بُرْهَانٌ", ur:"دلیل"}, {ar:"حُجَّةٌ", ur:"حجت"}, {ar:"صَادِقٌ", ur:"سچا"}, {ar:"مَصْدُوقٌ", ur:"سچا مانا گیا"}, {ar:"أَمِينٌ", ur:"امانت دار"}, {ar:"صَاحِبٌ", ur:"ساتھی"}, {ar:"مَكِّيٌّ", ur:"مکہ کا رہنے والا"}, {ar:"مَدَنِيٌّ", ur:"مدینہ کا رہنے والا"}, {ar:"عَرَبِيٌّ", ur:"عرب"}, {ar:"قُرَشِيٌّ", ur:"قریشی"}, {ar:"عَبْدُ اللَّهِ", ur:"اللہ کا بندہ"}, {ar:"خَيْرُ الْخَلْقِ", ur:"مخلوق میں سب سے بہتر"}, {ar:"سِرَاجٌ", ur:"چراغ"}, {ar:"مُنِيرٌ", ur:"روشن"}, {ar:"مُذَكِّرٌ", ur:"نصیحت کرنے والا"}, {ar:"وَلِيٌّ", ur:"دوست"}, {ar:"حَبِيبٌ", ur:"پیارا"}, {ar:"مُتَوَكِّلٌ", ur:"بھروسہ کرنے والا"}, {ar:"شَفِيعٌ", ur:"سفارش کرنے والا"}, {ar:"مُشَفَّعٌ", ur:"جس کی سفارش قبول ہو"}, {ar:"مُقَدَّمٌ", ur:"آگے کیا گیا"}, {ar:"مُؤَخَّرٌ", ur:"پیچھے کیا گیا"}, {ar:"فَاضِلٌ", ur:"فضیلت والا"}, {ar:"مُفَضَّلٌ", ur:"جسے فضیلت دی گئی"}, {ar:"كَرِيمٌ", ur:"کرم کرنے والا"}, {ar:"مُكَرَّمٌ", ur:"جس کی تکریم کی گئی"}, {ar:"مُعَظَّمٌ", ur:"عظمت والا"}, {ar:"غُوثٌ", ur:"مدد کرنے والا"}, {ar:"غِيَاثٌ", ur:"فریاد رس"}, {ar:"مُقِيتٌ", ur:"قوت دینے والا"}, {ar:"مُغِيثٌ", ur:"مدد کرنے والا"}, {ar:"عَفُوٌّ", ur:"معاف کرنے والا"}, {ar:"مُتَجَاوِزٌ", ur:"درگزر کرنے والا"}, {ar:"حَلِيمٌ", ur:"بردبار"}, {ar:"صَبُورٌ", ur:"صبر کرنے والا"}, {ar:"شَكُورٌ", ur:"قدردان"}, {ar:"عَالِمٌ", ur:"جاننے والا"}, {ar:"عَلِيمٌ", ur:"بہت جاننے والا"}, {ar:"عَلَّامٌ", ur:"بہت زیادہ جاننے والا"}, {ar:"مُعَلِّمٌ", ur:"سکھانے والا"}, {ar:"مُيَسِّرٌ", ur:"آسانی کرنے والا"}, {ar:"مُبَشِّرٌ", ur:"خوشخبری دینے والا"}];
+var allahNames = [
+    {ar:"ٱلرَّحْمَـٰنُ", ur:"بڑا مہربان"},{ar:"ٱلرَّحِيمُ", ur:"نہایت رحم والا"},{ar:"ٱلْمَلِكُ", ur:"بادشاہ"},{ar:"ٱلْقُدُّوسُ", ur:"پاک ذات"},{ar:"ٱلسَّلَامُ", ur:"سلامتی دینے والا"},{ar:"ٱلْمُؤْمِنُ", ur:"امن دینے والا"},{ar:"ٱلْمُهَيْمِنُ", ur:"نگہبان"},{ar:"ٱلْعَزِيزُ", ur:"غالب"},{ar:"ٱلْجَبَّارُ", ur:"زبردست"},{ar:"ٱلْمُتَكَبِّرُ", ur:"بڑائی والا"},{ar:"ٱلْخَالِقُ", ur:"پیدا کرنے والا"},{ar:"ٱلْبَارِئُ", ur:"جان ڈالنے والا"},{ar:"ٱلْمُصَوِّرُ", ur:"صورت بنانے والا"},{ar:"ٱلْغَفَّارُ", ur:"بڑا بخشنے والا"},{ar:"ٱلْقَهَّارُ", ur:"سب پر غالب"},{ar:"ٱلْوَهَّابُ", ur:"سب کچھ دینے والا"},{ar:"ٱلرَّزَّاقُ", ur:"روزی دینے والا"},{ar:"ٱلْفَتَّاحُ", ur:"دروازے کھولنے والا"},{ar:"ٱلْعَلِيمُ", ur:"سب کچھ جاننے والا"},{ar:"ٱلْقَابِضُ", ur:"روزی تنگ کرنے والا"},{ar:"ٱلْبَاسِطُ", ur:"روزی کشادہ کرنے والا"},{ar:"ٱلْخَافِضُ", ur:"پست کرنے والا"},{ar:"ٱلرَّافِعُ", ur:"بلند کرنے والا"},{ar:"ٱلْمُعِزُّ", ur:"عزت دینے والا"},{ar:"ٱلْمُذِلُّ", ur:"ذلت دینے والا"},{ar:"ٱلسَّمِيعُ", ur:"سب کچھ سننے والا"},{ar:"ٱلْبَصِيرُ", ur:"سب کچھ دیکھنے والا"},{ar:"ٱلْحَكَمُ", ur:"فیصلہ کرنے والا"},{ar:"ٱلْعَدْلُ", ur:"انصاف کرنے والا"},{ar:"ٱللَّطِيفُ", ur:"لطف و کرم کرنے والا"},{ar:"ٱلْخَبِيرُ", ur:"باخبر"},{ar:"ٱلْحَلِيمُ", ur:"بردبار"},{ar:"ٱلْعَظِيمُ", ur:"بزرگی والا"},{ar:"ٱلْغَفُورُ", ur:"بخشنے والا"},{ar:"ٱلشَّكُورُ", ur:"قدردان"},{ar:"ٱلْعَلِيُّ", ur:"بلند و بالا"},{ar:"ٱلْكَبِيرُ", ur:"بہت بڑا"},{ar:"ٱلْحَفِيظُ", ur:"حفاظت کرنے والا"},{ar:"ٱلْمُقِيتُ", ur:"قوت دینے والا"},{ar:"ٱلْحَسِيبُ", ur:"حساب لینے والا"},{ar:"ٱلْجَلِيلُ", ur:"بزرگ"},{ar:"ٱلْكَرِيمُ", ur:"کرم کرنے والا"},{ar:"ٱلرَّقِيبُ", ur:"نگہبان"},{ar:"ٱلْمُجِيبُ", ur:"دعا قبول کرنے والا"},{ar:"ٱلْوَاسِعُ", ur:"وسعت والا"},{ar:"ٱلْحَكِيمُ", ur:"حکمت والا"},{ar:"ٱلْوَدُودُ", ur:"محبت کرنے والا"},{ar:"ٱلْمَجِيدُ", ur:"بزرگی والا"},{ar:"ٱلْبَاعِثُ", ur:"اٹھانے والا"},{ar:"ٱلشَّهِيدُ", ur:"حاضر"},{ar:"ٱلْحَقُّ", ur:"سچا"},{ar:"ٱلْوَكِيلُ", ur:"کارساز"},{ar:"ٱلْقَوِيُّ", ur:"طاقتور"},{ar:"ٱلْمَتِينُ", ur:"مضبوط"},{ar:"ٱلْوَلِيُّ", ur:"دوست"},{ar:"ٱلْحَمِيدُ", ur:"تعریف کے لائق"},{ar:"ٱلْمُحْصِي", ur:"شمار کرنے والا"},{ar:"ٱلْمُبْدِئُ", ur:"پہلی بار پیدا کرنے والا"},{ar:"ٱلْمُعِيدُ", ur:"دوبارہ پیدا کرنے والا"},{ar:"ٱلْمُحْيِي", ur:"زندہ کرنے والا"},{ar:"ٱلْمُمِيتُ", ur:"موت دینے والا"},{ar:"ٱلْحَيُّ", ur:"ہمیشہ زندہ رہنے والا"},{ar:"ٱلْقَيُّومُ", ur:"سب کو قائم رکھنے والا"},{ar:"ٱلْوَاجِدُ", ur:"پانے والا"},{ar:"ٱلْمَاجِدُ", ur:"بزرگی والا"},{ar:"ٱلْوَاحِدُ", ur:"ایک"},{ar:"ٱلْأَحَد", ur:"اکیلا"},{ar:"ٱلصَّمَدُ", ur:"بے نیاز"},{ar:"ٱلْقَادِرُ", ur:"قدرت والا"},{ar:"ٱلْمُقْتَدِرُ", ur:"کامل قدرت والا"},{ar:"ٱلْمُقَدِّمُ", ur:"آگے کرنے والا"},{ar:"ٱلْمُؤَخِّرُ", ur:"پیچھے کرنے والا"},{ar:"ٱلْأَوَّلُ", ur:"سب سے پہلا"},{ar:"ٱلْآخِرُ", ur:"سب سے آخری"},{ar:"ٱلظَّاهِرُ", ur:"ظاہر"},{ar:"ٱلْبَاطِنُ", ur:"پوشیدہ"},{ar:"ٱلْوَالِي", ur:"مالک"},{ar:"ٱلْمُتَعَالِي", ur:"بلند و برتر"},{ar:"ٱلْبَرُّ", ur:"بھلائی کرنے والا"},{ar:"ٱلتَّوَّابُ", ur:"توبہ قبول کرنے والا"},{ar:"ٱلْمُنْتَقِمُ", ur:"بدلہ لینے والا"},{ar:"ٱلْعَفُوُّ", ur:"معاف کرنے والا"},{ar:"ٱلرَّءُوفُ", ur:"بہت مہربان"},{ar:"مَالِكُ ٱلْمُلْكِ", ur:"تمام ملک کا مالک"},{ar:"ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ", ur:"جلال اور انعام والا"},{ar:"ٱلْمُقْسِطُ", ur:"انصاف کرنے والا"},{ar:"ٱلْجَامِعُ", ur:"جمع کرنے والا"},{ar:"ٱلْغَنِيُّ", ur:"بے نیاز"},{ar:"ٱلْمُغْنِي", ur:"غنی کرنے والا"},{ar:"ٱلْمَانِعُ", ur:"روکنے والا"},{ar:"ٱلضَّارُّ", ur:"نقصان پہنچانے والا"},{ar:"ٱلنَّافِعُ", ur:"نفع پہنچانے والا"},{ar:"ٱلنُّورُ", ur:"روشن کرنے والا"},{ar:"ٱلْهَادِي", ur:"ہدایت دینے والا"},{ar:"ٱلْبَدِيعُ", ur:"نئی طرح پیدا کرنے والا"},{ar:"ٱلْبَاقِي", ur:"باقی رہنے والا"},{ar:"ٱلْوَارِثُ", ur:"سب کا وارث"},{ar:"ٱلرَّشِيدُ", ur:"رہنمائی کرنے والا"},{ar:"ٱلصَّبُورُ", ur:"صبر کرنے والا"}
+];
+
+var prophetNames = [
+    {ar:"مُحَمَّدٌ", ur:"بہت تعریف کیا گیا"}, {ar:"أَحْمَدُ", ur:"سب سے زیادہ تعریف کرنے والا"}, {ar:"حَامِدٌ", ur:"اللہ کی تعریف کرنے والا"}, {ar:"مَحْمُودٌ", ur:"جس کی تعریف کی گئی ہو"},
+    {ar:"قَاسِمٌ", ur:"تقسیم کرنے والا"}, {ar:"عَاقِبٌ", ur:"سب سے آخر میں آنے والا"}, {ar:"فَاتِحٌ", ur:"فتح کرنے والا"}, {ar:"شَاهِدٌ", ur:"گواہی دینے والا"},
+    {ar:"حَاشِرٌ", ur:"جمع کرنے والا"}, {ar:"رَشِيدٌ", ur:"ہدایت یافتہ"}, {ar:"مَشْهُودٌ", ur:"جس کی گواہی دی گئی"}, {ar:"بَشِيرٌ", ur:"خوشخبری دینے والا"},
+    {ar:"نَذِيرٌ", ur:"ڈرانے والا"}, {ar:"دَاعٍ", ur:"بلانے والا"}, {ar:"شَافٍ", ur:"شفا دینے والا"}, {ar:"هَادٍ", ur:"ہدایت دینے والا"},
+    {ar:"مَهْدِيٌّ", ur:"ہدایت یافتہ"}, {ar:"مَاحٍ", ur:"کفر مٹانے والا"}, {ar:"مُنْجٍ", ur:"نجات دلانے والا"}, {ar:"نَاهٍ", ur:"منع کرنے والا"},
+    {ar:"رَسُولٌ", ur:"پیغام پہنچانے والا"}, {ar:"نَبِيٌّ", ur:"غیب کی خبر دینے والا"}, {ar:"أُمِّيٌّ", ur:"ان پڑھ"}, {ar:"تِهَامِيٌّ", ur:"تہامہ کا رہنے والا"},
+    {ar:"هَاشِمِيٌّ", ur:"بنی ہاشم سے"}, {ar:"أَبْطَحِيٌّ", ur:"بطحاء والا"}, {ar:"عَزِيزٌ", ur:"عزت والا"}, {ar:"حَرِيصٌ", ur:"بھلائی چاہنے والا"},
+    {ar:"رَءُوفٌ", ur:"بہت مہربان"}, {ar:"رَحِيمٌ", ur:"رحم کرنے والا"}, {ar:"طٰهٰ", ur:"طہٰ"}, {ar:"يٰسٓ", ur:"یس"},
+    {ar:"مُزَّمِّلٌ", ur:"چادر اوڑھنے والا"}, {ar:"مُدَّثِّرٌ", ur:"کمبل اوڑھنے والا"}, {ar:"مُصْطَفَىٰ", ur:"چنا ہوا"}, {ar:"مُجْتَبَىٰ", ur:"منتخب کیا گیا"},
+    {ar:"مُرْتَضَىٰ", ur:"پسندیدہ"}, {ar:"مُخْتَارٌ", ur:"چنا ہوا"}, {ar:"نَاصِرٌ", ur:"مددگار"}, {ar:"مَنْصُورٌ", ur:"جس کی مدد کی گئی ہو"},
+    {ar:"قَائِمٌ", ur:"قائم رہنے والا"}, {ar:"مُطِيعٌ", ur:"فرمانبردار"}, {ar:"مُخْبِتٌ", ur:"عاجزی کرنے والا"}, {ar:"خَاتَمٌ", ur:"ختم کرنے والا"},
+    {ar:"شَكُورٌ", ur:"شکر گزار"}, {ar:"قَرِيبٌ", ur:"قریب"}, {ar:"خَلِيلٌ", ur:"گہرا دوست"}, {ar:"صَفِيٌّ", ur:"خالص دوست"},
+    {ar:"طَاهِرٌ", ur:"پاک"}, {ar:"مُطَهَّرٌ", ur:"پاک کیا گیا"}, {ar:"طَيِّبٌ", ur:"پاکیزہ"}, {ar:"سَيِّدٌ", ur:"سردار"}, {ar:"مُبِينٌ", ur:"واضح کرنے والا"},
+    {ar:"بُرْهَانٌ", ur:"دلیل"}, {ar:"حُجَّةٌ", ur:"حجت"}, {ar:"صَادِقٌ", ur:"سچا"}, {ar:"مَصْدُوقٌ", ur:"سچا مانا گیا"}, {ar:"أَمِينٌ", ur:"امانت دار"},
+    {ar:"صَاحِبٌ", ur:"ساتھی"}, {ar:"مَكِّيٌّ", ur:"مکہ کا رہنے والا"}, {ar:"مَدَنِيٌّ", ur:"مدینہ کا رہنے والا"}, {ar:"عَرَبِيٌّ", ur:"عرب"}, {ar:"قُرَشِيٌّ", ur:"قریشی"},
+    {ar:"عَبْدُ اللَّهِ", ur:"اللہ کا بندہ"}, {ar:"خَيْرُ الْخَلْقِ", ur:"مخلوق میں سب سے بہتر"}, {ar:"سِرَاجٌ", ur:"چراغ"}, {ar:"مُنِيرٌ", ur:"روشن"}, {ar:"مُذَكِّرٌ", ur:"نصیحت کرنے والا"},
+    {ar:"وَلِيٌّ", ur:"دوست"}, {ar:"حَبِيبٌ", ur:"پیارا"}, {ar:"مُتَوَكِّلٌ", ur:"بھروسہ کرنے والا"}, {ar:"شَفِيعٌ", ur:"سفارش کرنے والا"}, {ar:"مُشَفَّعٌ", ur:"جس کی سفارش قبول ہو"},
+    {ar:"مُقَدَّمٌ", ur:"آگے کیا گیا"}, {ar:"مُؤَخَّرٌ", ur:"پیچھے کیا گیا"}, {ar:"فَاضِلٌ", ur:"فضیلت والا"}, {ar:"مُفَضَّلٌ", ur:"جسے فضیلت دی گئی"}, {ar:"كَرِيمٌ", ur:"کرم کرنے والا"},
+    {ar:"مُكَرَّمٌ", ur:"جس کی تکریم کی گئی"}, {ar:"مُعَظَّمٌ", ur:"عظمت والا"}, {ar:"غُوثٌ", ur:"مدد کرنے والا"}, {ar:"غِيَاثٌ", ur:"فریاد رس"}, {ar:"مُقِيتٌ", ur:"قوت دینے والا"},
+    {ar:"مُغِيثٌ", ur:"مدد کرنے والا"}, {ar:"عَفُوٌّ", ur:"معاف کرنے والا"}, {ar:"مُتَجَاوِزٌ", ur:"درگزر کرنے والا"}, {ar:"حَلِيمٌ", ur:"بردبار"}, {ar:"صَبُورٌ", ur:"صبر کرنے والا"},
+    {ar:"شَكُورٌ", ur:"قدردان"}, {ar:"عَالِمٌ", ur:"جاننے والا"}, {ar:"عَلِيمٌ", ur:"بہت جاننے والا"}, {ar:"عَلَّامٌ", ur:"بہت زیادہ جاننے والا"}, {ar:"مُعَلِّمٌ", ur:"سکھانے والا"},
+    {ar:"مُيَسِّرٌ", ur:"آسانی کرنے والا"}, {ar:"مُبَشِّرٌ", ur:"خوشخبری دینے والا"}
+];
 
 function renderNames(type) {
     document.getElementById("btnAllahNames").style.background = type === 'allah' ? "var(--gold)" : "transparent";
@@ -281,7 +316,7 @@ setInterval(() => {
     var now = new Date();
     document.getElementById("liveClock").innerText = now.toLocaleTimeString('en-US', { hour12: false }); 
     
-    // NEXT NAMAZ TIMER
+    // NEXT NAMAZ TIMER & 30 MIN WARNING
     var nextP = getNextPrayerTime();
     var pCountdownEl = document.getElementById("nextPrayerCountdown");
     var pNameEl = document.getElementById("nextPrayerName");
@@ -335,8 +370,8 @@ window.onload = async function() {
         renderNames('allah');
         renderZikr();
         renderKidsZone();
+        initStaticData(); // FAST TAFSEER SYNC
         fetchBayanatAPI(); 
-        initTafseer(); 
 
         var arRes = await fetch('https://api.alquran.cloud/v1/edition?format=audio&language=ar');
         var arData = await arRes.json();
@@ -381,7 +416,7 @@ function switchTab(id) {
 var showLoad = function(show) { document.getElementById("loading").style.display = show ? "block" : "none"; };
 
 // ==========================================
-// ALARMS & CALENDAR 
+// ALARMS & CALENDAR
 // ==========================================
 function saveSettings() {
     localStorage.setItem("city", document.getElementById("cityName").value);
@@ -550,40 +585,9 @@ function playBayan() {
 }
 
 // ==========================================
-// NAAT LOCAL DB
+// QURAN ENGINE (FAST CACHE)
 // ==========================================
-var localNaatDb = {
-    "Junaid Jamshed": [{ title: "Mera Dil Badal De", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MeraDilBadalDe.mp3" }, { title: "Mohammad Ka Roza", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/MohammadKaRoza.mp3" }, { title: "Ilahi Teri Chokhat Pe", url: "https://archive.org/download/AhnafMedia-Audios-Naat-Junaid-Jamshed/IlahiTeriChokhatPe.mp3" }],
-    "Awais Raza Qadri": [{ title: "Tajdar E Haram", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Tajdar%20E%20Haram%20Ae%20Shehenshah%20E%20Deen.mp3" }, { title: "Mera Waliyon Ke Imam", url: "https://archive.org/download/AbdallahKamelSura1AlFatiha_201906/Awais%20%28Owais%29%20Raza%20Qadri_%20Mera%20Waliyon%20Ke%20Imam.mp3" }],
-    "Sami Yusuf": [{ title: "Hasbi Rabbi", url: "https://archive.org/download/HasbiRabbiJallallahSamiYusuf_201708/Hasbi%20Rabbi%20Jallallah%20Sami%20Yusuf.mp3" }, { title: "Ya Mustafa", url: "https://archive.org/download/SamiYusuf/Ya_Mustafa.mp3" }],
-    "Fasihuddin Soharwardi": [{ title: "Main Behak Sakun", url: "https://archive.org/download/Fasihuddin/Main_Behak.mp3" }],
-    "Maher Zain": [{ title: "Ya Nabi Salam Alayka", url: "https://archive.org/download/MaherZain/Ya_Nabi.mp3" }],
-    "General Famous Naats": [{ title: "Qaseeda Burda Shareef", url: "https://archive.org/download/QaseedaBurda/Qaseeda.mp3" }, { title: "Bhar Do Jholi", url: "https://archive.org/download/BharDoJholi/Bhar_Do.mp3" }]
-};
-
-function loadLocalNaats() {
-    var khawan = document.getElementById("naatKhawanSelect").value;
-    var nSelect = document.getElementById("naatSelect");
-    nSelect.innerHTML = "";
-    var naats = localNaatDb[khawan] || [];
-    if(naats.length === 0) { nSelect.add(new Option("No Naats Found", "")); return; }
-    naats.forEach(function(item, index) { nSelect.add(new Option(item.title, index)); });
-}
-
-function playNaat() {
-    var khawan = document.getElementById("naatKhawanSelect").value;
-    var index = document.getElementById("naatSelect").value;
-    var item = localNaatDb[khawan][index];
-    if(!item) return;
-    document.getElementById("currentNaatTitle").innerText = item.title;
-    var player = document.getElementById("naatPlayer");
-    player.src = item.url;
-    player.play().catch(e => showToast("Audio URL restricted."));
-}
-
-// ==========================================
-// QURAN ENGINE 
-// ==========================================
+var quranCache = {};
 var padNum = function(num) { return num.toString().padStart(3, '0'); };
 var toArabicNum = function(num) { return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); };
 
@@ -596,18 +600,28 @@ async function loadSurah() {
     var playStyle = document.getElementById("audioPlayStyle").value; 
     
     if(num < 1) return;
+    var cacheKey = mode + "-" + num + "-" + r + "-" + l;
     
     showLoad(true); document.getElementById("quranContainer").style.display = "none";
     audioEngine.pause(); playlist = []; currentTrackIndex = 0; isPlaying = false;
     document.getElementById("playBtn").innerHTML = '<i class="fas fa-play-circle"></i>';
 
     try {
-        var resAr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${r}`);
-        if(!resAr.ok) throw new Error("API Limit"); 
-        var dataAr = await resAr.json();
-
-        var resTr = await fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${l}`);
-        var dataTr = await resTr.json();
+        var dataAr, dataTr;
+        if(quranCache[cacheKey]) {
+            dataAr = quranCache[cacheKey].ar;
+            dataTr = quranCache[cacheKey].tr;
+        } else {
+            // PARALLEL FETCH
+            const [resAr, resTr] = await Promise.all([
+                fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${r}`),
+                fetch(`https://api.alquran.cloud/v1/${mode}/${num}/${l}`)
+            ]);
+            if(!resAr.ok) throw new Error("API Limit"); 
+            dataAr = await resAr.json();
+            dataTr = await resTr.json();
+            quranCache[cacheKey] = { ar: dataAr, tr: dataTr };
+        }
 
         var ayahsAr = mode === 'ayah' ? [dataAr.data] : dataAr.data.ayahs;
         var ayahsTr = mode === 'ayah' ? [dataTr.data] : dataTr.data.ayahs;
@@ -643,7 +657,6 @@ async function loadSurah() {
         document.getElementById("quranContainer").style.display = "block";
         document.getElementById("playerTitle").innerText = `${mode.toUpperCase()} Loaded successfully.`;
 
-        // PLAYBACK STYLES
         if (playStyle === 'ayahByAyah') {
             ayahsAr.forEach(ayah => {
                 var sNum = mode === 'surah' ? num : (ayah.surah ? ayah.surah.number : 1);
